@@ -12,14 +12,14 @@ namespace Guitarsharp
         private long currentTime = 0;
         private int currentEventIndex = 0;
         public KarplusStrongSampleProvider sampleProvider;
+
         public Form1()
         {
             InitializeComponent();
 
-            int sampleRate = 44100;
-            float defaultFrequency = 440.0f; // Example default frequency for A4 note
+            
 
-
+            WaveFormat format = GlobalConfig.GlobalWaveFormat;
             string midiFilePath = "test.mid"; // Ensure this path is correct
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
@@ -27,7 +27,9 @@ namespace Guitarsharp
 
 
             karplusStrong = new KarplusStrong(44100, 440.0f); // This is just an initial frequency.
+
             sampleProvider = new KarplusStrongSampleProvider(karplusStrong, 220f);
+            //MessageBox.Show(sampleProvider.WaveFormat.SampleRate.ToString());
             waveOut = new WaveOut();
             waveOut.Init(sampleProvider);
             waveOut.Play();
@@ -64,29 +66,37 @@ namespace Guitarsharp
             if (midiHandler.SortedMidiEvents.Count == 0)
             {
                 midiPlaybackTimer.Stop(); // Stop the timer if there are no more events.
-                MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString() + "here");
+                //MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString() + "here");
                 return;
             }
 
             while (midiHandler.SortedMidiEvents.Count > 0 && midiHandler.SortedMidiEvents[0].Timestamp <= currentPlaybackPosition)
             {
-               // MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString());
+                // MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString());
                 var midiEventWithTimestamp = midiHandler.SortedMidiEvents[0];
 
                 // Handle the MIDI event (e.g., play the note)
                 if (midiEventWithTimestamp.MidiEvent.CommandCode == MidiCommandCode.NoteOn)
                 {
                     var noteOnEvent = (NoteOnEvent)midiEventWithTimestamp.MidiEvent;
-                    if (noteOnEvent.Velocity > 0) // Check if it's a real NoteOn event (Velocity > 0)
+                    if (noteOnEvent.Velocity > 0)
                     {
                         double frequency = MidiUtilities.GetFrequencyFromMidiNote(noteOnEvent.NoteNumber);
 
-                        sampleProvider = new KarplusStrongSampleProvider(karplusStrong, (float)frequency);
-                        //WaveOut waveOut2 = new WaveOut();
+                        // Update the frequency of the existing KarplusStrong object
+                        karplusStrong.UpdateFrequency((float)frequency);
+
+                        // Stop and dispose of the previous waveOut instance
+                        waveOut.Stop();
+                        waveOut.Dispose();
+
+                        // Re-initialize waveOut with the same sampleProvider
+                        waveOut = new WaveOut();
                         waveOut.Init(sampleProvider);
                         waveOut.Play();
                     }
                 }
+
 
                 // Remove the processed event from the list
                 midiHandler.SortedMidiEvents.RemoveAt(0);
@@ -96,14 +106,7 @@ namespace Guitarsharp
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            KarplusStrong karplusStrong2 = new KarplusStrong(44100,111);
-            var sampleProvider2 = new KarplusStrongSampleProvider(karplusStrong2, 111);
-            WaveOut waveOut2 = new WaveOut();
-            waveOut2.Init(sampleProvider2);
-            waveOut2.Play();
-        }
+       
     }
 
     public static class MidiUtilities
@@ -113,5 +116,14 @@ namespace Guitarsharp
             return 440.0 * Math.Pow(2.0, (midiNoteNumber - 69) / 12.0);
         }
     }
+
+  
+
+    public static class GlobalConfig
+    {
+        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1);
+
+    }
+
 
 }
