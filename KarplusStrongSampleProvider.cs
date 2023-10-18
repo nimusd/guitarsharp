@@ -16,13 +16,20 @@ namespace Guitarsharp
 
         public KarplusStrongSampleProvider(KarplusStrong karplusStrongInstance, float frequency)
         {
+            WaveFormat format = GlobalConfig.GlobalWaveFormat;
             this.karplusStrong = karplusStrongInstance;
             karplusStrong = new KarplusStrong(44100, frequency); // Assuming a sample rate of 44100
+            
             karplusStrong.Pluck(0.5f); // Pluck the string with an amplitude of 0.5
-            WaveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1); // Mono output
+            
+
         }
 
-
+        public void UpdateFrequency(float frequency)
+        {
+            // Update the frequency of the KarplusStrong instance
+            this.karplusStrong.UpdateFrequency(frequency);
+        }
         public WaveFormat WaveFormat { get; }
 
         public int Read(float[] buffer, int offset, int count)
