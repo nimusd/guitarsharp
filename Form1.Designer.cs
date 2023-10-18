@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             buttonPlayMidi = new Button();
-            button1 = new Button();
             SuspendLayout();
             // 
             // buttonPlayMidi
@@ -42,22 +41,11 @@
             buttonPlayMidi.UseVisualStyleBackColor = true;
             buttonPlayMidi.Click += buttonPlayMidi_Click;
             // 
-            // button1
-            // 
-            button1.Location = new Point(145, 220);
-            button1.Name = "button1";
-            button1.Size = new Size(188, 58);
-            button1.TabIndex = 1;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(3180, 2082);
-            Controls.Add(button1);
             Controls.Add(buttonPlayMidi);
             Name = "Form1";
             Text = "Form1";
@@ -67,6 +55,5 @@
         #endregion
 
         private Button buttonPlayMidi;
-        private Button button1;
     }
 }
