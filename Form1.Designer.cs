@@ -57,6 +57,7 @@
             LECS1 = new Button();
             ABb2 = new Button();
             LEC1 = new Button();
+            GD2 = new Button();
             LEB1 = new Button();
             AA2 = new Button();
             LEBb1 = new Button();
@@ -153,10 +154,13 @@
             HEFs1 = new Button();
             HEF1 = new Button();
             HEE1 = new Button();
-            GD2 = new Button();
+            guitarRollPanel = new Panel();
+            velocityPanel = new Panel();
+            panel1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // buttonPlayMidi
@@ -591,6 +595,17 @@
             LEC1.Tag = "48";
             LEC1.Text = "C";
             LEC1.UseVisualStyleBackColor = false;
+            // 
+            // GD2
+            // 
+            GD2.BackColor = SystemColors.GradientInactiveCaption;
+            GD2.Location = new Point(1898, 120);
+            GD2.Name = "GD2";
+            GD2.Size = new Size(100, 50);
+            GD2.TabIndex = 20;
+            GD2.Tag = "74";
+            GD2.Text = "D";
+            GD2.UseVisualStyleBackColor = false;
             // 
             // LEB1
             // 
@@ -1648,22 +1663,37 @@
             HEE1.Text = "E";
             HEE1.UseVisualStyleBackColor = false;
             // 
-            // GD2
+            // guitarRollPanel
             // 
-            GD2.BackColor = SystemColors.GradientInactiveCaption;
-            GD2.Location = new Point(1898, 120);
-            GD2.Name = "GD2";
-            GD2.Size = new Size(100, 50);
-            GD2.TabIndex = 20;
-            GD2.Tag = "74";
-            GD2.Text = "D";
-            GD2.UseVisualStyleBackColor = false;
+            guitarRollPanel.Location = new Point(35, 27);
+            guitarRollPanel.Name = "guitarRollPanel";
+            guitarRollPanel.Size = new Size(2000, 600);
+            guitarRollPanel.TabIndex = 6;
+            guitarRollPanel.Paint += guitarRollPanel_Paint;
+            guitarRollPanel.MouseClick += this.guitarRollPanel_MouseClick;
+            // 
+            // velocityPanel
+            // 
+            velocityPanel.Location = new Point(35, 664);
+            velocityPanel.Name = "velocityPanel";
+            velocityPanel.Size = new Size(2000, 500);
+            velocityPanel.TabIndex = 7;
+            // 
+            // panel1
+            // 
+            panel1.Controls.Add(guitarRollPanel);
+            panel1.Controls.Add(velocityPanel);
+            panel1.Location = new Point(128, 704);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(2073, 1227);
+            panel1.TabIndex = 8;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(2258, 1323);
+            ClientSize = new Size(2804, 2012);
+            Controls.Add(panel1);
             Controls.Add(fretboard);
             Controls.Add(label2);
             Controls.Add(EnvelopeLengthSlider);
@@ -1676,6 +1706,7 @@
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).EndInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).EndInit();
             fretboard.ResumeLayout(false);
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1808,5 +1839,8 @@
         private Button BC1;
         private Button BB1;
         private Button GD2;
+        private Panel guitarRollPanel;
+        private Panel velocityPanel;
+        private Panel panel1;
     }
 }

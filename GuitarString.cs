@@ -8,5 +8,11 @@ namespace Guitarsharp
 {
     internal class GuitarString
     {
+        public int StringNumber { get; set; }
+        public List<Note> Notes { get; set; } = new List<Note>();
+        public GuitarString() { 
+        
+        }
+
     }
 }

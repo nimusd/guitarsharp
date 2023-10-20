@@ -13,6 +13,7 @@ namespace Guitarsharp
         private int currentEventIndex = 0;
         public KarplusStrongSampleProvider sampleProvider;
         public int fretboardMidiNoteNumber = 0;
+        private List<Note> composition = new List<Note>();
 
         public Form1()
         {
@@ -31,7 +32,7 @@ namespace Guitarsharp
             {
                 if (control is Button && control.Tag != null)
                 {
-                    
+
                     control.Click += FretboardButton_Click;
                 }
             }
@@ -57,9 +58,60 @@ namespace Guitarsharp
         {
             if (sender is Button button && int.TryParse(button.Tag.ToString(), out int midiNoteNumber))
             {
+                // Determine the string from the button's Y position
+                int stringNumber = GetStringNumberFromButtonY(button.Top);
+
+                // Create a new Note object
+                Note newNote = new Note( stringNumber,0, 0, 0, 0, 0, midiNoteNumber); // Adjust the parameters as needed
+
+                // Add the note to the composition
+                composition.Add(newNote);
+
+                // Draw the note on the guitarRollPanel
+                DrawNoteOnGuitarRoll(newNote);
+
+                // Play the note (if you want this functionality)
                 PlayFromFretboard(midiNoteNumber);
             }
         }
+
+        private int GetStringNumberFromButtonY(int yPosition)
+        {
+            if (yPosition >= 0 && yPosition < 50) return 0;   // High E string
+            if (yPosition >= 50 && yPosition < 100) return 1; // B string
+            if (yPosition >= 100 && yPosition < 150) return 2; // G string
+            if (yPosition >= 150 && yPosition < 200) return 3; // D string
+            if (yPosition >= 200 && yPosition < 250) return 4; // A string
+            if (yPosition >= 250 && yPosition < 300) return 5; // Low E string
+
+            throw new Exception("Invalid Y position for string determination.");
+        }
+
+        private void DrawNoteOnGuitarRoll(Note note)
+        {
+            int laneHeight = guitarRollPanel.Height / 6; // Assuming 6 strings
+            int noteWidth = 50; // You can adjust this value based on your requirements
+
+            // Calculate the position and size of the rectangle
+            int yPos = (note.StringNumber  ) * laneHeight; // Adjusted calculation for Y position
+            
+            Rectangle noteRect = new Rectangle(10, yPos, noteWidth, laneHeight); // Set X position to 10 for now
+
+            // Draw the rectangle on the guitarRollPanel
+            using (Graphics g = guitarRollPanel.CreateGraphics())
+            {
+                g.FillRectangle(Brushes.Blue, noteRect); // Fill the rectangle with a color
+                g.DrawRectangle(Pens.Black, noteRect); // Draw the rectangle border
+
+                // Draw the note number inside the rectangle
+                StringFormat stringFormat = new StringFormat();
+                stringFormat.Alignment = StringAlignment.Center;
+                stringFormat.LineAlignment = StringAlignment.Center;
+                g.DrawString(note.MidiNoteNumber.ToString(), new Font("Arial", 12), Brushes.White, noteRect, stringFormat);
+            }
+        }
+
+
         private void PlayFromFretboard(int midiNoteNumber)
         {
             double frequency = MidiUtilities.GetFrequencyFromMidiNote(midiNoteNumber);
@@ -143,9 +195,7 @@ namespace Guitarsharp
 
         }
 
-
-
- 
+       
     }
 
     public static class MidiUtilities
