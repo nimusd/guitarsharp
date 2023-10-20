@@ -18,7 +18,8 @@ namespace Guitarsharp
         {
             WaveFormat format = GlobalConfig.GlobalWaveFormat;
             this.karplusStrong = karplusStrongInstance;
-            //karplusStrong = new KarplusStrong(44100, frequency); // Assuming a sample rate of 44100
+            karplusStrong.UpdateFrequency(frequency);
+           
             
             karplusStrong.Pluck(0.5f); // Pluck the string with an amplitude of 0.5
             
