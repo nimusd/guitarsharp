@@ -12,12 +12,13 @@ namespace Guitarsharp
         private long currentTime = 0;
         private int currentEventIndex = 0;
         public KarplusStrongSampleProvider sampleProvider;
+        public int fretboardMidiNoteNumber = 0;
 
         public Form1()
         {
             InitializeComponent();
 
-            
+
 
             WaveFormat format = GlobalConfig.GlobalWaveFormat;
             string midiFilePath = "test.mid"; // Ensure this path is correct
@@ -25,11 +26,19 @@ namespace Guitarsharp
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
 
 
+            // Attach the single event handler to all relevant buttons
+            foreach (Control control in fretboard.Controls)
+            {
+                if (control is Button && control.Tag != null)
+                {
+                    
+                    control.Click += FretboardButton_Click;
+                }
+            }
 
-            karplusStrong = new KarplusStrong(44100, 440.0f); // This is just an initial frequency.
-
-            sampleProvider = new KarplusStrongSampleProvider(karplusStrong, 220f);
-            //MessageBox.Show(sampleProvider.WaveFormat.SampleRate.ToString());
+            karplusStrong = new KarplusStrong(format.SampleRate, 220.0f); // This is just an initial frequency.
+            karplusStrong.UpdateFrequency(880);
+            sampleProvider = new KarplusStrongSampleProvider(karplusStrong, 440f);
             waveOut = new WaveOut();
             waveOut.Init(sampleProvider);
             waveOut.Play();
@@ -44,6 +53,24 @@ namespace Guitarsharp
         }
 
 
+        private void FretboardButton_Click(object sender, EventArgs e)
+        {
+            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int midiNoteNumber))
+            {
+                PlayFromFretboard(midiNoteNumber);
+            }
+        }
+        private void PlayFromFretboard(int midiNoteNumber)
+        {
+            double frequency = MidiUtilities.GetFrequencyFromMidiNote(midiNoteNumber);
+
+            // Update the frequency of the existing KarplusStrong object
+            karplusStrong.UpdateFrequency((float)frequency);
+
+            // Pluck the virtual string to generate sound
+            karplusStrong.Pluck(0.5f); // You can adjust the amplitude value as needed
+
+        }
 
         private void buttonPlayMidi_Click(object sender, EventArgs e)
         {
@@ -66,15 +93,14 @@ namespace Guitarsharp
             if (midiHandler.SortedMidiEvents.Count == 0)
             {
                 midiPlaybackTimer.Stop(); // Stop the timer if there are no more events.
-                //MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString() + "here");
+                MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString() + "here");
                 return;
             }
 
             while (midiHandler.SortedMidiEvents.Count > 0 && midiHandler.SortedMidiEvents[0].Timestamp <= currentPlaybackPosition)
             {
-                // MessageBox.Show(midiHandler.SortedMidiEvents.Count.ToString());
-                var midiEventWithTimestamp = midiHandler.SortedMidiEvents[0];
 
+                var midiEventWithTimestamp = midiHandler.SortedMidiEvents[0];
                 // Handle the MIDI event (e.g., play the note)
                 if (midiEventWithTimestamp.MidiEvent.CommandCode == MidiCommandCode.NoteOn)
                 {
@@ -86,16 +112,13 @@ namespace Guitarsharp
                         // Update the frequency of the existing KarplusStrong object
                         karplusStrong.UpdateFrequency((float)frequency);
 
-                        // Stop and dispose of the previous waveOut instance
-                        waveOut.Stop();
-                        waveOut.Dispose();
+                        // Pluck the virtual string to generate sound
+                        karplusStrong.Pluck(0.5f); // You can adjust the amplitude value as needed
 
-                        // Re-initialize waveOut with the same sampleProvider
-                        waveOut = new WaveOut();
-                        waveOut.Init(sampleProvider);
-                        waveOut.Play();
+
                     }
                 }
+
 
 
                 // Remove the processed event from the list
@@ -106,7 +129,23 @@ namespace Guitarsharp
 
         }
 
-       
+        private void lowPassFilterAlpha_ValueChanged(object sender, EventArgs e)
+        {
+            karplusStrong.alpha = (float)lowPassFilterAlpha.Value / 100;
+        }
+
+        private void EnvelopeLengthSlider_ValueChanged(object sender, EventArgs e)
+        {
+            double minLog = Math.Log10(441);       // Logarithm of the minimum value
+            double maxLog = Math.Log10(220500);    // Logarithm of the maximum value
+            double scaledValue = minLog + (maxLog - minLog) * EnvelopeLengthSlider.Value / 100;  // sliderValue is between 0 and 1
+            karplusStrong.envelopeLength = (int)Math.Pow(10, scaledValue);
+
+        }
+
+
+
+ 
     }
 
     public static class MidiUtilities
@@ -117,7 +156,7 @@ namespace Guitarsharp
         }
     }
 
-  
+
 
     public static class GlobalConfig
     {
