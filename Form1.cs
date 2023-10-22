@@ -1,3 +1,7 @@
+
+
+
+
 namespace Guitarsharp
 {
     using NAudio.Midi;
@@ -9,11 +13,16 @@ namespace Guitarsharp
         private MidiHandler midiHandler;
         private WaveOut waveOut;
         private System.Windows.Forms.Timer midiPlaybackTimer = new System.Windows.Forms.Timer();
-        private long currentTime = 0;
+        private float currentTime = 0;
         private int currentEventIndex = 0;
         public KarplusStrongSampleProvider sampleProvider;
         public int fretboardMidiNoteNumber = 0;
-        private List<Note> composition = new List<Note>();
+        private List<Note> allNotes = new List<Note>();
+        private Composition composition = new Composition();
+        private const float PixelsPerSecond = 50.0f;  // Adjust this value as needed
+        private bool noNoteAddedSinceLastSpacePress;
+        // Declare the timer at the class level
+
 
         public Form1()
         {
@@ -25,6 +34,10 @@ namespace Guitarsharp
             string midiFilePath = "test.mid"; // Ensure this path is correct
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
+
+           
+            this.KeyPreview = true;
+            
 
 
             // Attach the single event handler to all relevant buttons
@@ -51,65 +64,46 @@ namespace Guitarsharp
             };
             midiPlaybackTimer.Interval = 10; // Check every 10ms
             midiPlaybackTimer.Tick += MidiPlaybackTimer_Tick;
+            noNoteAddedSinceLastSpacePress = true;
+
         }
 
-
-        private void FretboardButton_Click(object sender, EventArgs e)
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int midiNoteNumber))
+            if (e.KeyCode == Keys.S)
             {
-                // Determine the string from the button's Y position
-                int stringNumber = GetStringNumberFromButtonY(button.Top);
-
-                // Create a new Note object
-                Note newNote = new Note( stringNumber,0, 0, 0, 0, 0, midiNoteNumber); // Adjust the parameters as needed
-
-                // Add the note to the composition
-                composition.Add(newNote);
-
-                // Draw the note on the guitarRollPanel
-                DrawNoteOnGuitarRoll(newNote);
-
-                // Play the note (if you want this functionality)
-                PlayFromFretboard(midiNoteNumber);
+                // Advance the currentTime by a fixed duration (e.g., 1 second)
+                currentTime += 1.0f;
+                //MessageBox.Show(currentTime.ToString() + "key ");
+                guitarRollPanel.Invalidate(); // Redraw the guitar roll panel
             }
         }
 
-        private int GetStringNumberFromButtonY(int yPosition)
-        {
-            if (yPosition >= 0 && yPosition < 50) return 0;   // High E string
-            if (yPosition >= 50 && yPosition < 100) return 1; // B string
-            if (yPosition >= 100 && yPosition < 150) return 2; // G string
-            if (yPosition >= 150 && yPosition < 200) return 3; // D string
-            if (yPosition >= 200 && yPosition < 250) return 4; // A string
-            if (yPosition >= 250 && yPosition < 300) return 5; // Low E string
 
-            throw new Exception("Invalid Y position for string determination.");
-        }
+        /*
+                private void Form1_KeyDown(object sender, KeyEventArgs e)
+                {
+                    if (e.KeyCode == Keys.S) // Check for the "S" key press
+                    {
+                        // Introduce a silence (shift the notes without adding a new one)
+                        ShiftNotesByDurationWithoutDrawing();
+                        e.Handled = true; // Prevent the key press from being propagated
+                    }
+                    else if (e.KeyCode == Keys.Space)
+                    {
+                        if (!noNoteAddedSinceLastSpacePress)
+                        {
+                            ShiftNotesByDurationWithoutDrawing();
+                            e.Handled = true; // Prevent the key press from being propagated
 
-        private void DrawNoteOnGuitarRoll(Note note)
-        {
-            int laneHeight = guitarRollPanel.Height / 6; // Assuming 6 strings
-            int noteWidth = 50; // You can adjust this value based on your requirements
+                        }
 
-            // Calculate the position and size of the rectangle
-            int yPos = (note.StringNumber  ) * laneHeight; // Adjusted calculation for Y position
-            
-            Rectangle noteRect = new Rectangle(10, yPos, noteWidth, laneHeight); // Set X position to 10 for now
+                    }
+                }
 
-            // Draw the rectangle on the guitarRollPanel
-            using (Graphics g = guitarRollPanel.CreateGraphics())
-            {
-                g.FillRectangle(Brushes.Blue, noteRect); // Fill the rectangle with a color
-                g.DrawRectangle(Pens.Black, noteRect); // Draw the rectangle border
+        */
 
-                // Draw the note number inside the rectangle
-                StringFormat stringFormat = new StringFormat();
-                stringFormat.Alignment = StringAlignment.Center;
-                stringFormat.LineAlignment = StringAlignment.Center;
-                g.DrawString(note.MidiNoteNumber.ToString(), new Font("Arial", 12), Brushes.White, noteRect, stringFormat);
-            }
-        }
+
 
 
         private void PlayFromFretboard(int midiNoteNumber)
@@ -195,7 +189,7 @@ namespace Guitarsharp
 
         }
 
-       
+
     }
 
     public static class MidiUtilities
@@ -216,3 +210,7 @@ namespace Guitarsharp
 
 
 }
+
+
+
+

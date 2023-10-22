@@ -10,6 +10,7 @@ namespace Guitarsharp
     {
         public string Title { get; set; }
         public List<GuitarString> Strings { get; set; } = new List<GuitarString>();
+        public List<Note> Notes { get; set; } = new List<Note>();
         public int Tempo { get; set; }
         public string TimeSignature { get; set; }
 

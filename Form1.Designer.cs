@@ -157,10 +157,21 @@
             guitarRollPanel = new Panel();
             velocityPanel = new Panel();
             panel1 = new Panel();
+            blancheButton = new Button();
+            label3 = new Label();
+            noteDuration = new Panel();
+            tripletButton = new Button();
+            pointeeButton = new Button();
+            tripleCrocheButton = new Button();
+            doubleCrocheButton = new Button();
+            crocheButton = new Button();
+            NoireButton = new Button();
+            rondeButton = new Button();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
             panel1.SuspendLayout();
+            noteDuration.SuspendLayout();
             SuspendLayout();
             // 
             // buttonPlayMidi
@@ -1665,16 +1676,19 @@
             // 
             // guitarRollPanel
             // 
-            guitarRollPanel.Location = new Point(35, 27);
+            guitarRollPanel.AutoScroll = true;
+            guitarRollPanel.AutoScrollMinSize = new Size(5000, 600);
+            guitarRollPanel.Location = new Point(29, 27);
             guitarRollPanel.Name = "guitarRollPanel";
-            guitarRollPanel.Size = new Size(2000, 600);
+            guitarRollPanel.Size = new Size(2006, 669);
             guitarRollPanel.TabIndex = 6;
+            guitarRollPanel.Scroll += guitarRollPanel_Scroll;
             guitarRollPanel.Paint += guitarRollPanel_Paint;
-            guitarRollPanel.MouseClick += this.guitarRollPanel_MouseClick;
             // 
             // velocityPanel
             // 
-            velocityPanel.Location = new Point(35, 664);
+            velocityPanel.AutoScroll = true;
+            velocityPanel.Location = new Point(13, 724);
             velocityPanel.Name = "velocityPanel";
             velocityPanel.Size = new Size(2000, 500);
             velocityPanel.TabIndex = 7;
@@ -1688,11 +1702,110 @@
             panel1.Size = new Size(2073, 1227);
             panel1.TabIndex = 8;
             // 
+            // blancheButton
+            // 
+            blancheButton.Location = new Point(3, 50);
+            blancheButton.Name = "blancheButton";
+            blancheButton.Size = new Size(188, 58);
+            blancheButton.TabIndex = 9;
+            blancheButton.Text = "Whole";
+            blancheButton.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(3, 0);
+            label3.Name = "label3";
+            label3.Size = new Size(233, 47);
+            label3.TabIndex = 10;
+            label3.Text = "note duration";
+            // 
+            // noteDuration
+            // 
+            noteDuration.BackColor = SystemColors.ActiveCaption;
+            noteDuration.Controls.Add(tripletButton);
+            noteDuration.Controls.Add(pointeeButton);
+            noteDuration.Controls.Add(tripleCrocheButton);
+            noteDuration.Controls.Add(doubleCrocheButton);
+            noteDuration.Controls.Add(crocheButton);
+            noteDuration.Controls.Add(NoireButton);
+            noteDuration.Controls.Add(rondeButton);
+            noteDuration.Controls.Add(blancheButton);
+            noteDuration.Controls.Add(label3);
+            noteDuration.Location = new Point(133, 1966);
+            noteDuration.Name = "noteDuration";
+            noteDuration.Size = new Size(1723, 120);
+            noteDuration.TabIndex = 11;
+            // 
+            // tripletButton
+            // 
+            tripletButton.Location = new Point(1480, 50);
+            tripletButton.Name = "tripletButton";
+            tripletButton.Size = new Size(188, 58);
+            tripletButton.TabIndex = 17;
+            tripletButton.Text = "triplet";
+            tripletButton.UseVisualStyleBackColor = true;
+            // 
+            // pointeeButton
+            // 
+            pointeeButton.Location = new Point(1263, 50);
+            pointeeButton.Name = "pointeeButton";
+            pointeeButton.Size = new Size(188, 58);
+            pointeeButton.TabIndex = 16;
+            pointeeButton.Text = "dotted";
+            pointeeButton.UseVisualStyleBackColor = true;
+            // 
+            // tripleCrocheButton
+            // 
+            tripleCrocheButton.Location = new Point(1050, 50);
+            tripleCrocheButton.Name = "tripleCrocheButton";
+            tripleCrocheButton.Size = new Size(188, 58);
+            tripleCrocheButton.TabIndex = 15;
+            tripleCrocheButton.Text = "32nd";
+            tripleCrocheButton.UseVisualStyleBackColor = true;
+            // 
+            // doubleCrocheButton
+            // 
+            doubleCrocheButton.Location = new Point(840, 50);
+            doubleCrocheButton.Name = "doubleCrocheButton";
+            doubleCrocheButton.Size = new Size(188, 58);
+            doubleCrocheButton.TabIndex = 14;
+            doubleCrocheButton.Text = "sixteen";
+            doubleCrocheButton.UseVisualStyleBackColor = true;
+            // 
+            // crocheButton
+            // 
+            crocheButton.Location = new Point(635, 50);
+            crocheButton.Name = "crocheButton";
+            crocheButton.Size = new Size(188, 58);
+            crocheButton.TabIndex = 13;
+            crocheButton.Text = "eigth";
+            crocheButton.UseVisualStyleBackColor = true;
+            // 
+            // NoireButton
+            // 
+            NoireButton.Location = new Point(412, 50);
+            NoireButton.Name = "NoireButton";
+            NoireButton.Size = new Size(188, 58);
+            NoireButton.TabIndex = 12;
+            NoireButton.Text = "quarter";
+            NoireButton.UseVisualStyleBackColor = true;
+            // 
+            // rondeButton
+            // 
+            rondeButton.Location = new Point(210, 50);
+            rondeButton.Name = "rondeButton";
+            rondeButton.Size = new Size(188, 58);
+            rondeButton.TabIndex = 11;
+            rondeButton.Text = "Half";
+            rondeButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(2804, 2012);
+            ClientSize = new Size(3033, 2224);
+            Controls.Add(noteDuration);
             Controls.Add(panel1);
             Controls.Add(fretboard);
             Controls.Add(label2);
@@ -1703,10 +1816,13 @@
             Name = "Form1";
             Tag = "40";
             Text = "Form1";
+            KeyDown += Form1_KeyDown;
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).EndInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).EndInit();
             fretboard.ResumeLayout(false);
             panel1.ResumeLayout(false);
+            noteDuration.ResumeLayout(false);
+            noteDuration.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -1842,5 +1958,15 @@
         private Panel guitarRollPanel;
         private Panel velocityPanel;
         private Panel panel1;
+        private Button blancheButton;
+        private Label label3;
+        private Panel noteDuration;
+        private Button tripletButton;
+        private Button pointeeButton;
+        private Button tripleCrocheButton;
+        private Button doubleCrocheButton;
+        private Button crocheButton;
+        private Button NoireButton;
+        private Button rondeButton;
     }
 }

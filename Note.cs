@@ -16,6 +16,7 @@ namespace Guitarsharp
         public double StartTime { get; set; }
         public double EndTime { get; set; }
         public int Velocity { get; set; }
+        public Rectangle DrawingRectangle { get; set; }
         // Define the open string frequencies and MIDI note numbers for a standard-tuned six-string guitar
         private static readonly float[] OpenStringFrequencies = { 82.41f, 110.00f, 146.83f, 196.00f, 246.94f, 329.63f };
         private static readonly int[] OpenStringMidiNumbers = { 40, 45, 50, 55, 59, 64 };
