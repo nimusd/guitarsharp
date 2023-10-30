@@ -1,6 +1,6 @@
 ﻿using NAudio.Midi;
 using System;
-
+[Serializable]
 public class MidiHandler
 {
     private string midiFilePath;

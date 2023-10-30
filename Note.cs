@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Guitarsharp
 {
-    internal class Note
+    [Serializable]
+    public class Note
     {
         
         public int StringNumber { get; set; }
@@ -17,22 +19,33 @@ namespace Guitarsharp
         public double EndTime { get; set; }
         public int Velocity { get; set; }
         public Rectangle DrawingRectangle { get; set; }
+
+        public bool IsSelected { get; set; } = false;
+        public int MidiChannel;
+
+
         // Define the open string frequencies and MIDI note numbers for a standard-tuned six-string guitar
         private static readonly float[] OpenStringFrequencies = { 82.41f, 110.00f, 146.83f, 196.00f, 246.94f, 329.63f };
         private static readonly int[] OpenStringMidiNumbers = { 40, 45, 50, 55, 59, 64 };
 
-        public Note(int stringNumber, int fretNumber, float startTime, float endTime, int velocity, float frequency, int midiNoteNumber)
+        //Ensure they have a parameterless default constructor, which is required for deserialization.  
+        public Note() { } // Default constructor
+        public Note(int stringNumber, int fretNumber, float startTime, float endTime, int velocity, float frequency, int midiNoteNumber, int midiChannel)
         {
             StringNumber = stringNumber;
             FretNumber = fretNumber;
             StartTime = startTime;
             EndTime = endTime;
             Velocity = velocity;
+            Frequency = frequency;
+            MidiChannel = midiChannel;
 
-            // Calculate the frequency and MIDI note number for the given fret and string
-            //Frequency = CalculateFrequency(fretNumber, stringNumber);
+            // Calculate the frequency 
+           // frequency =  (float) MidiUtilities.GetFrequencyFromMidiNote( midiNoteNumber);
+
+
             MidiNoteNumber = midiNoteNumber;
-            //MidiNoteNumber = CalculateMidiNoteNumber(fretNumber, stringNumber);
+            
 
         }
         private float CalculateFrequency(int fretNumber, int stringNumber)

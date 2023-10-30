@@ -8,7 +8,7 @@ using System;
 
 namespace Guitarsharp
 {
-
+    [Serializable]
 
     public class KarplusStrongSampleProvider : ISampleProvider
     {

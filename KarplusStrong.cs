@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Guitarsharp
 {
 
-
+    [Serializable]
     public class KarplusStrong
     {
         private readonly double decay = 0.998;
