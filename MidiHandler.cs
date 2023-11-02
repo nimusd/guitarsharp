@@ -44,7 +44,7 @@ public class MidiHandler
         public MidiEventWithTimestamp(MidiEvent midiEvent, long timestamp)
         {
             MidiEvent = midiEvent;
-            Timestamp = timestamp;
+            Timestamp = timestamp/10;
         }
     }
 

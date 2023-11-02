@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Remove="fretboard.cs" />
+    <Compile Remove="FretButton.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -63,6 +63,9 @@ namespace Guitarsharp
         private System.Windows.Forms.Timer playbackTimer = new System.Windows.Forms.Timer();
         private int currentNoteIndex = 0;
         private float currentPlaybackTime = 0;
+
+        private FretPattern activeFretPattern;
+        public List<FretPattern> allFretPatterns = new List<FretPattern>();
         public Form1()
         {
             InitializeComponent();
@@ -136,16 +139,25 @@ namespace Guitarsharp
             crocheButton.BackColor = Color.LightGreen;
             doubleCrocheButton.BackColor = Color.LightGreen;
             tripleCrocheButton.BackColor = Color.LightGreen;
-            Debug.WriteLine("Init completed"); 
+            CreateFretPatterns();
+
+
+
+            Debug.WriteLine("Init completed");
+
+
+
         }
+
+
 
         private void InitializeComposition()
         {
             composition = new Composition
             {
                 Title = "May and June",
-                Tempo = this.tempo, 
-                TimeSignatureNumerator = this.timeSignatureNumerator, 
+                Tempo = this.tempo,
+                TimeSignatureNumerator = this.timeSignatureNumerator,
                 TimeSignatureDenominator = this.timeSignatureDenominator,
                 Strings = new List<GuitarString>()
             };
@@ -201,7 +213,7 @@ namespace Guitarsharp
             currentEventIndex = 0;
             midiPlaybackTimer.Start();
 
-            Console.WriteLine("Timer started!"); // Add this line
+            Debug.WriteLine("Timer started!"); // Add this line
             midiHandler.ReadMidiFile();
 
         }
@@ -288,6 +300,20 @@ namespace Guitarsharp
             };
         }
 
+        /*
+         * 
+         * 
+        public List<Note> AllNotes { get; set; }
+        public Composition Composition { get; set; }
+        public int FretboardMidiNoteNumber { get; set; }
+        public float PixelsPerSecond { get; set; } = 50.0f;
+        public int Version { get; set; }
+        public int[] MidiChannelPerString { get; set; }
+
+        public int timeSignatureNumerator { get; set; }
+        public int timeSignatureDenominator { get; set; }
+        public int tempo { get; set; }
+         * */
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.DefaultExt = "gur";
@@ -789,7 +815,7 @@ namespace Guitarsharp
                 }
 
                 // Create a MIDI event collection with the format type and tracks count
-                MidiEventCollection midiEvents = new MidiEventCollection(1, 960);
+                MidiEventCollection midiEvents = new MidiEventCollection(1, MidiUtilities.TicksPerQuarterNote);
 
                 // Track 0 is reserved for tempo and time signature events
                 IList<MidiEvent> trackEvents = midiEvents.AddTrack();
@@ -821,67 +847,56 @@ namespace Guitarsharp
             }
         }
 
-
-        /*
-        private void exportMIDIToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string filePath = "test.mid"; // Hardcoded file path for the test
-
-            // Hardcoded notes for the test
-            var notes = new List<Note>
-    {
-        new Note { StartTime = 0, EndTime = 1, MidiNoteNumber = 60, Velocity = 100, MidiChannel = 1 }, // C4, quarter note
-        new Note { StartTime = 2, EndTime = 3, MidiNoteNumber = 62, Velocity = 100, MidiChannel = 1 }, // D4, quarter note
-        new Note { StartTime = 5, EndTime = 6, MidiNoteNumber = 64, Velocity = 100, MidiChannel = 1 }, // E4, quarter note
-        new Note { StartTime = 8, EndTime = 9, MidiNoteNumber = 65, Velocity = 100, MidiChannel = 1 }  // F4, quarter note
-    };
-
-            // Create a MIDI event collection with the format type and tracks count
-            MidiEventCollection midiEvents = new MidiEventCollection(1, MidiUtilities.TicksPerQuarterNote);
-
-            // Track 0 is reserved for tempo and time signature events
-            IList<MidiEvent> trackEvents = midiEvents.AddTrack();
-
-            // Add tempo event (assuming 120 BPM for this test)
-            int tempo = MidiUtilities.BpmToMicrosecondsPerQuarterNote(120);
-            trackEvents.Add(new TempoEvent(tempo, 0));
-
-            // Add time signature event (assuming 4/4 for this test)
-            trackEvents.Add(new TimeSignatureEvent(0, 4, 4, 24, 8));
-
-            int lastEventTime = 0; // Keep track of the time of the last event
-
-            // Add notes to the MIDI event collection
-            foreach (Note note in notes)
+        private void editFretPatternButton_Click(object sender, EventArgs e)
+        {/*
+            FretPattern testFretPattern = new FretPattern("Firstpattern", 5, this);
+            testFretPattern.CreateFretboard(6, 4, testFretPattern.BaseFret, new Point(200, 250));
+            for (int i = 0; i < testFretPattern.Buttons.Count; i++)
             {
-                int startTime = (int)(note.StartTime * MidiUtilities.TicksPerQuarterNote);
-                Debug.WriteLine(" startime: " + startTime.ToString());
-                int duration = (int)((note.EndTime - note.StartTime) * MidiUtilities.TicksPerQuarterNote);
-                Debug.WriteLine(" duration: " + duration.ToString());
-                int noteOnDeltaTime = startTime - lastEventTime; // Calculate delta time for Note On
-                Debug.WriteLine(" deltatime: " + noteOnDeltaTime.ToString());
-                lastEventTime = startTime; // Update the time of the last event
-                Debug.WriteLine(" last event time: " + lastEventTime.ToString());
-                NoteOnEvent noteOn = new NoteOnEvent(startTime, note.MidiChannel, note.MidiNoteNumber, note.Velocity, duration);
-                trackEvents.Add(noteOn);
+                fretPatternPanel.Controls.Add(testFretPattern.Buttons[i]); // Add the button to the fretPatternPanel
+                Debug.WriteLine(" init: " + testFretPattern.Buttons[i].Text);
 
-                int noteOffDeltaTime = startTime + duration; // Delta time for Note Off is the duration of the note
-                lastEventTime += duration; // Update the time of the last event
-
-                NoteEvent noteOff = new NoteEvent(noteOffDeltaTime, note.MidiChannel, MidiCommandCode.NoteOff, note.MidiNoteNumber, 0);
-                trackEvents.Add(noteOff);
             }
+            */
+        }
+        private void CreateFretPatterns()
+        {
+            int numberOfPatterns = 12;
+            int patternsPerRow = 3;
+            int patternSpacing = 50;
+            int patternWidth = 400; // Adjust as needed
+            int patternHeight = 550; // Adjust as needed
 
-            // Add End Track event
-            trackEvents.Add(new MetaEvent(MetaEventType.EndTrack, 0, lastEventTime));
+            for (int i = 0; i < numberOfPatterns; i++)
+            {
+                int row = i / patternsPerRow;
+                int col = i % patternsPerRow;
 
-            // Export the MIDI event collection to a file
-            MidiFile.Export(filePath, midiEvents);
+                FretPattern pattern = new FretPattern($"Pattern {i + 1}", 0, this);
+                allFretPatterns.Add(pattern); // Add the pattern to the list
+                Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 150);
+                pattern.CreateFretboard(6, 4, pattern.BaseFret, location,i);
 
-            MessageBox.Show("MIDI export completed successfully.", "MIDI Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                // Add fret buttons, activation button, and base fret control to the panel
+                foreach (Button button in pattern.Buttons)
+                {
+                    fretPatternPanel.Controls.Add(button);
+                }
+                fretPatternPanel.Controls.Add(pattern.ActivateButton);
+                fretPatternPanel.Controls.Add(pattern.BaseFretControl);
+            }
+        }
+        public void DeactivateOtherFretPatterns(FretPattern activePattern)
+        {
+            foreach (var pattern in allFretPatterns)
+            {
+                if (pattern != activePattern)
+                {
+                    pattern.Deactivate();
+                }
+            }
         }
 
-*/
 
     }
 

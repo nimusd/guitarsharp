@@ -193,6 +193,9 @@
             openAudioFileDialog = new OpenFileDialog();
             exportAudioFileDialog = new SaveFileDialog();
             exportMidiSaveFileDialog = new SaveFileDialog();
+            fretPatternPanel = new Panel();
+            labelfretpattern = new Label();
+            editFretPatternButton = new Button();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
@@ -209,6 +212,7 @@
             ((System.ComponentModel.ISupportInitialize)stringFiveMidiChannelUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)stringSixMidiChannelUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)velocitySlider).BeginInit();
+            fretPatternPanel.SuspendLayout();
             SuspendLayout();
             // 
             // buttonPlayMidi
@@ -223,7 +227,7 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(2320, 776);
+            lowPassFilterAlpha.Location = new Point(153, 1874);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
@@ -235,7 +239,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(2341, 678);
+            label1.Location = new Point(136, 1800);
             label1.Name = "label1";
             label1.Size = new Size(354, 47);
             label1.TabIndex = 2;
@@ -243,7 +247,7 @@
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(3123, 776);
+            EnvelopeLengthSlider.Location = new Point(898, 1874);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
@@ -255,7 +259,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(3103, 661);
+            label2.Location = new Point(891, 1800);
             label2.Name = "label2";
             label2.Size = new Size(270, 47);
             label2.TabIndex = 4;
@@ -1860,28 +1864,28 @@
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(448, 56);
+            openToolStripMenuItem.Size = new Size(386, 56);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(448, 56);
+            saveToolStripMenuItem.Size = new Size(386, 56);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // exportAudioToolStripMenuItem
             // 
             exportAudioToolStripMenuItem.Name = "exportAudioToolStripMenuItem";
-            exportAudioToolStripMenuItem.Size = new Size(448, 56);
+            exportAudioToolStripMenuItem.Size = new Size(386, 56);
             exportAudioToolStripMenuItem.Text = "export audio";
             exportAudioToolStripMenuItem.Click += exportAudioToolStripMenuItem_Click;
             // 
             // exportMIDIToolStripMenuItem
             // 
             exportMIDIToolStripMenuItem.Name = "exportMIDIToolStripMenuItem";
-            exportMIDIToolStripMenuItem.Size = new Size(448, 56);
+            exportMIDIToolStripMenuItem.Size = new Size(386, 56);
             exportMIDIToolStripMenuItem.Text = "export MIDI";
             exportMIDIToolStripMenuItem.Click += exportMIDIToolStripMenuItem_Click;
             // 
@@ -2042,11 +2046,42 @@
             StopPlayingButton.UseVisualStyleBackColor = true;
             StopPlayingButton.Click += StopPlayingButton_Click;
             // 
+            // fretPatternPanel
+            // 
+            fretPatternPanel.BackColor = SystemColors.AppWorkspace;
+            fretPatternPanel.Controls.Add(labelfretpattern);
+            fretPatternPanel.Location = new Point(2343, 233);
+            fretPatternPanel.Name = "fretPatternPanel";
+            fretPatternPanel.Size = new Size(1457, 2708);
+            fretPatternPanel.TabIndex = 29;
+            // 
+            // labelfretpattern
+            // 
+            labelfretpattern.AutoSize = true;
+            labelfretpattern.Location = new Point(496, 26);
+            labelfretpattern.Name = "labelfretpattern";
+            labelfretpattern.Size = new Size(215, 47);
+            labelfretpattern.TabIndex = 0;
+            labelfretpattern.Text = "Fret Patterns";
+            // 
+            // editFretPatternButton
+            // 
+            editFretPatternButton.Location = new Point(2507, 110);
+            editFretPatternButton.Name = "editFretPatternButton";
+            editFretPatternButton.Size = new Size(335, 58);
+            editFretPatternButton.TabIndex = 30;
+            editFretPatternButton.Text = "Edit Fret Patterns";
+            editFretPatternButton.UseVisualStyleBackColor = true;
+            editFretPatternButton.Click += editFretPatternButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(3834, 2534);
+            AutoScroll = true;
+            ClientSize = new Size(3834, 3361);
+            Controls.Add(editFretPatternButton);
+            Controls.Add(fretPatternPanel);
             Controls.Add(StopPlayingButton);
             Controls.Add(startPlayingButton);
             Controls.Add(label7);
@@ -2095,6 +2130,8 @@
             ((System.ComponentModel.ISupportInitialize)stringFiveMidiChannelUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)stringSixMidiChannelUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)velocitySlider).EndInit();
+            fretPatternPanel.ResumeLayout(false);
+            fretPatternPanel.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2266,5 +2303,8 @@
         private OpenFileDialog openAudioFileDialog;
         private SaveFileDialog exportAudioFileDialog;
         private SaveFileDialog exportMidiSaveFileDialog;
+        public Panel fretPatternPanel;
+        private Label labelfretpattern;
+        private Button editFretPatternButton;
     }
 }

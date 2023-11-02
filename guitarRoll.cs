@@ -11,6 +11,16 @@ namespace Guitarsharp
         private void guitarRollPanel_Paint(object sender, PaintEventArgs e)
         {
             int numberOfStrings = 7;
+            if (activeFretPattern != null && activeFretPattern.IsActive)
+            {
+                // Logic to highlight the frets based on the active fret pattern
+                // This could involve changing colors or styles of the frets
+                // Example:
+                // foreach (var fret in activeFretPattern.Pattern)
+                // {
+                //     // Draw or highlight the frets here
+                // }
+            }
             int laneHeight = (guitarRollPanel.Height-50) / numberOfStrings;
             float contentWidth = 0;
 
