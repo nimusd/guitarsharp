@@ -135,4 +135,10 @@
   <metadata name="exportMidiSaveFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>1822, 17</value>
   </metadata>
+  <metadata name="saveFretPatternsFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>2305, 17</value>
+  </metadata>
+  <metadata name="loadFretPatternsDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>2801, 17</value>
+  </metadata>
 </root>

@@ -66,6 +66,9 @@ namespace Guitarsharp
 
         private FretPattern activeFretPattern;
         public List<FretPattern> allFretPatterns = new List<FretPattern>();
+        public bool fringerPatternMode = false;
+
+
         public Form1()
         {
             InitializeComponent();
@@ -859,11 +862,12 @@ namespace Guitarsharp
             }
             */
         }
+
         private void CreateFretPatterns()
         {
             int numberOfPatterns = 12;
             int patternsPerRow = 3;
-            int patternSpacing = 50;
+            int patternSpacing = 150;
             int patternWidth = 400; // Adjust as needed
             int patternHeight = 550; // Adjust as needed
 
@@ -874,8 +878,8 @@ namespace Guitarsharp
 
                 FretPattern pattern = new FretPattern($"Pattern {i + 1}", 0, this);
                 allFretPatterns.Add(pattern); // Add the pattern to the list
-                Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 150);
-                pattern.CreateFretboard(6, 4, pattern.BaseFret, location,i);
+                Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
+                pattern.CreateFretboard(6, 4, pattern.BaseFret, location, i);
 
                 // Add fret buttons, activation button, and base fret control to the panel
                 foreach (Button button in pattern.Buttons)
@@ -897,7 +901,200 @@ namespace Guitarsharp
             }
         }
 
+        private void FingerPatternModeButton_Click(object sender, EventArgs e)
+        {
+            var theButton = sender as Button;
+            if (theButton != null)
+            {
+                if (fringerPatternMode == true)
+                {
+                    fringerPatternMode = false;
+                    FingerPatternModeButton.BackColor = Color.White;
+                    // if less than 12 defined patterns set the UI for next finger pattern
+                    return;
+                }
+                if (fringerPatternMode == false)
+                {
+                    fringerPatternMode = true;
+                    FingerPatternModeButton.BackColor = Color.Red;
+                }
+            }
+        }
 
+        // Method to clear the existing patterns from the UI
+        private void ClearFretPatternsUI()
+        {
+            // Clear the UI elements that represent the fret patterns
+            // This will depend on how your UI is structured
+            fretPatternPanel.Controls.Clear(); // Example for clearing a panel
+        }
+        private void saveFretPatternsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFretPatternsFileDialog.Filter = "Guitar Fret Patterns (*.gfp)|*.gfp";
+            saveFretPatternsFileDialog.DefaultExt = "gfp";
+            saveFretPatternsFileDialog.AddExtension = true;
+
+            if (saveFretPatternsFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = saveFretPatternsFileDialog.FileName;
+                try
+                {
+                    // Create a list to hold the serializable data
+
+                    List<FretPatternData> allPatternData = new List<FretPatternData>();
+
+                    // Populate the list with data from each FretPattern
+                    foreach (var pattern in allFretPatterns)
+                    {
+                        FretPatternData patternData = pattern.GetSerializableData();
+                        allPatternData.Add(patternData);
+                    }
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    string jsonString = JsonSerializer.Serialize(allPatternData, options);
+                    File.WriteAllText(fileName, jsonString);
+                    MessageBox.Show("Fret patterns saved successfully.", "Save Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to save fret patterns: {ex.Message}", "Save Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void loadFretPatternsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            loadFretPatternsDialog.Filter = "Guitar Fret Patterns (*.gfp)|*.gfp";
+            loadFretPatternsDialog.DefaultExt = "gfp";
+
+            if (loadFretPatternsDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = loadFretPatternsDialog.FileName;
+                try
+                {
+                    string jsonString = File.ReadAllText(fileName);
+
+                    // Deserialize the JSON to a list of FretPatternData
+                    List<FretPatternData> loadedPatternData = JsonSerializer.Deserialize<List<FretPatternData>>(jsonString);
+
+                    // Clear the existing UI elements
+                    fretPatternPanel.Controls.Clear();
+                    allFretPatterns.Clear();
+
+                    // Constants for layout
+                    int patternsPerRow = 3;
+                    int patternSpacing = 150;
+                    int patternWidth = 400; // Adjust as needed
+                    int patternHeight = 550; // Adjust as needed
+
+                    // Rebuild the UI elements with the loaded data
+                    for (int i = 0; i < loadedPatternData.Count; i++)
+                    {
+                        var patternData = loadedPatternData[i];
+                        int row = i / patternsPerRow;
+                        int col = i % patternsPerRow;
+
+                        // Calculate the location for each pattern
+                        Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
+
+                        FretPattern pattern = new FretPattern(patternData.Name, patternData.BaseFret, this);
+                        pattern.Description = patternData.Description;
+                        pattern.IsActive = patternData.IsActive;
+
+                        // Set up the pattern's UI elements
+                        pattern.CreateFretboard(6, 4, pattern.BaseFret, location, i);
+
+                        // Update the activation button text and back color
+                        pattern.ActivateButton.Text = patternData.ActivateButtonText;
+                        pattern.ActivateButton.BackColor = Color.FromArgb(patternData.ActivateButtonBackColor);
+                        pattern.ActivateButton.Tag = patternData.ActivateButtonTag;
+
+                        // Update the base fret control value
+                        if (patternData.BaseFret >= pattern.BaseFretControl.Minimum && patternData.BaseFret <= pattern.BaseFretControl.Maximum)
+                        {
+                            pattern.BaseFretControl.Value = patternData.BaseFret;
+                        }
+                        else
+                        {
+                            // Set to a default value or minimum value if the loaded value is out of range
+                            pattern.BaseFretControl.Value = pattern.BaseFretControl.Minimum;
+                        }
+
+
+                        // Update the buttons with the loaded names and back colors
+                        for (int j = 0; j < pattern.Buttons.Count; j++)
+                        {
+                            pattern.Buttons[j].Text = patternData.FretButtonName[j];
+                            pattern.Buttons[j].BackColor = Color.FromArgb(patternData.FretButtonBackColor[j]);
+                            pattern.Buttons[j].Tag = new Tuple<int, int>(patternData.FretTags[j].StringIndex, patternData.FretTags[j].FretIndex);
+
+                        }
+
+                        // Add the pattern to the list
+                        allFretPatterns.Add(pattern);
+
+                        // Add the pattern's UI elements to the panel
+                        foreach (Button button in pattern.Buttons)
+                        {
+                            fretPatternPanel.Controls.Add(button);
+                        }
+                        fretPatternPanel.Controls.Add(pattern.ActivateButton);
+                        fretPatternPanel.Controls.Add(pattern.BaseFretControl);
+                    }
+
+                    // Optionally, refresh the panel or form if necessary
+                    fretPatternPanel.Refresh();
+
+                    MessageBox.Show("Fret patterns loaded successfully.", "Load Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to load fret patterns: {ex.Message}", "Load Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+
+        private void UpdateFretPatternsUI()
+        {
+            Color openStringSelectedColor = Color.Bisque; // or any color you use for selected open strings
+            Color openStringNotSelectedColor = Color.Blue; // or any color you use for not selected open strings
+            Color fretSelectedColor = Color.Bisque; // Color for selected frets
+            Color fretNotSelectedColor = Color.Beige; // Color for not selected frets
+
+            for (int i = 0; i < allFretPatterns.Count; i++)
+            {
+                FretPattern pattern = allFretPatterns[i];
+
+                // Update the activation button
+                pattern.ActivateButton.BackColor = pattern.IsActive ? Color.Red : Color.Beige;
+                pattern.ActivateButton.Text = pattern.IsActive ? "Active" : "Activate";
+
+                // Update the base fret numeric up/down
+                pattern.BaseFretControl.Value = pattern.BaseFret;
+
+                // Update the fret buttons
+                foreach (Button button in pattern.Buttons)
+                {
+                    Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
+                    int stringIndex = tag.Item1;
+                    int fretIndex = tag.Item2;
+
+                    // Check if the button is for an open string
+                    if (fretIndex == -1)
+                    {
+                        // Open string button color is based on its current color
+                        button.BackColor = button.BackColor == openStringSelectedColor ? openStringSelectedColor : openStringNotSelectedColor;
+                        button.Text = pattern.GetNoteName(stringIndex, 0); // Assuming open string is equivalent to fret 0
+                    }
+                    else
+                    {
+                        // Regular fret button color is based on its current color
+                        button.BackColor = button.BackColor == fretSelectedColor ? fretSelectedColor : fretNotSelectedColor;
+                        button.Text = pattern.GetNoteName(stringIndex, fretIndex + pattern.BaseFret);
+                    }
+                }
+            }
+        }
     }
 
     public static class MidiUtilities

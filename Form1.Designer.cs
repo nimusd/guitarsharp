@@ -196,6 +196,11 @@
             fretPatternPanel = new Panel();
             labelfretpattern = new Label();
             editFretPatternButton = new Button();
+            FingerPatternModeButton = new Button();
+            saveFretPatternsToolStripMenuItem = new ToolStripMenuItem();
+            loadFretPatternsToolStripMenuItem = new ToolStripMenuItem();
+            saveFretPatternsFileDialog = new SaveFileDialog();
+            loadFretPatternsDialog = new OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
@@ -227,7 +232,7 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(153, 1874);
+            lowPassFilterAlpha.Location = new Point(170, 2044);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
@@ -239,7 +244,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(136, 1800);
+            label1.Location = new Point(153, 1970);
             label1.Name = "label1";
             label1.Size = new Size(354, 47);
             label1.TabIndex = 2;
@@ -247,7 +252,7 @@
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(898, 1874);
+            EnvelopeLengthSlider.Location = new Point(915, 2044);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
@@ -259,7 +264,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(891, 1800);
+            label2.Location = new Point(908, 1970);
             label2.Name = "label2";
             label2.Size = new Size(270, 47);
             label2.TabIndex = 4;
@@ -1856,7 +1861,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, exportAudioToolStripMenuItem, exportMIDIToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, exportAudioToolStripMenuItem, exportMIDIToolStripMenuItem, saveFretPatternsToolStripMenuItem, loadFretPatternsToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(95, 51);
             fileToolStripMenuItem.Text = "File";
@@ -1864,28 +1869,28 @@
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(386, 56);
+            openToolStripMenuItem.Size = new Size(469, 56);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(386, 56);
+            saveToolStripMenuItem.Size = new Size(469, 56);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // exportAudioToolStripMenuItem
             // 
             exportAudioToolStripMenuItem.Name = "exportAudioToolStripMenuItem";
-            exportAudioToolStripMenuItem.Size = new Size(386, 56);
+            exportAudioToolStripMenuItem.Size = new Size(469, 56);
             exportAudioToolStripMenuItem.Text = "export audio";
             exportAudioToolStripMenuItem.Click += exportAudioToolStripMenuItem_Click;
             // 
             // exportMIDIToolStripMenuItem
             // 
             exportMIDIToolStripMenuItem.Name = "exportMIDIToolStripMenuItem";
-            exportMIDIToolStripMenuItem.Size = new Size(386, 56);
+            exportMIDIToolStripMenuItem.Size = new Size(469, 56);
             exportMIDIToolStripMenuItem.Text = "export MIDI";
             exportMIDIToolStripMenuItem.Click += exportMIDIToolStripMenuItem_Click;
             // 
@@ -2074,12 +2079,41 @@
             editFretPatternButton.UseVisualStyleBackColor = true;
             editFretPatternButton.Click += editFretPatternButton_Click;
             // 
+            // FingerPatternModeButton
+            // 
+            FingerPatternModeButton.Location = new Point(210, 1805);
+            FingerPatternModeButton.Name = "FingerPatternModeButton";
+            FingerPatternModeButton.Size = new Size(492, 58);
+            FingerPatternModeButton.TabIndex = 31;
+            FingerPatternModeButton.Text = "Finger Pattern Mode";
+            FingerPatternModeButton.UseVisualStyleBackColor = true;
+            FingerPatternModeButton.Click += FingerPatternModeButton_Click;
+            // 
+            // saveFretPatternsToolStripMenuItem
+            // 
+            saveFretPatternsToolStripMenuItem.Name = "saveFretPatternsToolStripMenuItem";
+            saveFretPatternsToolStripMenuItem.Size = new Size(469, 56);
+            saveFretPatternsToolStripMenuItem.Text = "Save Fret Patterns";
+            saveFretPatternsToolStripMenuItem.Click += saveFretPatternsToolStripMenuItem_Click;
+            // 
+            // loadFretPatternsToolStripMenuItem
+            // 
+            loadFretPatternsToolStripMenuItem.Name = "loadFretPatternsToolStripMenuItem";
+            loadFretPatternsToolStripMenuItem.Size = new Size(469, 56);
+            loadFretPatternsToolStripMenuItem.Text = "Load Fret Patterns";
+            loadFretPatternsToolStripMenuItem.Click += loadFretPatternsToolStripMenuItem_Click;
+            // 
+            // loadFretPatternsDialog
+            // 
+            loadFretPatternsDialog.FileName = "openFileDialog2";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(3834, 3361);
+            Controls.Add(FingerPatternModeButton);
             Controls.Add(editFretPatternButton);
             Controls.Add(fretPatternPanel);
             Controls.Add(StopPlayingButton);
@@ -2306,5 +2340,10 @@
         public Panel fretPatternPanel;
         private Label labelfretpattern;
         private Button editFretPatternButton;
+        private Button FingerPatternModeButton;
+        private ToolStripMenuItem saveFretPatternsToolStripMenuItem;
+        private ToolStripMenuItem loadFretPatternsToolStripMenuItem;
+        private SaveFileDialog saveFretPatternsFileDialog;
+        private OpenFileDialog loadFretPatternsDialog;
     }
 }
