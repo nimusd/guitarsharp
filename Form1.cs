@@ -145,13 +145,16 @@ namespace Guitarsharp
             CreateFretPatterns();
 
 
-
             Debug.WriteLine("Init completed");
 
 
 
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
 
 
         private void InitializeComposition()
@@ -866,7 +869,7 @@ namespace Guitarsharp
         private void CreateFretPatterns()
         {
             int numberOfPatterns = 12;
-            int patternsPerRow = 3;
+            int patternsPerRow = 4;
             int patternSpacing = 150;
             int patternWidth = 400; // Adjust as needed
             int patternHeight = 550; // Adjust as needed
@@ -981,7 +984,7 @@ namespace Guitarsharp
                     allFretPatterns.Clear();
 
                     // Constants for layout
-                    int patternsPerRow = 3;
+                    int patternsPerRow = 4;
                     int patternSpacing = 150;
                     int patternWidth = 400; // Adjust as needed
                     int patternHeight = 550; // Adjust as needed
@@ -1095,6 +1098,8 @@ namespace Guitarsharp
                 }
             }
         }
+
+
     }
 
     public static class MidiUtilities

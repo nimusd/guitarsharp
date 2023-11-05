@@ -172,6 +172,8 @@
             saveToolStripMenuItem = new ToolStripMenuItem();
             exportAudioToolStripMenuItem = new ToolStripMenuItem();
             exportMIDIToolStripMenuItem = new ToolStripMenuItem();
+            saveFretPatternsToolStripMenuItem = new ToolStripMenuItem();
+            loadFretPatternsToolStripMenuItem = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
             timeSignatureNumeratorNumericUpDown = new NumericUpDown();
@@ -195,12 +197,13 @@
             exportMidiSaveFileDialog = new SaveFileDialog();
             fretPatternPanel = new Panel();
             labelfretpattern = new Label();
-            editFretPatternButton = new Button();
             FingerPatternModeButton = new Button();
-            saveFretPatternsToolStripMenuItem = new ToolStripMenuItem();
-            loadFretPatternsToolStripMenuItem = new ToolStripMenuItem();
             saveFretPatternsFileDialog = new SaveFileDialog();
             loadFretPatternsDialog = new OpenFileDialog();
+            tabControl1 = new TabControl();
+            tabPage1 = new TabPage();
+            tabPage2 = new TabPage();
+            tabPage3 = new TabPage();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
@@ -218,11 +221,14 @@
             ((System.ComponentModel.ISupportInitialize)stringSixMidiChannelUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)velocitySlider).BeginInit();
             fretPatternPanel.SuspendLayout();
+            tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
             SuspendLayout();
             // 
             // buttonPlayMidi
             // 
-            buttonPlayMidi.Location = new Point(3608, 61);
+            buttonPlayMidi.Location = new Point(1038, 64);
             buttonPlayMidi.Name = "buttonPlayMidi";
             buttonPlayMidi.Size = new Size(188, 58);
             buttonPlayMidi.TabIndex = 0;
@@ -232,7 +238,7 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(170, 2044);
+            lowPassFilterAlpha.Location = new Point(45, 395);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
@@ -244,7 +250,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(153, 1970);
+            label1.Location = new Point(28, 321);
             label1.Name = "label1";
             label1.Size = new Size(354, 47);
             label1.TabIndex = 2;
@@ -252,7 +258,7 @@
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(915, 2044);
+            EnvelopeLengthSlider.Location = new Point(790, 395);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
@@ -264,7 +270,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(908, 1970);
+            label2.Location = new Point(783, 321);
             label2.Name = "label2";
             label2.Size = new Size(270, 47);
             label2.TabIndex = 4;
@@ -394,7 +400,7 @@
             fretboard.Controls.Add(HEFs1);
             fretboard.Controls.Add(HEF1);
             fretboard.Controls.Add(HEE1);
-            fretboard.Location = new Point(128, 314);
+            fretboard.Location = new Point(175, 676);
             fretboard.Name = "fretboard";
             fretboard.Size = new Size(2013, 348);
             fretboard.TabIndex = 5;
@@ -1724,7 +1730,8 @@
             // 
             guitarRollPanel.AutoScroll = true;
             guitarRollPanel.AutoScrollMinSize = new Size(5000, 600);
-            guitarRollPanel.Location = new Point(25, 24);
+            guitarRollPanel.BackColor = Color.White;
+            guitarRollPanel.Location = new Point(42, 38);
             guitarRollPanel.Name = "guitarRollPanel";
             guitarRollPanel.Size = new Size(1999, 790);
             guitarRollPanel.TabIndex = 6;
@@ -1738,7 +1745,7 @@
             // panel1
             // 
             panel1.Controls.Add(guitarRollPanel);
-            panel1.Location = new Point(128, 704);
+            panel1.Location = new Point(122, 1082);
             panel1.Name = "panel1";
             panel1.Size = new Size(2066, 881);
             panel1.TabIndex = 8;
@@ -1774,7 +1781,7 @@
             noteDuration.Controls.Add(blancheButton);
             noteDuration.Controls.Add(rondeButton);
             noteDuration.Controls.Add(label3);
-            noteDuration.Location = new Point(133, 1616);
+            noteDuration.Location = new Point(178, 2050);
             noteDuration.Name = "noteDuration";
             noteDuration.Size = new Size(1723, 120);
             noteDuration.TabIndex = 11;
@@ -1855,7 +1862,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(3834, 55);
+            menuStrip1.Size = new Size(3762, 55);
             menuStrip1.TabIndex = 12;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -1894,201 +1901,6 @@
             exportMIDIToolStripMenuItem.Text = "export MIDI";
             exportMIDIToolStripMenuItem.Click += exportMIDIToolStripMenuItem_Click;
             // 
-            // openFileDialog1
-            // 
-            openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // timeSignatureNumeratorNumericUpDown
-            // 
-            timeSignatureNumeratorNumericUpDown.Location = new Point(46, 124);
-            timeSignatureNumeratorNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            timeSignatureNumeratorNumericUpDown.Name = "timeSignatureNumeratorNumericUpDown";
-            timeSignatureNumeratorNumericUpDown.Size = new Size(100, 54);
-            timeSignatureNumeratorNumericUpDown.TabIndex = 13;
-            timeSignatureNumeratorNumericUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
-            timeSignatureNumeratorNumericUpDown.ValueChanged += timeSignatureNumeratorNumericUpDown_ValueChanged;
-            // 
-            // timeSignatureDenominatorNumericUpDown
-            // 
-            timeSignatureDenominatorNumericUpDown.Location = new Point(46, 184);
-            timeSignatureDenominatorNumericUpDown.Minimum = new decimal(new int[] { 2, 0, 0, 0 });
-            timeSignatureDenominatorNumericUpDown.Name = "timeSignatureDenominatorNumericUpDown";
-            timeSignatureDenominatorNumericUpDown.Size = new Size(100, 54);
-            timeSignatureDenominatorNumericUpDown.TabIndex = 14;
-            timeSignatureDenominatorNumericUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
-            timeSignatureDenominatorNumericUpDown.ValueChanged += timeSignatureDenominatorNumericUpDown_ValueChanged;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(46, 72);
-            label4.Name = "label4";
-            label4.Size = new Size(242, 47);
-            label4.TabIndex = 15;
-            label4.Text = "time signature";
-            // 
-            // tempoNumericUpDown
-            // 
-            tempoNumericUpDown.Location = new Point(199, 173);
-            tempoNumericUpDown.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
-            tempoNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
-            tempoNumericUpDown.Name = "tempoNumericUpDown";
-            tempoNumericUpDown.Size = new Size(204, 54);
-            tempoNumericUpDown.TabIndex = 16;
-            tempoNumericUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
-            tempoNumericUpDown.ValueChanged += tempoNumericUpDown_ValueChanged;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(197, 125);
-            label5.Name = "label5";
-            label5.Size = new Size(122, 47);
-            label5.TabIndex = 17;
-            label5.Text = "tempo";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(37, 250);
-            label6.Name = "label6";
-            label6.Size = new Size(230, 47);
-            label6.TabIndex = 18;
-            label6.Text = "MIDI Channel";
-            // 
-            // stringOneMidiChannelUpDown
-            // 
-            stringOneMidiChannelUpDown.Location = new Point(23, 318);
-            stringOneMidiChannelUpDown.Name = "stringOneMidiChannelUpDown";
-            stringOneMidiChannelUpDown.Size = new Size(99, 54);
-            stringOneMidiChannelUpDown.TabIndex = 19;
-            stringOneMidiChannelUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
-            stringOneMidiChannelUpDown.ValueChanged += stringOneMidiChannelUpDown_ValueChanged;
-            // 
-            // stringTwoMidiChannelUpDown
-            // 
-            stringTwoMidiChannelUpDown.Location = new Point(23, 369);
-            stringTwoMidiChannelUpDown.Name = "stringTwoMidiChannelUpDown";
-            stringTwoMidiChannelUpDown.Size = new Size(99, 54);
-            stringTwoMidiChannelUpDown.TabIndex = 20;
-            stringTwoMidiChannelUpDown.Value = new decimal(new int[] { 2, 0, 0, 0 });
-            stringTwoMidiChannelUpDown.ValueChanged += stringTwoMidiChannelUpDown_ValueChanged;
-            // 
-            // stringThreeMidiChannelUpDown
-            // 
-            stringThreeMidiChannelUpDown.Location = new Point(23, 428);
-            stringThreeMidiChannelUpDown.Name = "stringThreeMidiChannelUpDown";
-            stringThreeMidiChannelUpDown.Size = new Size(99, 54);
-            stringThreeMidiChannelUpDown.TabIndex = 21;
-            stringThreeMidiChannelUpDown.Value = new decimal(new int[] { 3, 0, 0, 0 });
-            stringThreeMidiChannelUpDown.ValueChanged += stringThreeMidiChannelUpDown_ValueChanged;
-            // 
-            // stringFourMidiChannelUpDown
-            // 
-            stringFourMidiChannelUpDown.Location = new Point(23, 484);
-            stringFourMidiChannelUpDown.Name = "stringFourMidiChannelUpDown";
-            stringFourMidiChannelUpDown.Size = new Size(99, 54);
-            stringFourMidiChannelUpDown.TabIndex = 22;
-            stringFourMidiChannelUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
-            stringFourMidiChannelUpDown.ValueChanged += stringFourMidiChannelUpDown_ValueChanged;
-            // 
-            // stringFiveMidiChannelUpDown
-            // 
-            stringFiveMidiChannelUpDown.Location = new Point(23, 543);
-            stringFiveMidiChannelUpDown.Name = "stringFiveMidiChannelUpDown";
-            stringFiveMidiChannelUpDown.Size = new Size(99, 54);
-            stringFiveMidiChannelUpDown.TabIndex = 23;
-            stringFiveMidiChannelUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
-            stringFiveMidiChannelUpDown.ValueChanged += stringFiveMidiChannelUpDown_ValueChanged;
-            // 
-            // stringSixMidiChannelUpDown
-            // 
-            stringSixMidiChannelUpDown.Location = new Point(23, 596);
-            stringSixMidiChannelUpDown.Name = "stringSixMidiChannelUpDown";
-            stringSixMidiChannelUpDown.Size = new Size(99, 54);
-            stringSixMidiChannelUpDown.TabIndex = 24;
-            stringSixMidiChannelUpDown.Value = new decimal(new int[] { 6, 0, 0, 0 });
-            stringSixMidiChannelUpDown.ValueChanged += stringSixMidiChannelUpDown_ValueChanged;
-            // 
-            // velocitySlider
-            // 
-            velocitySlider.Location = new Point(2200, 704);
-            velocitySlider.Maximum = 127;
-            velocitySlider.Minimum = 1;
-            velocitySlider.Name = "velocitySlider";
-            velocitySlider.Orientation = Orientation.Vertical;
-            velocitySlider.Size = new Size(114, 691);
-            velocitySlider.TabIndex = 25;
-            velocitySlider.Value = 64;
-            velocitySlider.ValueChanged += velocitySlider_ValueChanged;
-            // 
-            // label7
-            // 
-            label7.AutoSize = true;
-            label7.Location = new Point(2200, 1408);
-            label7.Name = "label7";
-            label7.Size = new Size(137, 47);
-            label7.TabIndex = 26;
-            label7.Text = "velocity";
-            // 
-            // startPlayingButton
-            // 
-            startPlayingButton.Location = new Point(600, 173);
-            startPlayingButton.Name = "startPlayingButton";
-            startPlayingButton.Size = new Size(258, 58);
-            startPlayingButton.TabIndex = 27;
-            startPlayingButton.Text = "Start Playing";
-            startPlayingButton.UseVisualStyleBackColor = true;
-            startPlayingButton.Click += startPlayingButton_Click;
-            // 
-            // StopPlayingButton
-            // 
-            StopPlayingButton.Location = new Point(898, 173);
-            StopPlayingButton.Name = "StopPlayingButton";
-            StopPlayingButton.Size = new Size(302, 58);
-            StopPlayingButton.TabIndex = 28;
-            StopPlayingButton.Text = "Stop Playing";
-            StopPlayingButton.UseVisualStyleBackColor = true;
-            StopPlayingButton.Click += StopPlayingButton_Click;
-            // 
-            // fretPatternPanel
-            // 
-            fretPatternPanel.BackColor = SystemColors.AppWorkspace;
-            fretPatternPanel.Controls.Add(labelfretpattern);
-            fretPatternPanel.Location = new Point(2343, 233);
-            fretPatternPanel.Name = "fretPatternPanel";
-            fretPatternPanel.Size = new Size(1457, 2708);
-            fretPatternPanel.TabIndex = 29;
-            // 
-            // labelfretpattern
-            // 
-            labelfretpattern.AutoSize = true;
-            labelfretpattern.Location = new Point(496, 26);
-            labelfretpattern.Name = "labelfretpattern";
-            labelfretpattern.Size = new Size(215, 47);
-            labelfretpattern.TabIndex = 0;
-            labelfretpattern.Text = "Fret Patterns";
-            // 
-            // editFretPatternButton
-            // 
-            editFretPatternButton.Location = new Point(2507, 110);
-            editFretPatternButton.Name = "editFretPatternButton";
-            editFretPatternButton.Size = new Size(335, 58);
-            editFretPatternButton.TabIndex = 30;
-            editFretPatternButton.Text = "Edit Fret Patterns";
-            editFretPatternButton.UseVisualStyleBackColor = true;
-            editFretPatternButton.Click += editFretPatternButton_Click;
-            // 
-            // FingerPatternModeButton
-            // 
-            FingerPatternModeButton.Location = new Point(210, 1805);
-            FingerPatternModeButton.Name = "FingerPatternModeButton";
-            FingerPatternModeButton.Size = new Size(492, 58);
-            FingerPatternModeButton.TabIndex = 31;
-            FingerPatternModeButton.Text = "Finger Pattern Mode";
-            FingerPatternModeButton.UseVisualStyleBackColor = true;
-            FingerPatternModeButton.Click += FingerPatternModeButton_Click;
-            // 
             // saveFretPatternsToolStripMenuItem
             // 
             saveFretPatternsToolStripMenuItem.Name = "saveFretPatternsToolStripMenuItem";
@@ -2103,48 +1915,274 @@
             loadFretPatternsToolStripMenuItem.Text = "Load Fret Patterns";
             loadFretPatternsToolStripMenuItem.Click += loadFretPatternsToolStripMenuItem_Click;
             // 
+            // openFileDialog1
+            // 
+            openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // timeSignatureNumeratorNumericUpDown
+            // 
+            timeSignatureNumeratorNumericUpDown.Location = new Point(45, 122);
+            timeSignatureNumeratorNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            timeSignatureNumeratorNumericUpDown.Name = "timeSignatureNumeratorNumericUpDown";
+            timeSignatureNumeratorNumericUpDown.Size = new Size(100, 54);
+            timeSignatureNumeratorNumericUpDown.TabIndex = 13;
+            timeSignatureNumeratorNumericUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            timeSignatureNumeratorNumericUpDown.ValueChanged += timeSignatureNumeratorNumericUpDown_ValueChanged;
+            // 
+            // timeSignatureDenominatorNumericUpDown
+            // 
+            timeSignatureDenominatorNumericUpDown.Location = new Point(45, 182);
+            timeSignatureDenominatorNumericUpDown.Minimum = new decimal(new int[] { 2, 0, 0, 0 });
+            timeSignatureDenominatorNumericUpDown.Name = "timeSignatureDenominatorNumericUpDown";
+            timeSignatureDenominatorNumericUpDown.Size = new Size(100, 54);
+            timeSignatureDenominatorNumericUpDown.TabIndex = 14;
+            timeSignatureDenominatorNumericUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
+            timeSignatureDenominatorNumericUpDown.ValueChanged += timeSignatureDenominatorNumericUpDown_ValueChanged;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(45, 70);
+            label4.Name = "label4";
+            label4.Size = new Size(242, 47);
+            label4.TabIndex = 15;
+            label4.Text = "time signature";
+            // 
+            // tempoNumericUpDown
+            // 
+            tempoNumericUpDown.Location = new Point(198, 171);
+            tempoNumericUpDown.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
+            tempoNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            tempoNumericUpDown.Name = "tempoNumericUpDown";
+            tempoNumericUpDown.Size = new Size(204, 54);
+            tempoNumericUpDown.TabIndex = 16;
+            tempoNumericUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            tempoNumericUpDown.ValueChanged += tempoNumericUpDown_ValueChanged;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(196, 123);
+            label5.Name = "label5";
+            label5.Size = new Size(122, 47);
+            label5.TabIndex = 17;
+            label5.Text = "tempo";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(84, 612);
+            label6.Name = "label6";
+            label6.Size = new Size(230, 47);
+            label6.TabIndex = 18;
+            label6.Text = "MIDI Channel";
+            // 
+            // stringOneMidiChannelUpDown
+            // 
+            stringOneMidiChannelUpDown.Location = new Point(70, 680);
+            stringOneMidiChannelUpDown.Name = "stringOneMidiChannelUpDown";
+            stringOneMidiChannelUpDown.Size = new Size(99, 54);
+            stringOneMidiChannelUpDown.TabIndex = 19;
+            stringOneMidiChannelUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            stringOneMidiChannelUpDown.ValueChanged += stringOneMidiChannelUpDown_ValueChanged;
+            // 
+            // stringTwoMidiChannelUpDown
+            // 
+            stringTwoMidiChannelUpDown.Location = new Point(70, 731);
+            stringTwoMidiChannelUpDown.Name = "stringTwoMidiChannelUpDown";
+            stringTwoMidiChannelUpDown.Size = new Size(99, 54);
+            stringTwoMidiChannelUpDown.TabIndex = 20;
+            stringTwoMidiChannelUpDown.Value = new decimal(new int[] { 2, 0, 0, 0 });
+            stringTwoMidiChannelUpDown.ValueChanged += stringTwoMidiChannelUpDown_ValueChanged;
+            // 
+            // stringThreeMidiChannelUpDown
+            // 
+            stringThreeMidiChannelUpDown.Location = new Point(70, 790);
+            stringThreeMidiChannelUpDown.Name = "stringThreeMidiChannelUpDown";
+            stringThreeMidiChannelUpDown.Size = new Size(99, 54);
+            stringThreeMidiChannelUpDown.TabIndex = 21;
+            stringThreeMidiChannelUpDown.Value = new decimal(new int[] { 3, 0, 0, 0 });
+            stringThreeMidiChannelUpDown.ValueChanged += stringThreeMidiChannelUpDown_ValueChanged;
+            // 
+            // stringFourMidiChannelUpDown
+            // 
+            stringFourMidiChannelUpDown.Location = new Point(70, 846);
+            stringFourMidiChannelUpDown.Name = "stringFourMidiChannelUpDown";
+            stringFourMidiChannelUpDown.Size = new Size(99, 54);
+            stringFourMidiChannelUpDown.TabIndex = 22;
+            stringFourMidiChannelUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
+            stringFourMidiChannelUpDown.ValueChanged += stringFourMidiChannelUpDown_ValueChanged;
+            // 
+            // stringFiveMidiChannelUpDown
+            // 
+            stringFiveMidiChannelUpDown.Location = new Point(70, 905);
+            stringFiveMidiChannelUpDown.Name = "stringFiveMidiChannelUpDown";
+            stringFiveMidiChannelUpDown.Size = new Size(99, 54);
+            stringFiveMidiChannelUpDown.TabIndex = 23;
+            stringFiveMidiChannelUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
+            stringFiveMidiChannelUpDown.ValueChanged += stringFiveMidiChannelUpDown_ValueChanged;
+            // 
+            // stringSixMidiChannelUpDown
+            // 
+            stringSixMidiChannelUpDown.Location = new Point(70, 958);
+            stringSixMidiChannelUpDown.Name = "stringSixMidiChannelUpDown";
+            stringSixMidiChannelUpDown.Size = new Size(99, 54);
+            stringSixMidiChannelUpDown.TabIndex = 24;
+            stringSixMidiChannelUpDown.Value = new decimal(new int[] { 6, 0, 0, 0 });
+            stringSixMidiChannelUpDown.ValueChanged += stringSixMidiChannelUpDown_ValueChanged;
+            // 
+            // velocitySlider
+            // 
+            velocitySlider.Location = new Point(2236, 1155);
+            velocitySlider.Maximum = 127;
+            velocitySlider.Minimum = 1;
+            velocitySlider.Name = "velocitySlider";
+            velocitySlider.Orientation = Orientation.Vertical;
+            velocitySlider.Size = new Size(114, 691);
+            velocitySlider.TabIndex = 25;
+            velocitySlider.Value = 64;
+            velocitySlider.ValueChanged += velocitySlider_ValueChanged;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(2236, 1859);
+            label7.Name = "label7";
+            label7.Size = new Size(137, 47);
+            label7.TabIndex = 26;
+            label7.Text = "velocity";
+            // 
+            // startPlayingButton
+            // 
+            startPlayingButton.Location = new Point(409, 64);
+            startPlayingButton.Name = "startPlayingButton";
+            startPlayingButton.Size = new Size(258, 58);
+            startPlayingButton.TabIndex = 27;
+            startPlayingButton.Text = "Start Playing";
+            startPlayingButton.UseVisualStyleBackColor = true;
+            startPlayingButton.Click += startPlayingButton_Click;
+            // 
+            // StopPlayingButton
+            // 
+            StopPlayingButton.Location = new Point(680, 64);
+            StopPlayingButton.Name = "StopPlayingButton";
+            StopPlayingButton.Size = new Size(302, 58);
+            StopPlayingButton.TabIndex = 28;
+            StopPlayingButton.Text = "Stop Playing";
+            StopPlayingButton.UseVisualStyleBackColor = true;
+            StopPlayingButton.Click += StopPlayingButton_Click;
+            // 
+            // fretPatternPanel
+            // 
+            fretPatternPanel.BackColor = SystemColors.AppWorkspace;
+            fretPatternPanel.Controls.Add(labelfretpattern);
+            fretPatternPanel.Location = new Point(19, 27);
+            fretPatternPanel.Name = "fretPatternPanel";
+            fretPatternPanel.Size = new Size(2362, 2305);
+            fretPatternPanel.TabIndex = 29;
+            // 
+            // labelfretpattern
+            // 
+            labelfretpattern.AutoSize = true;
+            labelfretpattern.Location = new Point(496, 26);
+            labelfretpattern.Name = "labelfretpattern";
+            labelfretpattern.Size = new Size(215, 47);
+            labelfretpattern.TabIndex = 0;
+            labelfretpattern.Text = "Fret Patterns";
+            // 
+            // FingerPatternModeButton
+            // 
+            FingerPatternModeButton.Location = new Point(163, 2247);
+            FingerPatternModeButton.Name = "FingerPatternModeButton";
+            FingerPatternModeButton.Size = new Size(492, 58);
+            FingerPatternModeButton.TabIndex = 31;
+            FingerPatternModeButton.Text = "Finger Pattern Mode";
+            FingerPatternModeButton.UseVisualStyleBackColor = true;
+            FingerPatternModeButton.Click += FingerPatternModeButton_Click;
+            // 
             // loadFretPatternsDialog
             // 
             loadFretPatternsDialog.FileName = "openFileDialog2";
+            // 
+            // tabControl1
+            // 
+            tabControl1.Controls.Add(tabPage1);
+            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Controls.Add(tabPage3);
+            tabControl1.Location = new Point(34, 108);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new Size(2900, 2670);
+            tabControl1.TabIndex = 32;
+            // 
+            // tabPage1
+            // 
+            tabPage1.Controls.Add(FingerPatternModeButton);
+            tabPage1.Controls.Add(label7);
+            tabPage1.Controls.Add(StopPlayingButton);
+            tabPage1.Controls.Add(velocitySlider);
+            tabPage1.Controls.Add(label4);
+            tabPage1.Controls.Add(buttonPlayMidi);
+            tabPage1.Controls.Add(timeSignatureNumeratorNumericUpDown);
+            tabPage1.Controls.Add(timeSignatureDenominatorNumericUpDown);
+            tabPage1.Controls.Add(startPlayingButton);
+            tabPage1.Controls.Add(tempoNumericUpDown);
+            tabPage1.Controls.Add(label5);
+            tabPage1.Controls.Add(label1);
+            tabPage1.Controls.Add(noteDuration);
+            tabPage1.Controls.Add(stringSixMidiChannelUpDown);
+            tabPage1.Controls.Add(lowPassFilterAlpha);
+            tabPage1.Controls.Add(stringFiveMidiChannelUpDown);
+            tabPage1.Controls.Add(EnvelopeLengthSlider);
+            tabPage1.Controls.Add(stringFourMidiChannelUpDown);
+            tabPage1.Controls.Add(label2);
+            tabPage1.Controls.Add(stringThreeMidiChannelUpDown);
+            tabPage1.Controls.Add(panel1);
+            tabPage1.Controls.Add(stringTwoMidiChannelUpDown);
+            tabPage1.Controls.Add(fretboard);
+            tabPage1.Controls.Add(stringOneMidiChannelUpDown);
+            tabPage1.Controls.Add(label6);
+            tabPage1.Location = new Point(10, 64);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new Padding(3);
+            tabPage1.Size = new Size(2880, 2596);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Main Page";
+            tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            tabPage2.Controls.Add(fretPatternPanel);
+            tabPage2.Location = new Point(10, 64);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(2880, 2596);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Fret Patterns";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tabPage3
+            // 
+            tabPage3.Location = new Point(10, 64);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Size = new Size(2880, 2596);
+            tabPage3.TabIndex = 2;
+            tabPage3.Text = "Fingering Patterns";
+            tabPage3.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(19F, 47F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            ClientSize = new Size(3834, 3361);
-            Controls.Add(FingerPatternModeButton);
-            Controls.Add(editFretPatternButton);
-            Controls.Add(fretPatternPanel);
-            Controls.Add(StopPlayingButton);
-            Controls.Add(startPlayingButton);
-            Controls.Add(label7);
-            Controls.Add(velocitySlider);
-            Controls.Add(stringSixMidiChannelUpDown);
-            Controls.Add(stringFiveMidiChannelUpDown);
-            Controls.Add(stringFourMidiChannelUpDown);
-            Controls.Add(stringThreeMidiChannelUpDown);
-            Controls.Add(stringTwoMidiChannelUpDown);
-            Controls.Add(stringOneMidiChannelUpDown);
-            Controls.Add(label6);
-            Controls.Add(label5);
-            Controls.Add(tempoNumericUpDown);
-            Controls.Add(label4);
-            Controls.Add(timeSignatureDenominatorNumericUpDown);
-            Controls.Add(timeSignatureNumeratorNumericUpDown);
-            Controls.Add(noteDuration);
-            Controls.Add(panel1);
-            Controls.Add(fretboard);
-            Controls.Add(label2);
-            Controls.Add(EnvelopeLengthSlider);
-            Controls.Add(label1);
-            Controls.Add(lowPassFilterAlpha);
-            Controls.Add(buttonPlayMidi);
+            ClientSize = new Size(3762, 2779);
+            Controls.Add(tabControl1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             Name = "Form1";
             Tag = "40";
             Text = "Guitarap";
+            Load += Form1_Load;
             KeyDown += Form1_KeyDown;
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).EndInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).EndInit();
@@ -2166,6 +2204,10 @@
             ((System.ComponentModel.ISupportInitialize)velocitySlider).EndInit();
             fretPatternPanel.ResumeLayout(false);
             fretPatternPanel.PerformLayout();
+            tabControl1.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2339,11 +2381,14 @@
         private SaveFileDialog exportMidiSaveFileDialog;
         public Panel fretPatternPanel;
         private Label labelfretpattern;
-        private Button editFretPatternButton;
         private Button FingerPatternModeButton;
         private ToolStripMenuItem saveFretPatternsToolStripMenuItem;
         private ToolStripMenuItem loadFretPatternsToolStripMenuItem;
         private SaveFileDialog saveFretPatternsFileDialog;
         private OpenFileDialog loadFretPatternsDialog;
+        private TabControl tabControl1;
+        private TabPage tabPage1;
+        private TabPage tabPage2;
+        private TabPage tabPage3;
     }
 }
