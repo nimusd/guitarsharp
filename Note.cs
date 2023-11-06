@@ -61,4 +61,55 @@ namespace Guitarsharp
         }
 
     }
+    public class NoteDTO
+    {
+        public int StartTime { get; set; }
+        public int EndTime { get; set; }
+        public int Velocity { get; set; }
+        public int StringNumber { get; set; }
+        public int MidiChannelNumber { get; set; }
+        // Add other properties that need to be serialized
+
+        // Assuming Rectangle has properties like X, Y, Width, Height
+        public int RectangleX { get; set; }
+        public int RectangleY { get; set; }
+        public int RectangleWidth { get; set; }
+        public int RectangleHeight { get; set; }
+
+        public NoteDTO() { }
+
+        // Convert a Note to a NoteDTO
+        public static NoteDTO FromNote(Note note)
+        {
+            return new NoteDTO
+            {
+                StartTime =(int) note.StartTime,
+                EndTime = (int) note.EndTime,
+                Velocity = note.Velocity,
+                StringNumber = note.StringNumber,
+                MidiChannelNumber = note.MidiChannel,
+                RectangleX = note.DrawingRectangle.X,
+                RectangleY = note.DrawingRectangle.Y,
+                RectangleWidth = note.DrawingRectangle.Width,
+                RectangleHeight = note.DrawingRectangle.Height
+            };
+        }
+
+        // Convert a NoteDTO back to a Note
+        public Note ToNote()
+        {
+            Note note = new Note
+            {
+                StartTime = this.StartTime,
+                EndTime = this.EndTime,
+                Velocity = this.Velocity,
+                StringNumber = this.StringNumber,
+                MidiChannel = this.MidiChannelNumber,
+                // Recreate the Rectangle object
+                DrawingRectangle = new Rectangle(this.RectangleX, this.RectangleY, this.RectangleWidth, this.RectangleHeight)
+            };
+            return note;
+        }
+    }
+
 }

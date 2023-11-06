@@ -32,6 +32,8 @@ namespace Guitarsharp
         public int fretboardMidiNoteNumber = 0;
         private List<Note> allNotes = new List<Note>();
         private Composition composition;
+        private Composition fingerPatternComposition =new Composition ();
+
         private float PixelsPerSecond = 150.0f;  // zoom factor: adjust this value as needed
         private bool noNoteAddedSinceLastSpacePress;
         Note selectedNote = null;
@@ -66,6 +68,8 @@ namespace Guitarsharp
 
         private FretPattern activeFretPattern;
         public List<FretPattern> allFretPatterns = new List<FretPattern>();
+        public List<FingeringPattern> allFingeringPatterns = new List<FingeringPattern>();
+
         public bool fringerPatternMode = false;
 
 
@@ -144,6 +148,15 @@ namespace Guitarsharp
             tripleCrocheButton.BackColor = Color.LightGreen;
             CreateFretPatterns();
 
+            allFingeringPatterns = new List<FingeringPattern>();
+            for (int i = 0; i < 5; i++)
+            {
+                FingeringPattern fingeringPattern = new FingeringPattern();
+
+                allFingeringPatterns.Add(fingeringPattern);
+            }
+
+            RefreshFingeringPatternsUI();
 
             Debug.WriteLine("Init completed");
 
@@ -904,25 +917,7 @@ namespace Guitarsharp
             }
         }
 
-        private void FingerPatternModeButton_Click(object sender, EventArgs e)
-        {
-            var theButton = sender as Button;
-            if (theButton != null)
-            {
-                if (fringerPatternMode == true)
-                {
-                    fringerPatternMode = false;
-                    FingerPatternModeButton.BackColor = Color.White;
-                    // if less than 12 defined patterns set the UI for next finger pattern
-                    return;
-                }
-                if (fringerPatternMode == false)
-                {
-                    fringerPatternMode = true;
-                    FingerPatternModeButton.BackColor = Color.Red;
-                }
-            }
-        }
+
 
         // Method to clear the existing patterns from the UI
         private void ClearFretPatternsUI()
@@ -1099,7 +1094,151 @@ namespace Guitarsharp
             }
         }
 
+        private void FingerPatternModeButton_Click(object sender, EventArgs e)
+        {
+            var theButton = sender as Button;
+            if (theButton != null)
+            {
+                if (fringerPatternMode == true)
+                {
+                    fringerPatternMode = false;
+                    FingerPatternModeButton.BackColor = Color.White;
+                    // if less than 12 defined patterns set the UI for next finger pattern
+                    return;
+                }
+                if (fringerPatternMode == false)
+                {
+                    fringerPatternMode = true;
+                    FingerPatternModeButton.BackColor = Color.Red;
+                }
+            }
+        }
+        private void fingeringPatternPanelPaint(object sender, PaintEventArgs e)
+        {
+            Panel panel = sender as Panel;
+            int panelNumber = Convert.ToInt32(panel.Tag); // Assuming each panel's Tag property is set to its corresponding pattern number
 
+            // Retrieve the fingering pattern for this panel
+            FingeringPattern fingeringPattern = allFingeringPatterns[panelNumber - 1]; // Adjusted to use the list
+
+            int numberOfStrings = 7;
+            int laneHeight = (panel.Height - 50) / numberOfStrings;
+
+            // Draw the strings
+            for (int i = 1; i <= numberOfStrings; i++)
+            {
+                e.Graphics.DrawLine(Pens.Gray, 0, i * laneHeight, panel.Width, i * laneHeight);
+            }
+
+            // Check if there are notes in the fingering pattern
+            if (fingeringPattern.Notes.Any())
+            {
+                // Draw the notes
+                foreach (Note note in fingeringPattern.Notes)
+                {
+                    DrawNoteOnFingeringPattern(note, e.Graphics, panel);
+                }
+            }
+            else
+            {
+                // Optionally, draw a placeholder or message indicating the pattern is empty
+                e.Graphics.DrawString("Empty Pattern", new Font("Arial", 12), Brushes.Gray, new PointF(panel.Width / 2 - 50, panel.Height / 2));
+            }
+
+            // ... Additional drawing logic for beats and bars, if necessary
+        }
+
+
+        // Implement this method to retrieve the correct fingering pattern based on the panel number
+        private FingeringPattern GetFingeringPatternByNumber(int patternNumber)
+        {
+            // Logic to retrieve the correct FingeringPattern instance
+            // This could be from an array, list, or other collection that holds the patterns
+            // For example:
+            return allFingeringPatterns[patternNumber - 1];
+        }
+        private void DrawNoteOnFingeringPattern(Note note, Graphics g, Panel panel)
+        {
+            int laneHeight = (panel.Height - 50) / 7;
+            int noteStartX = (int)(note.StartTime * PixelsPerSecond) + panel.AutoScrollPosition.X;
+            int noteWidth = (int)((note.EndTime - note.StartTime) * PixelsPerSecond);
+            //int noteHeight = ...; // Calculate based on the panel size and note velocity
+            //int noteY = ...; // Calculate based on the string number and lane height
+
+            // Create a rectangle for the note and draw it
+            //  Rectangle noteRect = new Rectangle(noteStartX, noteY, noteWidth, noteHeight);
+            // g.FillRectangle(..., noteRect); // Use the appropriate brush
+            // g.DrawRectangle(Pens.Black, noteRect);
+
+            // ... Additional drawing logic for the note text
+        }
+
+
+        private void saveFingeringPatternsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fpg)|*.fpg";
+            saveFingeringPatternsFileDialog.DefaultExt = "fpg";
+            if (saveFingeringPatternsFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                SaveFingeringPatterns(saveFingeringPatternsFileDialog.FileName);
+            }
+        }
+
+        public void SaveFingeringPatterns(string filePath)
+        {
+            var fingeringPatternDTOs = allFingeringPatterns.Select(FingeringPatternDTO.FromFingeringPattern).ToList();
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string jsonString = JsonSerializer.Serialize(fingeringPatternDTOs, options);
+            File.WriteAllText(filePath, jsonString);
+        }
+
+        private void loadFingeringPatternsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            openFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fpg)|*.fpg";
+            if (openFingeringPatternsFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                LoadFingeringPatterns(openFingeringPatternsFileDialog.FileName);
+                RefreshFingeringPatternsUI();
+            }
+        }
+
+        public void LoadFingeringPatterns(string filePath)
+        {
+            string jsonString = File.ReadAllText(filePath);
+            var fingeringPatternDTOs = JsonSerializer.Deserialize<List<FingeringPatternDTO>>(jsonString);
+            allFingeringPatterns = fingeringPatternDTOs.Select(dto => dto.ToFingeringPattern()).ToList();
+        }
+
+        private void RefreshFingeringPatternsUI()
+        {
+            // Invalidate each fingering pattern panel to trigger a repaint
+            for (int i = 0; i < allFingeringPatterns.Count; i++)
+            {
+                var panel = this.Controls.Find("fingeringPatternPanel" + (i + 1), true).FirstOrDefault() as Panel;
+                panel?.Invalidate();
+            }
+        }
+        private void selectedFingeringPatternNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            // Update the selected fingering pattern index based on the NumericUpDown value
+            //selectedFingeringPatternIndex = (int)selectedFingeringPatternNumericUpDown.Value - 1;
+            // No other action is taken here. Other methods will use selectedFingeringPatternIndex as needed.
+        }
+
+        private void addFingerinPatternToCompositionButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void clearFingeringPatternButton_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void editFingeringPatternButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public static class MidiUtilities

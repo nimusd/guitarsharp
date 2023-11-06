@@ -174,6 +174,8 @@
             exportMIDIToolStripMenuItem = new ToolStripMenuItem();
             saveFretPatternsToolStripMenuItem = new ToolStripMenuItem();
             loadFretPatternsToolStripMenuItem = new ToolStripMenuItem();
+            saveFingeringPatternsToolStripMenuItem = new ToolStripMenuItem();
+            loadFingeringPatternsToolStripMenuItem = new ToolStripMenuItem();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
             timeSignatureNumeratorNumericUpDown = new NumericUpDown();
@@ -204,6 +206,18 @@
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
             tabPage3 = new TabPage();
+            fingeringPatternpanel5 = new Panel();
+            fingeringPatternpanel4 = new Panel();
+            fingeringPatternPanel3 = new Panel();
+            fingeringPatternPanel2 = new Panel();
+            fingeringPatternPanel1 = new Panel();
+            openFingeringPatternsFileDialog = new OpenFileDialog();
+            saveFingeringPatternsFileDialog = new SaveFileDialog();
+            selectedFingeringPatternNumericUpDown = new NumericUpDown();
+            addFingerinPatternToCompositionButton = new Button();
+            label8 = new Label();
+            clearFingeringPatternButton = new Button();
+            editFingeringPatternButton = new Button();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             fretboard.SuspendLayout();
@@ -224,13 +238,16 @@
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // buttonPlayMidi
             // 
-            buttonPlayMidi.Location = new Point(1038, 64);
+            buttonPlayMidi.Location = new Point(710, 44);
+            buttonPlayMidi.Margin = new Padding(2);
             buttonPlayMidi.Name = "buttonPlayMidi";
-            buttonPlayMidi.Size = new Size(188, 58);
+            buttonPlayMidi.Size = new Size(129, 39);
             buttonPlayMidi.TabIndex = 0;
             buttonPlayMidi.Text = "play MIDI";
             buttonPlayMidi.UseVisualStyleBackColor = true;
@@ -238,11 +255,12 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(45, 395);
+            lowPassFilterAlpha.Location = new Point(31, 269);
+            lowPassFilterAlpha.Margin = new Padding(2);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
-            lowPassFilterAlpha.Size = new Size(702, 114);
+            lowPassFilterAlpha.Size = new Size(480, 90);
             lowPassFilterAlpha.TabIndex = 1;
             lowPassFilterAlpha.Value = 1;
             lowPassFilterAlpha.ValueChanged += lowPassFilterAlpha_ValueChanged;
@@ -250,19 +268,21 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(28, 321);
+            label1.Location = new Point(19, 219);
+            label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(354, 47);
+            label1.Size = new Size(242, 32);
             label1.TabIndex = 2;
             label1.Text = "Low Pass Filter Alpha ";
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(790, 395);
+            EnvelopeLengthSlider.Location = new Point(541, 269);
+            EnvelopeLengthSlider.Margin = new Padding(2);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
-            EnvelopeLengthSlider.Size = new Size(684, 114);
+            EnvelopeLengthSlider.Size = new Size(468, 90);
             EnvelopeLengthSlider.TabIndex = 3;
             EnvelopeLengthSlider.Value = 1;
             EnvelopeLengthSlider.ValueChanged += EnvelopeLengthSlider_ValueChanged;
@@ -270,9 +290,10 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(783, 321);
+            label2.Location = new Point(536, 219);
+            label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
-            label2.Size = new Size(270, 47);
+            label2.Size = new Size(189, 32);
             label2.TabIndex = 4;
             label2.Text = "envelope length";
             // 
@@ -400,18 +421,20 @@
             fretboard.Controls.Add(HEFs1);
             fretboard.Controls.Add(HEF1);
             fretboard.Controls.Add(HEE1);
-            fretboard.Location = new Point(175, 676);
+            fretboard.Location = new Point(120, 460);
+            fretboard.Margin = new Padding(2);
             fretboard.Name = "fretboard";
-            fretboard.Size = new Size(2013, 348);
+            fretboard.Size = new Size(1378, 238);
             fretboard.TabIndex = 5;
             fretboard.Tag = "80";
             // 
             // LEB2
             // 
             LEB2.BackColor = SystemColors.GradientInactiveCaption;
-            LEB2.Location = new Point(1900, 291);
+            LEB2.Location = new Point(1300, 198);
+            LEB2.Margin = new Padding(2);
             LEB2.Name = "LEB2";
-            LEB2.Size = new Size(100, 50);
+            LEB2.Size = new Size(68, 34);
             LEB2.TabIndex = 20;
             LEB2.Tag = "59";
             LEB2.Text = "B";
@@ -420,9 +443,10 @@
             // AE2
             // 
             AE2.BackColor = SystemColors.GradientInactiveCaption;
-            AE2.Location = new Point(1900, 235);
+            AE2.Location = new Point(1300, 160);
+            AE2.Margin = new Padding(2);
             AE2.Name = "AE2";
-            AE2.Size = new Size(100, 50);
+            AE2.Size = new Size(68, 34);
             AE2.TabIndex = 20;
             AE2.Tag = "64";
             AE2.Text = "E";
@@ -431,9 +455,10 @@
             // LEBb2
             // 
             LEBb2.BackColor = SystemColors.GradientInactiveCaption;
-            LEBb2.Location = new Point(1800, 291);
+            LEBb2.Location = new Point(1232, 198);
+            LEBb2.Margin = new Padding(2);
             LEBb2.Name = "LEBb2";
-            LEBb2.Size = new Size(100, 50);
+            LEBb2.Size = new Size(68, 34);
             LEBb2.TabIndex = 19;
             LEBb2.Tag = "58";
             LEBb2.Text = "Bb";
@@ -442,9 +467,10 @@
             // AD2
             // 
             AD2.BackColor = SystemColors.GradientInactiveCaption;
-            AD2.Location = new Point(1698, 232);
+            AD2.Location = new Point(1162, 158);
+            AD2.Margin = new Padding(2);
             AD2.Name = "AD2";
-            AD2.Size = new Size(100, 50);
+            AD2.Size = new Size(68, 34);
             AD2.TabIndex = 18;
             AD2.Tag = "62";
             AD2.Text = "D";
@@ -453,9 +479,10 @@
             // LEA2
             // 
             LEA2.BackColor = SystemColors.GradientInactiveCaption;
-            LEA2.Location = new Point(1700, 291);
+            LEA2.Location = new Point(1163, 198);
+            LEA2.Margin = new Padding(2);
             LEA2.Name = "LEA2";
-            LEA2.Size = new Size(100, 50);
+            LEA2.Size = new Size(68, 34);
             LEA2.TabIndex = 18;
             LEA2.Tag = "57";
             LEA2.Text = "A";
@@ -464,9 +491,10 @@
             // AEb2
             // 
             AEb2.BackColor = SystemColors.GradientInactiveCaption;
-            AEb2.Location = new Point(1800, 235);
+            AEb2.Location = new Point(1232, 160);
+            AEb2.Margin = new Padding(2);
             AEb2.Name = "AEb2";
-            AEb2.Size = new Size(100, 50);
+            AEb2.Size = new Size(68, 34);
             AEb2.TabIndex = 19;
             AEb2.Tag = "63";
             AEb2.Text = "Eb";
@@ -475,9 +503,10 @@
             // LEGS2
             // 
             LEGS2.BackColor = SystemColors.GradientInactiveCaption;
-            LEGS2.Location = new Point(1600, 291);
+            LEGS2.Location = new Point(1095, 198);
+            LEGS2.Margin = new Padding(2);
             LEGS2.Name = "LEGS2";
-            LEGS2.Size = new Size(100, 50);
+            LEGS2.Size = new Size(68, 34);
             LEGS2.TabIndex = 17;
             LEGS2.Tag = "56";
             LEGS2.Text = "G#";
@@ -486,9 +515,10 @@
             // DA2
             // 
             DA2.BackColor = SystemColors.GradientInactiveCaption;
-            DA2.Location = new Point(1900, 179);
+            DA2.Location = new Point(1300, 122);
+            DA2.Margin = new Padding(2);
             DA2.Name = "DA2";
-            DA2.Size = new Size(100, 50);
+            DA2.Size = new Size(68, 34);
             DA2.TabIndex = 20;
             DA2.Tag = "69";
             DA2.Text = "A";
@@ -497,9 +527,10 @@
             // LEG2
             // 
             LEG2.BackColor = SystemColors.GradientInactiveCaption;
-            LEG2.Location = new Point(1500, 291);
+            LEG2.Location = new Point(1026, 198);
+            LEG2.Margin = new Padding(2);
             LEG2.Name = "LEG2";
-            LEG2.Size = new Size(100, 50);
+            LEG2.Size = new Size(68, 34);
             LEG2.TabIndex = 16;
             LEG2.Tag = "55";
             LEG2.Text = "G";
@@ -508,9 +539,10 @@
             // ACs2
             // 
             ACs2.BackColor = SystemColors.GradientInactiveCaption;
-            ACs2.Location = new Point(1600, 232);
+            ACs2.Location = new Point(1095, 158);
+            ACs2.Margin = new Padding(2);
             ACs2.Name = "ACs2";
-            ACs2.Size = new Size(100, 50);
+            ACs2.Size = new Size(68, 34);
             ACs2.TabIndex = 17;
             ACs2.Tag = "61";
             ACs2.Text = "C#";
@@ -519,9 +551,10 @@
             // LEFS2
             // 
             LEFS2.BackColor = SystemColors.GradientInactiveCaption;
-            LEFS2.Location = new Point(1400, 288);
+            LEFS2.Location = new Point(958, 196);
+            LEFS2.Margin = new Padding(2);
             LEFS2.Name = "LEFS2";
-            LEFS2.Size = new Size(100, 50);
+            LEFS2.Size = new Size(68, 34);
             LEFS2.TabIndex = 15;
             LEFS2.Tag = "54";
             LEFS2.Text = "F#";
@@ -530,9 +563,10 @@
             // DGs2
             // 
             DGs2.BackColor = SystemColors.GradientInactiveCaption;
-            DGs2.Location = new Point(1800, 179);
+            DGs2.Location = new Point(1232, 122);
+            DGs2.Margin = new Padding(2);
             DGs2.Name = "DGs2";
-            DGs2.Size = new Size(100, 50);
+            DGs2.Size = new Size(68, 34);
             DGs2.TabIndex = 19;
             DGs2.Tag = "68";
             DGs2.Text = "G#";
@@ -541,9 +575,10 @@
             // LEF2
             // 
             LEF2.BackColor = SystemColors.GradientInactiveCaption;
-            LEF2.Location = new Point(1300, 288);
+            LEF2.Location = new Point(889, 196);
+            LEF2.Margin = new Padding(2);
             LEF2.Name = "LEF2";
-            LEF2.Size = new Size(100, 50);
+            LEF2.Size = new Size(68, 34);
             LEF2.TabIndex = 14;
             LEF2.Tag = "53";
             LEF2.Text = "F";
@@ -552,9 +587,10 @@
             // AC2
             // 
             AC2.BackColor = SystemColors.GradientInactiveCaption;
-            AC2.Location = new Point(1500, 232);
+            AC2.Location = new Point(1026, 158);
+            AC2.Margin = new Padding(2);
             AC2.Name = "AC2";
-            AC2.Size = new Size(100, 50);
+            AC2.Size = new Size(68, 34);
             AC2.TabIndex = 16;
             AC2.Tag = "60";
             AC2.Text = "C";
@@ -563,9 +599,10 @@
             // LEE2
             // 
             LEE2.BackColor = SystemColors.Info;
-            LEE2.Location = new Point(1200, 288);
+            LEE2.Location = new Point(821, 196);
+            LEE2.Margin = new Padding(2);
             LEE2.Name = "LEE2";
-            LEE2.Size = new Size(100, 50);
+            LEE2.Size = new Size(68, 34);
             LEE2.TabIndex = 13;
             LEE2.Tag = "52";
             LEE2.Text = "E";
@@ -574,9 +611,10 @@
             // DG2
             // 
             DG2.BackColor = SystemColors.GradientInactiveCaption;
-            DG2.Location = new Point(1700, 179);
+            DG2.Location = new Point(1163, 122);
+            DG2.Margin = new Padding(2);
             DG2.Name = "DG2";
-            DG2.Size = new Size(100, 50);
+            DG2.Size = new Size(68, 34);
             DG2.TabIndex = 18;
             DG2.Tag = "67";
             DG2.Text = "G";
@@ -585,9 +623,10 @@
             // LEEb1
             // 
             LEEb1.BackColor = SystemColors.GradientInactiveCaption;
-            LEEb1.Location = new Point(1100, 288);
+            LEEb1.Location = new Point(753, 196);
+            LEEb1.Margin = new Padding(2);
             LEEb1.Name = "LEEb1";
-            LEEb1.Size = new Size(100, 50);
+            LEEb1.Size = new Size(68, 34);
             LEEb1.TabIndex = 12;
             LEEb1.Tag = "51";
             LEEb1.Text = "Eb";
@@ -596,9 +635,10 @@
             // AB2
             // 
             AB2.BackColor = SystemColors.GradientInactiveCaption;
-            AB2.Location = new Point(1402, 232);
+            AB2.Location = new Point(959, 158);
+            AB2.Margin = new Padding(2);
             AB2.Name = "AB2";
-            AB2.Size = new Size(100, 50);
+            AB2.Size = new Size(68, 34);
             AB2.TabIndex = 15;
             AB2.Tag = "59";
             AB2.Text = "B";
@@ -607,9 +647,10 @@
             // LED1
             // 
             LED1.BackColor = SystemColors.ControlLightLight;
-            LED1.Location = new Point(1000, 288);
+            LED1.Location = new Point(684, 196);
+            LED1.Margin = new Padding(2);
             LED1.Name = "LED1";
-            LED1.Size = new Size(100, 50);
+            LED1.Size = new Size(68, 34);
             LED1.TabIndex = 11;
             LED1.Tag = "50";
             LED1.Text = "D";
@@ -618,9 +659,10 @@
             // DFs2
             // 
             DFs2.BackColor = SystemColors.GradientInactiveCaption;
-            DFs2.Location = new Point(1602, 179);
+            DFs2.Location = new Point(1096, 122);
+            DFs2.Margin = new Padding(2);
             DFs2.Name = "DFs2";
-            DFs2.Size = new Size(100, 50);
+            DFs2.Size = new Size(68, 34);
             DFs2.TabIndex = 17;
             DFs2.Tag = "66";
             DFs2.Text = "F#";
@@ -629,9 +671,10 @@
             // LECS1
             // 
             LECS1.BackColor = SystemColors.GradientInactiveCaption;
-            LECS1.Location = new Point(902, 288);
+            LECS1.Location = new Point(617, 196);
+            LECS1.Margin = new Padding(2);
             LECS1.Name = "LECS1";
-            LECS1.Size = new Size(100, 50);
+            LECS1.Size = new Size(68, 34);
             LECS1.TabIndex = 10;
             LECS1.Tag = "49";
             LECS1.Text = "C#";
@@ -640,9 +683,10 @@
             // ABb2
             // 
             ABb2.BackColor = SystemColors.GradientInactiveCaption;
-            ABb2.Location = new Point(1302, 232);
+            ABb2.Location = new Point(891, 158);
+            ABb2.Margin = new Padding(2);
             ABb2.Name = "ABb2";
-            ABb2.Size = new Size(100, 50);
+            ABb2.Size = new Size(68, 34);
             ABb2.TabIndex = 14;
             ABb2.Tag = "58";
             ABb2.Text = "Bb";
@@ -651,9 +695,10 @@
             // LEC1
             // 
             LEC1.BackColor = SystemColors.GradientInactiveCaption;
-            LEC1.Location = new Point(802, 288);
+            LEC1.Location = new Point(549, 196);
+            LEC1.Margin = new Padding(2);
             LEC1.Name = "LEC1";
-            LEC1.Size = new Size(100, 50);
+            LEC1.Size = new Size(68, 34);
             LEC1.TabIndex = 9;
             LEC1.Tag = "48";
             LEC1.Text = "C";
@@ -662,9 +707,10 @@
             // GD2
             // 
             GD2.BackColor = SystemColors.GradientInactiveCaption;
-            GD2.Location = new Point(1898, 120);
+            GD2.Location = new Point(1299, 82);
+            GD2.Margin = new Padding(2);
             GD2.Name = "GD2";
-            GD2.Size = new Size(100, 50);
+            GD2.Size = new Size(68, 34);
             GD2.TabIndex = 20;
             GD2.Tag = "74";
             GD2.Text = "D";
@@ -673,9 +719,10 @@
             // LEB1
             // 
             LEB1.BackColor = SystemColors.GradientInactiveCaption;
-            LEB1.Location = new Point(702, 288);
+            LEB1.Location = new Point(480, 196);
+            LEB1.Margin = new Padding(2);
             LEB1.Name = "LEB1";
-            LEB1.Size = new Size(100, 50);
+            LEB1.Size = new Size(68, 34);
             LEB1.TabIndex = 8;
             LEB1.Tag = "47";
             LEB1.Text = "B";
@@ -684,9 +731,10 @@
             // AA2
             // 
             AA2.BackColor = SystemColors.Info;
-            AA2.Location = new Point(1202, 232);
+            AA2.Location = new Point(822, 158);
+            AA2.Margin = new Padding(2);
             AA2.Name = "AA2";
-            AA2.Size = new Size(100, 50);
+            AA2.Size = new Size(68, 34);
             AA2.TabIndex = 13;
             AA2.Tag = "57";
             AA2.Text = "A";
@@ -695,9 +743,10 @@
             // LEBb1
             // 
             LEBb1.BackColor = SystemColors.GradientInactiveCaption;
-            LEBb1.Location = new Point(602, 288);
+            LEBb1.Location = new Point(412, 196);
+            LEBb1.Margin = new Padding(2);
             LEBb1.Name = "LEBb1";
-            LEBb1.Size = new Size(100, 50);
+            LEBb1.Size = new Size(68, 34);
             LEBb1.TabIndex = 7;
             LEBb1.Tag = "46";
             LEBb1.Text = "Bb";
@@ -706,9 +755,10 @@
             // DF2
             // 
             DF2.BackColor = SystemColors.GradientInactiveCaption;
-            DF2.Location = new Point(1502, 179);
+            DF2.Location = new Point(1028, 122);
+            DF2.Margin = new Padding(2);
             DF2.Name = "DF2";
-            DF2.Size = new Size(100, 50);
+            DF2.Size = new Size(68, 34);
             DF2.TabIndex = 16;
             DF2.Tag = "65";
             DF2.Text = "F";
@@ -717,9 +767,10 @@
             // LEA1
             // 
             LEA1.BackColor = SystemColors.ControlLightLight;
-            LEA1.Location = new Point(502, 288);
+            LEA1.Location = new Point(343, 196);
+            LEA1.Margin = new Padding(2);
             LEA1.Name = "LEA1";
-            LEA1.Size = new Size(100, 50);
+            LEA1.Size = new Size(68, 34);
             LEA1.TabIndex = 6;
             LEA1.Tag = "45";
             LEA1.Text = "A";
@@ -728,9 +779,10 @@
             // AGs1
             // 
             AGs1.BackColor = SystemColors.GradientInactiveCaption;
-            AGs1.Location = new Point(1102, 232);
+            AGs1.Location = new Point(754, 158);
+            AGs1.Margin = new Padding(2);
             AGs1.Name = "AGs1";
-            AGs1.Size = new Size(100, 50);
+            AGs1.Size = new Size(68, 34);
             AGs1.TabIndex = 12;
             AGs1.Tag = "56";
             AGs1.Text = "G#";
@@ -739,9 +791,10 @@
             // LEGS1
             // 
             LEGS1.BackColor = SystemColors.GradientInactiveCaption;
-            LEGS1.Location = new Point(402, 285);
+            LEGS1.Location = new Point(275, 194);
+            LEGS1.Margin = new Padding(2);
             LEGS1.Name = "LEGS1";
-            LEGS1.Size = new Size(100, 50);
+            LEGS1.Size = new Size(68, 34);
             LEGS1.TabIndex = 5;
             LEGS1.Tag = "44";
             LEGS1.Text = "G#";
@@ -750,9 +803,10 @@
             // GCs2
             // 
             GCs2.BackColor = SystemColors.GradientInactiveCaption;
-            GCs2.Location = new Point(1800, 120);
+            GCs2.Location = new Point(1232, 82);
+            GCs2.Margin = new Padding(2);
             GCs2.Name = "GCs2";
-            GCs2.Size = new Size(100, 50);
+            GCs2.Size = new Size(68, 34);
             GCs2.TabIndex = 19;
             GCs2.Tag = "73";
             GCs2.Text = "C#";
@@ -761,9 +815,10 @@
             // LEG1
             // 
             LEG1.BackColor = SystemColors.GradientInactiveCaption;
-            LEG1.Location = new Point(302, 285);
+            LEG1.Location = new Point(207, 194);
+            LEG1.Margin = new Padding(2);
             LEG1.Name = "LEG1";
-            LEG1.Size = new Size(100, 50);
+            LEG1.Size = new Size(68, 34);
             LEG1.TabIndex = 4;
             LEG1.Tag = "43";
             LEG1.Text = "G";
@@ -772,9 +827,10 @@
             // AG1
             // 
             AG1.BackColor = SystemColors.ControlLightLight;
-            AG1.Location = new Point(1002, 232);
+            AG1.Location = new Point(686, 158);
+            AG1.Margin = new Padding(2);
             AG1.Name = "AG1";
-            AG1.Size = new Size(100, 50);
+            AG1.Size = new Size(68, 34);
             AG1.TabIndex = 11;
             AG1.Tag = "55";
             AG1.Text = "G";
@@ -783,9 +839,10 @@
             // LEFS1
             // 
             LEFS1.BackColor = SystemColors.GradientInactiveCaption;
-            LEFS1.Location = new Point(202, 285);
+            LEFS1.Location = new Point(138, 194);
+            LEFS1.Margin = new Padding(2);
             LEFS1.Name = "LEFS1";
-            LEFS1.Size = new Size(100, 50);
+            LEFS1.Size = new Size(68, 34);
             LEFS1.TabIndex = 3;
             LEFS1.Tag = "42";
             LEFS1.Text = "F#";
@@ -794,9 +851,10 @@
             // LEF1
             // 
             LEF1.BackColor = SystemColors.GradientInactiveCaption;
-            LEF1.Location = new Point(102, 285);
+            LEF1.Location = new Point(70, 194);
+            LEF1.Margin = new Padding(2);
             LEF1.Name = "LEF1";
-            LEF1.Size = new Size(100, 50);
+            LEF1.Size = new Size(68, 34);
             LEF1.TabIndex = 2;
             LEF1.Tag = "41";
             LEF1.Text = "F";
@@ -805,9 +863,10 @@
             // DE2
             // 
             DE2.BackColor = SystemColors.GradientInactiveCaption;
-            DE2.Location = new Point(1402, 179);
+            DE2.Location = new Point(959, 122);
+            DE2.Margin = new Padding(2);
             DE2.Name = "DE2";
-            DE2.Size = new Size(100, 50);
+            DE2.Size = new Size(68, 34);
             DE2.TabIndex = 15;
             DE2.Tag = "64";
             DE2.Text = "E";
@@ -816,9 +875,10 @@
             // LEE1
             // 
             LEE1.BackColor = SystemColors.Info;
-            LEE1.Location = new Point(2, 285);
+            LEE1.Location = new Point(1, 194);
+            LEE1.Margin = new Padding(2);
             LEE1.Name = "LEE1";
-            LEE1.Size = new Size(100, 50);
+            LEE1.Size = new Size(68, 34);
             LEE1.TabIndex = 1;
             LEE1.Tag = "40";
             LEE1.Text = "E";
@@ -827,9 +887,10 @@
             // AFs1
             // 
             AFs1.BackColor = SystemColors.GradientInactiveCaption;
-            AFs1.Location = new Point(902, 229);
+            AFs1.Location = new Point(617, 156);
+            AFs1.Margin = new Padding(2);
             AFs1.Name = "AFs1";
-            AFs1.Size = new Size(100, 50);
+            AFs1.Size = new Size(68, 34);
             AFs1.TabIndex = 10;
             AFs1.Tag = "54";
             AFs1.Text = "F#";
@@ -838,9 +899,10 @@
             // GC2
             // 
             GC2.BackColor = SystemColors.GradientInactiveCaption;
-            GC2.Location = new Point(1700, 120);
+            GC2.Location = new Point(1163, 82);
+            GC2.Margin = new Padding(2);
             GC2.Name = "GC2";
-            GC2.Size = new Size(100, 50);
+            GC2.Size = new Size(68, 34);
             GC2.TabIndex = 18;
             GC2.Tag = "72";
             GC2.Text = "C";
@@ -849,9 +911,10 @@
             // AF1
             // 
             AF1.BackColor = SystemColors.GradientInactiveCaption;
-            AF1.Location = new Point(802, 229);
+            AF1.Location = new Point(549, 156);
+            AF1.Margin = new Padding(2);
             AF1.Name = "AF1";
-            AF1.Size = new Size(100, 50);
+            AF1.Size = new Size(68, 34);
             AF1.TabIndex = 9;
             AF1.Tag = "53";
             AF1.Text = "F";
@@ -860,9 +923,10 @@
             // DEb2
             // 
             DEb2.BackColor = SystemColors.GradientInactiveCaption;
-            DEb2.Location = new Point(1302, 179);
+            DEb2.Location = new Point(891, 122);
+            DEb2.Margin = new Padding(2);
             DEb2.Name = "DEb2";
-            DEb2.Size = new Size(100, 50);
+            DEb2.Size = new Size(68, 34);
             DEb2.TabIndex = 14;
             DEb2.Tag = "63";
             DEb2.Text = "Eb";
@@ -871,9 +935,10 @@
             // AE1
             // 
             AE1.BackColor = SystemColors.GradientInactiveCaption;
-            AE1.Location = new Point(702, 229);
+            AE1.Location = new Point(480, 156);
+            AE1.Margin = new Padding(2);
             AE1.Name = "AE1";
-            AE1.Size = new Size(100, 50);
+            AE1.Size = new Size(68, 34);
             AE1.TabIndex = 8;
             AE1.Tag = "52";
             AE1.Text = "E";
@@ -882,9 +947,10 @@
             // GB2
             // 
             GB2.BackColor = SystemColors.GradientInactiveCaption;
-            GB2.Location = new Point(1602, 120);
+            GB2.Location = new Point(1096, 82);
+            GB2.Margin = new Padding(2);
             GB2.Name = "GB2";
-            GB2.Size = new Size(100, 50);
+            GB2.Size = new Size(68, 34);
             GB2.TabIndex = 17;
             GB2.Tag = "71";
             GB2.Text = "B";
@@ -893,9 +959,10 @@
             // AEb1
             // 
             AEb1.BackColor = SystemColors.GradientInactiveCaption;
-            AEb1.Location = new Point(602, 229);
+            AEb1.Location = new Point(412, 156);
+            AEb1.Margin = new Padding(2);
             AEb1.Name = "AEb1";
-            AEb1.Size = new Size(100, 50);
+            AEb1.Size = new Size(68, 34);
             AEb1.TabIndex = 7;
             AEb1.Tag = "51";
             AEb1.Text = "Eb";
@@ -904,9 +971,10 @@
             // DD2
             // 
             DD2.BackColor = SystemColors.Info;
-            DD2.Location = new Point(1202, 179);
+            DD2.Location = new Point(822, 122);
+            DD2.Margin = new Padding(2);
             DD2.Name = "DD2";
-            DD2.Size = new Size(100, 50);
+            DD2.Size = new Size(68, 34);
             DD2.TabIndex = 13;
             DD2.Tag = "62";
             DD2.Text = "D";
@@ -915,9 +983,10 @@
             // AD1
             // 
             AD1.BackColor = SystemColors.ControlLightLight;
-            AD1.Location = new Point(502, 229);
+            AD1.Location = new Point(343, 156);
+            AD1.Margin = new Padding(2);
             AD1.Name = "AD1";
-            AD1.Size = new Size(100, 50);
+            AD1.Size = new Size(68, 34);
             AD1.TabIndex = 6;
             AD1.Tag = "50";
             AD1.Text = "D";
@@ -926,9 +995,10 @@
             // BFs2
             // 
             BFs2.BackColor = SystemColors.GradientInactiveCaption;
-            BFs2.Location = new Point(1900, 64);
+            BFs2.Location = new Point(1300, 44);
+            BFs2.Margin = new Padding(2);
             BFs2.Name = "BFs2";
-            BFs2.Size = new Size(100, 50);
+            BFs2.Size = new Size(68, 34);
             BFs2.TabIndex = 20;
             BFs2.Tag = "78";
             BFs2.Text = "F#";
@@ -937,9 +1007,10 @@
             // ACs1
             // 
             ACs1.BackColor = SystemColors.GradientInactiveCaption;
-            ACs1.Location = new Point(404, 229);
+            ACs1.Location = new Point(276, 156);
+            ACs1.Margin = new Padding(2);
             ACs1.Name = "ACs1";
-            ACs1.Size = new Size(100, 50);
+            ACs1.Size = new Size(68, 34);
             ACs1.TabIndex = 5;
             ACs1.Tag = "49";
             ACs1.Text = "C#";
@@ -948,9 +1019,10 @@
             // DCs1
             // 
             DCs1.BackColor = SystemColors.GradientInactiveCaption;
-            DCs1.Location = new Point(1104, 179);
+            DCs1.Location = new Point(755, 122);
+            DCs1.Margin = new Padding(2);
             DCs1.Name = "DCs1";
-            DCs1.Size = new Size(100, 50);
+            DCs1.Size = new Size(68, 34);
             DCs1.TabIndex = 12;
             DCs1.Tag = "61";
             DCs1.Text = "C#";
@@ -959,9 +1031,10 @@
             // AC1
             // 
             AC1.BackColor = SystemColors.GradientInactiveCaption;
-            AC1.Location = new Point(304, 229);
+            AC1.Location = new Point(208, 156);
+            AC1.Margin = new Padding(2);
             AC1.Name = "AC1";
-            AC1.Size = new Size(100, 50);
+            AC1.Size = new Size(68, 34);
             AC1.TabIndex = 4;
             AC1.Tag = "48";
             AC1.Text = "C";
@@ -970,9 +1043,10 @@
             // GBb2
             // 
             GBb2.BackColor = SystemColors.GradientInactiveCaption;
-            GBb2.Location = new Point(1502, 120);
+            GBb2.Location = new Point(1028, 82);
+            GBb2.Margin = new Padding(2);
             GBb2.Name = "GBb2";
-            GBb2.Size = new Size(100, 50);
+            GBb2.Size = new Size(68, 34);
             GBb2.TabIndex = 16;
             GBb2.Tag = "70";
             GBb2.Text = "Bb";
@@ -981,9 +1055,10 @@
             // AB1
             // 
             AB1.BackColor = SystemColors.GradientInactiveCaption;
-            AB1.Location = new Point(204, 229);
+            AB1.Location = new Point(140, 156);
+            AB1.Margin = new Padding(2);
             AB1.Name = "AB1";
-            AB1.Size = new Size(100, 50);
+            AB1.Size = new Size(68, 34);
             AB1.TabIndex = 3;
             AB1.Tag = "47";
             AB1.Text = "B";
@@ -992,9 +1067,10 @@
             // DC1
             // 
             DC1.BackColor = SystemColors.ControlLightLight;
-            DC1.Location = new Point(1004, 179);
+            DC1.Location = new Point(687, 122);
+            DC1.Margin = new Padding(2);
             DC1.Name = "DC1";
-            DC1.Size = new Size(100, 50);
+            DC1.Size = new Size(68, 34);
             DC1.TabIndex = 11;
             DC1.Tag = "60";
             DC1.Text = "C";
@@ -1003,9 +1079,10 @@
             // ABb1
             // 
             ABb1.BackColor = SystemColors.GradientInactiveCaption;
-            ABb1.Location = new Point(104, 229);
+            ABb1.Location = new Point(71, 156);
+            ABb1.Margin = new Padding(2);
             ABb1.Name = "ABb1";
-            ABb1.Size = new Size(100, 50);
+            ABb1.Size = new Size(68, 34);
             ABb1.TabIndex = 2;
             ABb1.Tag = "46";
             ABb1.Text = "Bb";
@@ -1014,9 +1091,10 @@
             // AA1
             // 
             AA1.BackColor = SystemColors.Info;
-            AA1.Location = new Point(4, 229);
+            AA1.Location = new Point(3, 156);
+            AA1.Margin = new Padding(2);
             AA1.Name = "AA1";
-            AA1.Size = new Size(100, 50);
+            AA1.Size = new Size(68, 34);
             AA1.TabIndex = 1;
             AA1.Tag = "45";
             AA1.Text = "A";
@@ -1025,9 +1103,10 @@
             // BF2
             // 
             BF2.BackColor = SystemColors.GradientInactiveCaption;
-            BF2.Location = new Point(1800, 64);
+            BF2.Location = new Point(1232, 44);
+            BF2.Margin = new Padding(2);
             BF2.Name = "BF2";
-            BF2.Size = new Size(100, 50);
+            BF2.Size = new Size(68, 34);
             BF2.TabIndex = 19;
             BF2.Tag = "77";
             BF2.Text = "F";
@@ -1036,9 +1115,10 @@
             // DB1
             // 
             DB1.BackColor = SystemColors.GradientInactiveCaption;
-            DB1.Location = new Point(904, 176);
+            DB1.Location = new Point(619, 120);
+            DB1.Margin = new Padding(2);
             DB1.Name = "DB1";
-            DB1.Size = new Size(100, 50);
+            DB1.Size = new Size(68, 34);
             DB1.TabIndex = 10;
             DB1.Tag = "59";
             DB1.Text = "B";
@@ -1047,9 +1127,10 @@
             // GA2
             // 
             GA2.BackColor = SystemColors.GradientInactiveCaption;
-            GA2.Location = new Point(1402, 120);
+            GA2.Location = new Point(959, 82);
+            GA2.Margin = new Padding(2);
             GA2.Name = "GA2";
-            GA2.Size = new Size(100, 50);
+            GA2.Size = new Size(68, 34);
             GA2.TabIndex = 15;
             GA2.Tag = "69";
             GA2.Text = "A";
@@ -1058,9 +1139,10 @@
             // DBb1
             // 
             DBb1.BackColor = SystemColors.GradientInactiveCaption;
-            DBb1.Location = new Point(804, 176);
+            DBb1.Location = new Point(550, 120);
+            DBb1.Margin = new Padding(2);
             DBb1.Name = "DBb1";
-            DBb1.Size = new Size(100, 50);
+            DBb1.Size = new Size(68, 34);
             DBb1.TabIndex = 9;
             DBb1.Tag = "58";
             DBb1.Text = "Bb";
@@ -1069,9 +1151,10 @@
             // BE2
             // 
             BE2.BackColor = SystemColors.GradientInactiveCaption;
-            BE2.Location = new Point(1700, 64);
+            BE2.Location = new Point(1163, 44);
+            BE2.Margin = new Padding(2);
             BE2.Name = "BE2";
-            BE2.Size = new Size(100, 50);
+            BE2.Size = new Size(68, 34);
             BE2.TabIndex = 18;
             BE2.Tag = "76";
             BE2.Text = "E";
@@ -1080,9 +1163,10 @@
             // DA1
             // 
             DA1.BackColor = SystemColors.GradientInactiveCaption;
-            DA1.Location = new Point(704, 176);
+            DA1.Location = new Point(482, 120);
+            DA1.Margin = new Padding(2);
             DA1.Name = "DA1";
-            DA1.Size = new Size(100, 50);
+            DA1.Size = new Size(68, 34);
             DA1.TabIndex = 8;
             DA1.Tag = "57";
             DA1.Text = "A";
@@ -1091,9 +1175,10 @@
             // GGs2
             // 
             GGs2.BackColor = SystemColors.GradientInactiveCaption;
-            GGs2.Location = new Point(1302, 120);
+            GGs2.Location = new Point(891, 82);
+            GGs2.Margin = new Padding(2);
             GGs2.Name = "GGs2";
-            GGs2.Size = new Size(100, 50);
+            GGs2.Size = new Size(68, 34);
             GGs2.TabIndex = 14;
             GGs2.Tag = "68";
             GGs2.Text = "G#";
@@ -1102,9 +1187,10 @@
             // DGs1
             // 
             DGs1.BackColor = SystemColors.GradientInactiveCaption;
-            DGs1.Location = new Point(604, 176);
+            DGs1.Location = new Point(413, 120);
+            DGs1.Margin = new Padding(2);
             DGs1.Name = "DGs1";
-            DGs1.Size = new Size(100, 50);
+            DGs1.Size = new Size(68, 34);
             DGs1.TabIndex = 7;
             DGs1.Tag = "56";
             DGs1.Text = "G#";
@@ -1113,9 +1199,10 @@
             // BEb2
             // 
             BEb2.BackColor = SystemColors.GradientInactiveCaption;
-            BEb2.Location = new Point(1600, 64);
+            BEb2.Location = new Point(1095, 44);
+            BEb2.Margin = new Padding(2);
             BEb2.Name = "BEb2";
-            BEb2.Size = new Size(100, 50);
+            BEb2.Size = new Size(68, 34);
             BEb2.TabIndex = 17;
             BEb2.Tag = "75";
             BEb2.Text = "Eb";
@@ -1124,9 +1211,10 @@
             // DG1
             // 
             DG1.BackColor = SystemColors.ControlLightLight;
-            DG1.Location = new Point(504, 176);
+            DG1.Location = new Point(345, 120);
+            DG1.Margin = new Padding(2);
             DG1.Name = "DG1";
-            DG1.Size = new Size(100, 50);
+            DG1.Size = new Size(68, 34);
             DG1.TabIndex = 6;
             DG1.Tag = "55";
             DG1.Text = "G";
@@ -1135,9 +1223,10 @@
             // GG2
             // 
             GG2.BackColor = SystemColors.Info;
-            GG2.Location = new Point(1202, 120);
+            GG2.Location = new Point(822, 82);
+            GG2.Margin = new Padding(2);
             GG2.Name = "GG2";
-            GG2.Size = new Size(100, 50);
+            GG2.Size = new Size(68, 34);
             GG2.TabIndex = 13;
             GG2.Tag = "67";
             GG2.Text = "G";
@@ -1146,9 +1235,10 @@
             // DFs1
             // 
             DFs1.BackColor = SystemColors.GradientInactiveCaption;
-            DFs1.Location = new Point(404, 173);
+            DFs1.Location = new Point(276, 118);
+            DFs1.Margin = new Padding(2);
             DFs1.Name = "DFs1";
-            DFs1.Size = new Size(100, 50);
+            DFs1.Size = new Size(68, 34);
             DFs1.TabIndex = 5;
             DFs1.Tag = "54";
             DFs1.Text = "F#";
@@ -1157,9 +1247,10 @@
             // BD2
             // 
             BD2.BackColor = SystemColors.GradientInactiveCaption;
-            BD2.Location = new Point(1500, 64);
+            BD2.Location = new Point(1026, 44);
+            BD2.Margin = new Padding(2);
             BD2.Name = "BD2";
-            BD2.Size = new Size(100, 50);
+            BD2.Size = new Size(68, 34);
             BD2.TabIndex = 16;
             BD2.Tag = "74";
             BD2.Text = "D";
@@ -1168,9 +1259,10 @@
             // DF1
             // 
             DF1.BackColor = SystemColors.GradientInactiveCaption;
-            DF1.Location = new Point(304, 173);
+            DF1.Location = new Point(208, 118);
+            DF1.Margin = new Padding(2);
             DF1.Name = "DF1";
-            DF1.Size = new Size(100, 50);
+            DF1.Size = new Size(68, 34);
             DF1.TabIndex = 4;
             DF1.Tag = "53";
             DF1.Text = "F";
@@ -1179,9 +1271,10 @@
             // GFs1
             // 
             GFs1.BackColor = SystemColors.GradientInactiveCaption;
-            GFs1.Location = new Point(1102, 117);
+            GFs1.Location = new Point(754, 80);
+            GFs1.Margin = new Padding(2);
             GFs1.Name = "GFs1";
-            GFs1.Size = new Size(100, 50);
+            GFs1.Size = new Size(68, 34);
             GFs1.TabIndex = 12;
             GFs1.Tag = "66";
             GFs1.Text = "F#";
@@ -1190,9 +1283,10 @@
             // DE1
             // 
             DE1.BackColor = SystemColors.GradientInactiveCaption;
-            DE1.Location = new Point(204, 173);
+            DE1.Location = new Point(140, 118);
+            DE1.Margin = new Padding(2);
             DE1.Name = "DE1";
-            DE1.Size = new Size(100, 50);
+            DE1.Size = new Size(68, 34);
             DE1.TabIndex = 3;
             DE1.Tag = "52";
             DE1.Text = "E";
@@ -1201,9 +1295,10 @@
             // Deb1
             // 
             Deb1.BackColor = SystemColors.GradientInactiveCaption;
-            Deb1.Location = new Point(104, 173);
+            Deb1.Location = new Point(71, 118);
+            Deb1.Margin = new Padding(2);
             Deb1.Name = "Deb1";
-            Deb1.Size = new Size(100, 50);
+            Deb1.Size = new Size(68, 34);
             Deb1.TabIndex = 2;
             Deb1.Tag = "51";
             Deb1.Text = "Eb";
@@ -1212,9 +1307,10 @@
             // BCs2
             // 
             BCs2.BackColor = SystemColors.GradientInactiveCaption;
-            BCs2.Location = new Point(1402, 64);
+            BCs2.Location = new Point(959, 44);
+            BCs2.Margin = new Padding(2);
             BCs2.Name = "BCs2";
-            BCs2.Size = new Size(100, 50);
+            BCs2.Size = new Size(68, 34);
             BCs2.TabIndex = 15;
             BCs2.Tag = "73";
             BCs2.Text = "C#";
@@ -1223,9 +1319,10 @@
             // DD1
             // 
             DD1.BackColor = SystemColors.Info;
-            DD1.Location = new Point(4, 173);
+            DD1.Location = new Point(3, 118);
+            DD1.Margin = new Padding(2);
             DD1.Name = "DD1";
-            DD1.Size = new Size(100, 50);
+            DD1.Size = new Size(68, 34);
             DD1.TabIndex = 1;
             DD1.Tag = "50";
             DD1.Text = "D";
@@ -1234,9 +1331,10 @@
             // GF1
             // 
             GF1.BackColor = SystemColors.ControlLightLight;
-            GF1.Location = new Point(1002, 117);
+            GF1.Location = new Point(686, 80);
+            GF1.Margin = new Padding(2);
             GF1.Name = "GF1";
-            GF1.Size = new Size(100, 50);
+            GF1.Size = new Size(68, 34);
             GF1.TabIndex = 11;
             GF1.Tag = "65";
             GF1.Text = "F";
@@ -1245,9 +1343,10 @@
             // BC2
             // 
             BC2.BackColor = SystemColors.GradientInactiveCaption;
-            BC2.Location = new Point(1302, 64);
+            BC2.Location = new Point(891, 44);
+            BC2.Margin = new Padding(2);
             BC2.Name = "BC2";
-            BC2.Size = new Size(100, 50);
+            BC2.Size = new Size(68, 34);
             BC2.TabIndex = 14;
             BC2.Tag = "72";
             BC2.Text = "C";
@@ -1256,9 +1355,10 @@
             // GE1
             // 
             GE1.BackColor = SystemColors.GradientInactiveCaption;
-            GE1.Location = new Point(902, 117);
+            GE1.Location = new Point(617, 80);
+            GE1.Margin = new Padding(2);
             GE1.Name = "GE1";
-            GE1.Size = new Size(100, 50);
+            GE1.Size = new Size(68, 34);
             GE1.TabIndex = 10;
             GE1.Tag = "64";
             GE1.Text = "E";
@@ -1267,9 +1367,10 @@
             // BB2
             // 
             BB2.BackColor = SystemColors.Info;
-            BB2.Location = new Point(1202, 61);
+            BB2.Location = new Point(822, 42);
+            BB2.Margin = new Padding(2);
             BB2.Name = "BB2";
-            BB2.Size = new Size(100, 50);
+            BB2.Size = new Size(68, 34);
             BB2.TabIndex = 13;
             BB2.Tag = "71";
             BB2.Text = "B";
@@ -1278,9 +1379,10 @@
             // GEb1
             // 
             GEb1.BackColor = SystemColors.GradientInactiveCaption;
-            GEb1.Location = new Point(802, 117);
+            GEb1.Location = new Point(549, 80);
+            GEb1.Margin = new Padding(2);
             GEb1.Name = "GEb1";
-            GEb1.Size = new Size(100, 50);
+            GEb1.Size = new Size(68, 34);
             GEb1.TabIndex = 9;
             GEb1.Tag = "63";
             GEb1.Text = "Eb";
@@ -1289,9 +1391,10 @@
             // BBb1
             // 
             BBb1.BackColor = SystemColors.GradientInactiveCaption;
-            BBb1.Location = new Point(1102, 61);
+            BBb1.Location = new Point(754, 42);
+            BBb1.Margin = new Padding(2);
             BBb1.Name = "BBb1";
-            BBb1.Size = new Size(100, 50);
+            BBb1.Size = new Size(68, 34);
             BBb1.TabIndex = 12;
             BBb1.Tag = "70";
             BBb1.Text = "Bb";
@@ -1300,9 +1403,10 @@
             // GD1
             // 
             GD1.BackColor = SystemColors.GradientInactiveCaption;
-            GD1.Location = new Point(702, 117);
+            GD1.Location = new Point(480, 80);
+            GD1.Margin = new Padding(2);
             GD1.Name = "GD1";
-            GD1.Size = new Size(100, 50);
+            GD1.Size = new Size(68, 34);
             GD1.TabIndex = 8;
             GD1.Tag = "62";
             GD1.Text = "D";
@@ -1311,9 +1415,10 @@
             // BA1
             // 
             BA1.BackColor = SystemColors.ControlLightLight;
-            BA1.Location = new Point(1002, 61);
+            BA1.Location = new Point(686, 42);
+            BA1.Margin = new Padding(2);
             BA1.Name = "BA1";
-            BA1.Size = new Size(100, 50);
+            BA1.Size = new Size(68, 34);
             BA1.TabIndex = 11;
             BA1.Tag = "69";
             BA1.Text = "A";
@@ -1322,9 +1427,10 @@
             // GCs1
             // 
             GCs1.BackColor = SystemColors.GradientInactiveCaption;
-            GCs1.Location = new Point(604, 117);
+            GCs1.Location = new Point(413, 80);
+            GCs1.Margin = new Padding(2);
             GCs1.Name = "GCs1";
-            GCs1.Size = new Size(100, 50);
+            GCs1.Size = new Size(68, 34);
             GCs1.TabIndex = 7;
             GCs1.Tag = "61";
             GCs1.Text = "C#";
@@ -1333,9 +1439,10 @@
             // BGs1
             // 
             BGs1.BackColor = SystemColors.GradientInactiveCaption;
-            BGs1.Location = new Point(902, 61);
+            BGs1.Location = new Point(617, 42);
+            BGs1.Margin = new Padding(2);
             BGs1.Name = "BGs1";
-            BGs1.Size = new Size(100, 50);
+            BGs1.Size = new Size(68, 34);
             BGs1.TabIndex = 10;
             BGs1.Tag = "68";
             BGs1.Text = "G#";
@@ -1344,9 +1451,10 @@
             // GC1
             // 
             GC1.BackColor = SystemColors.ControlLightLight;
-            GC1.Location = new Point(504, 117);
+            GC1.Location = new Point(345, 80);
+            GC1.Margin = new Padding(2);
             GC1.Name = "GC1";
-            GC1.Size = new Size(100, 50);
+            GC1.Size = new Size(68, 34);
             GC1.TabIndex = 6;
             GC1.Tag = "60";
             GC1.Text = "C";
@@ -1355,9 +1463,10 @@
             // BG1
             // 
             BG1.BackColor = SystemColors.GradientInactiveCaption;
-            BG1.Location = new Point(802, 58);
+            BG1.Location = new Point(549, 39);
+            BG1.Margin = new Padding(2);
             BG1.Name = "BG1";
-            BG1.Size = new Size(100, 50);
+            BG1.Size = new Size(68, 34);
             BG1.TabIndex = 9;
             BG1.Tag = "67";
             BG1.Text = "G";
@@ -1366,9 +1475,10 @@
             // GB1
             // 
             GB1.BackColor = SystemColors.GradientInactiveCaption;
-            GB1.Location = new Point(404, 117);
+            GB1.Location = new Point(276, 80);
+            GB1.Margin = new Padding(2);
             GB1.Name = "GB1";
-            GB1.Size = new Size(100, 50);
+            GB1.Size = new Size(68, 34);
             GB1.TabIndex = 5;
             GB1.Tag = "59";
             GB1.Text = "B";
@@ -1377,9 +1487,10 @@
             // BFs1
             // 
             BFs1.BackColor = SystemColors.GradientInactiveCaption;
-            BFs1.Location = new Point(702, 58);
+            BFs1.Location = new Point(480, 39);
+            BFs1.Margin = new Padding(2);
             BFs1.Name = "BFs1";
-            BFs1.Size = new Size(100, 50);
+            BFs1.Size = new Size(68, 34);
             BFs1.TabIndex = 8;
             BFs1.Tag = "66";
             BFs1.Text = "F#";
@@ -1388,9 +1499,10 @@
             // GBb1
             // 
             GBb1.BackColor = SystemColors.GradientInactiveCaption;
-            GBb1.Location = new Point(304, 117);
+            GBb1.Location = new Point(208, 80);
+            GBb1.Margin = new Padding(2);
             GBb1.Name = "GBb1";
-            GBb1.Size = new Size(100, 50);
+            GBb1.Size = new Size(68, 34);
             GBb1.TabIndex = 4;
             GBb1.Tag = "58";
             GBb1.Text = "Bb";
@@ -1399,9 +1511,10 @@
             // BF1
             // 
             BF1.BackColor = SystemColors.GradientInactiveCaption;
-            BF1.Location = new Point(602, 58);
+            BF1.Location = new Point(412, 39);
+            BF1.Margin = new Padding(2);
             BF1.Name = "BF1";
-            BF1.Size = new Size(100, 50);
+            BF1.Size = new Size(68, 34);
             BF1.TabIndex = 7;
             BF1.Tag = "65";
             BF1.Text = "F";
@@ -1410,9 +1523,10 @@
             // GA1
             // 
             GA1.BackColor = SystemColors.GradientInactiveCaption;
-            GA1.Location = new Point(204, 117);
+            GA1.Location = new Point(140, 80);
+            GA1.Margin = new Padding(2);
             GA1.Name = "GA1";
-            GA1.Size = new Size(100, 50);
+            GA1.Size = new Size(68, 34);
             GA1.TabIndex = 3;
             GA1.Tag = "57";
             GA1.Text = "A";
@@ -1421,9 +1535,10 @@
             // BE1
             // 
             BE1.BackColor = SystemColors.ControlLightLight;
-            BE1.Location = new Point(502, 58);
+            BE1.Location = new Point(343, 39);
+            BE1.Margin = new Padding(2);
             BE1.Name = "BE1";
-            BE1.Size = new Size(100, 50);
+            BE1.Size = new Size(68, 34);
             BE1.TabIndex = 6;
             BE1.Tag = "64";
             BE1.Text = "E";
@@ -1432,9 +1547,10 @@
             // GGs1
             // 
             GGs1.BackColor = SystemColors.GradientInactiveCaption;
-            GGs1.Location = new Point(104, 114);
+            GGs1.Location = new Point(71, 78);
+            GGs1.Margin = new Padding(2);
             GGs1.Name = "GGs1";
-            GGs1.Size = new Size(100, 50);
+            GGs1.Size = new Size(68, 34);
             GGs1.TabIndex = 2;
             GGs1.Tag = "56";
             GGs1.Text = "G#";
@@ -1443,9 +1559,10 @@
             // GG1
             // 
             GG1.BackColor = SystemColors.Info;
-            GG1.Location = new Point(4, 114);
+            GG1.Location = new Point(3, 78);
+            GG1.Margin = new Padding(2);
             GG1.Name = "GG1";
-            GG1.Size = new Size(100, 50);
+            GG1.Size = new Size(68, 34);
             GG1.TabIndex = 1;
             GG1.Tag = "55";
             GG1.Text = "G";
@@ -1454,9 +1571,10 @@
             // BEb1
             // 
             BEb1.BackColor = SystemColors.GradientInactiveCaption;
-            BEb1.Location = new Point(402, 58);
+            BEb1.Location = new Point(275, 39);
+            BEb1.Margin = new Padding(2);
             BEb1.Name = "BEb1";
-            BEb1.Size = new Size(100, 50);
+            BEb1.Size = new Size(68, 34);
             BEb1.TabIndex = 5;
             BEb1.Tag = "63";
             BEb1.Text = "Eb";
@@ -1465,9 +1583,10 @@
             // BD1
             // 
             BD1.BackColor = SystemColors.GradientInactiveCaption;
-            BD1.Location = new Point(302, 58);
+            BD1.Location = new Point(207, 39);
+            BD1.Margin = new Padding(2);
             BD1.Name = "BD1";
-            BD1.Size = new Size(100, 50);
+            BD1.Size = new Size(68, 34);
             BD1.TabIndex = 4;
             BD1.Tag = "62";
             BD1.Text = "D";
@@ -1476,9 +1595,10 @@
             // BCs1
             // 
             BCs1.BackColor = SystemColors.GradientInactiveCaption;
-            BCs1.Location = new Point(204, 58);
+            BCs1.Location = new Point(140, 39);
+            BCs1.Margin = new Padding(2);
             BCs1.Name = "BCs1";
-            BCs1.Size = new Size(100, 50);
+            BCs1.Size = new Size(68, 34);
             BCs1.TabIndex = 3;
             BCs1.Tag = "61";
             BCs1.Text = "C#";
@@ -1487,9 +1607,10 @@
             // BC1
             // 
             BC1.BackColor = SystemColors.GradientInactiveCaption;
-            BC1.Location = new Point(104, 58);
+            BC1.Location = new Point(71, 39);
+            BC1.Margin = new Padding(2);
             BC1.Name = "BC1";
-            BC1.Size = new Size(100, 50);
+            BC1.Size = new Size(68, 34);
             BC1.TabIndex = 2;
             BC1.Tag = "60";
             BC1.Text = "C";
@@ -1498,9 +1619,10 @@
             // BB1
             // 
             BB1.BackColor = SystemColors.Info;
-            BB1.Location = new Point(4, 58);
+            BB1.Location = new Point(3, 39);
+            BB1.Margin = new Padding(2);
             BB1.Name = "BB1";
-            BB1.Size = new Size(100, 50);
+            BB1.Size = new Size(68, 34);
             BB1.TabIndex = 1;
             BB1.Tag = "59";
             BB1.Text = "B";
@@ -1509,9 +1631,10 @@
             // HEB2
             // 
             HEB2.BackColor = SystemColors.GradientInactiveCaption;
-            HEB2.Location = new Point(1900, 8);
+            HEB2.Location = new Point(1300, 5);
+            HEB2.Margin = new Padding(2);
             HEB2.Name = "HEB2";
-            HEB2.Size = new Size(100, 50);
+            HEB2.Size = new Size(68, 34);
             HEB2.TabIndex = 20;
             HEB2.Tag = "83";
             HEB2.Text = "B";
@@ -1520,9 +1643,10 @@
             // HEBb2
             // 
             HEBb2.BackColor = SystemColors.GradientInactiveCaption;
-            HEBb2.Location = new Point(1800, 8);
+            HEBb2.Location = new Point(1232, 5);
+            HEBb2.Margin = new Padding(2);
             HEBb2.Name = "HEBb2";
-            HEBb2.Size = new Size(100, 50);
+            HEBb2.Size = new Size(68, 34);
             HEBb2.TabIndex = 19;
             HEBb2.Tag = "82";
             HEBb2.Text = "Bb";
@@ -1531,9 +1655,10 @@
             // HEA2
             // 
             HEA2.BackColor = SystemColors.GradientInactiveCaption;
-            HEA2.Location = new Point(1700, 8);
+            HEA2.Location = new Point(1163, 5);
+            HEA2.Margin = new Padding(2);
             HEA2.Name = "HEA2";
-            HEA2.Size = new Size(100, 50);
+            HEA2.Size = new Size(68, 34);
             HEA2.TabIndex = 18;
             HEA2.Tag = "81";
             HEA2.Text = "A";
@@ -1542,9 +1667,10 @@
             // HEGs2
             // 
             HEGs2.BackColor = SystemColors.GradientInactiveCaption;
-            HEGs2.Location = new Point(1600, 8);
+            HEGs2.Location = new Point(1095, 5);
+            HEGs2.Margin = new Padding(2);
             HEGs2.Name = "HEGs2";
-            HEGs2.Size = new Size(100, 50);
+            HEGs2.Size = new Size(68, 34);
             HEGs2.TabIndex = 17;
             HEGs2.Tag = "80";
             HEGs2.Text = "G#";
@@ -1553,9 +1679,10 @@
             // HEG2
             // 
             HEG2.BackColor = SystemColors.GradientInactiveCaption;
-            HEG2.Location = new Point(1500, 8);
+            HEG2.Location = new Point(1026, 5);
+            HEG2.Margin = new Padding(2);
             HEG2.Name = "HEG2";
-            HEG2.Size = new Size(100, 50);
+            HEG2.Size = new Size(68, 34);
             HEG2.TabIndex = 16;
             HEG2.Tag = "79";
             HEG2.Text = "G";
@@ -1564,9 +1691,10 @@
             // HEFs2
             // 
             HEFs2.BackColor = SystemColors.GradientInactiveCaption;
-            HEFs2.Location = new Point(1400, 5);
+            HEFs2.Location = new Point(958, 3);
+            HEFs2.Margin = new Padding(2);
             HEFs2.Name = "HEFs2";
-            HEFs2.Size = new Size(100, 50);
+            HEFs2.Size = new Size(68, 34);
             HEFs2.TabIndex = 15;
             HEFs2.Tag = "78";
             HEFs2.Text = "F#";
@@ -1575,9 +1703,10 @@
             // HEF2
             // 
             HEF2.BackColor = SystemColors.GradientInactiveCaption;
-            HEF2.Location = new Point(1300, 5);
+            HEF2.Location = new Point(889, 3);
+            HEF2.Margin = new Padding(2);
             HEF2.Name = "HEF2";
-            HEF2.Size = new Size(100, 50);
+            HEF2.Size = new Size(68, 34);
             HEF2.TabIndex = 14;
             HEF2.Tag = "77";
             HEF2.Text = "F";
@@ -1586,9 +1715,10 @@
             // HEE2
             // 
             HEE2.BackColor = SystemColors.Info;
-            HEE2.Location = new Point(1200, 5);
+            HEE2.Location = new Point(821, 3);
+            HEE2.Margin = new Padding(2);
             HEE2.Name = "HEE2";
-            HEE2.Size = new Size(100, 50);
+            HEE2.Size = new Size(68, 34);
             HEE2.TabIndex = 13;
             HEE2.Tag = "76";
             HEE2.Text = "E";
@@ -1597,9 +1727,10 @@
             // HEEb1
             // 
             HEEb1.BackColor = SystemColors.GradientInactiveCaption;
-            HEEb1.Location = new Point(1100, 5);
+            HEEb1.Location = new Point(753, 3);
+            HEEb1.Margin = new Padding(2);
             HEEb1.Name = "HEEb1";
-            HEEb1.Size = new Size(100, 50);
+            HEEb1.Size = new Size(68, 34);
             HEEb1.TabIndex = 12;
             HEEb1.Tag = "75";
             HEEb1.Text = "Eb";
@@ -1608,9 +1739,10 @@
             // HED1
             // 
             HED1.BackColor = SystemColors.ControlLightLight;
-            HED1.Location = new Point(1000, 5);
+            HED1.Location = new Point(684, 3);
+            HED1.Margin = new Padding(2);
             HED1.Name = "HED1";
-            HED1.Size = new Size(100, 50);
+            HED1.Size = new Size(68, 34);
             HED1.TabIndex = 11;
             HED1.Tag = "74";
             HED1.Text = "D";
@@ -1619,9 +1751,10 @@
             // HECs1
             // 
             HECs1.BackColor = SystemColors.GradientInactiveCaption;
-            HECs1.Location = new Point(902, 5);
+            HECs1.Location = new Point(617, 3);
+            HECs1.Margin = new Padding(2);
             HECs1.Name = "HECs1";
-            HECs1.Size = new Size(100, 50);
+            HECs1.Size = new Size(68, 34);
             HECs1.TabIndex = 10;
             HECs1.Tag = "73";
             HECs1.Text = "C#";
@@ -1630,9 +1763,10 @@
             // HEC1
             // 
             HEC1.BackColor = SystemColors.GradientInactiveCaption;
-            HEC1.Location = new Point(802, 5);
+            HEC1.Location = new Point(549, 3);
+            HEC1.Margin = new Padding(2);
             HEC1.Name = "HEC1";
-            HEC1.Size = new Size(100, 50);
+            HEC1.Size = new Size(68, 34);
             HEC1.TabIndex = 9;
             HEC1.Tag = "72";
             HEC1.Text = "C";
@@ -1641,9 +1775,10 @@
             // HEB1
             // 
             HEB1.BackColor = SystemColors.GradientInactiveCaption;
-            HEB1.Location = new Point(702, 5);
+            HEB1.Location = new Point(480, 3);
+            HEB1.Margin = new Padding(2);
             HEB1.Name = "HEB1";
-            HEB1.Size = new Size(100, 50);
+            HEB1.Size = new Size(68, 34);
             HEB1.TabIndex = 8;
             HEB1.Tag = "71";
             HEB1.Text = "B";
@@ -1652,9 +1787,10 @@
             // HEBb1
             // 
             HEBb1.BackColor = SystemColors.GradientInactiveCaption;
-            HEBb1.Location = new Point(602, 5);
+            HEBb1.Location = new Point(412, 3);
+            HEBb1.Margin = new Padding(2);
             HEBb1.Name = "HEBb1";
-            HEBb1.Size = new Size(100, 50);
+            HEBb1.Size = new Size(68, 34);
             HEBb1.TabIndex = 7;
             HEBb1.Tag = "70";
             HEBb1.Text = "Bb";
@@ -1663,9 +1799,10 @@
             // HEA1
             // 
             HEA1.BackColor = SystemColors.ControlLightLight;
-            HEA1.Location = new Point(502, 5);
+            HEA1.Location = new Point(343, 3);
+            HEA1.Margin = new Padding(2);
             HEA1.Name = "HEA1";
-            HEA1.Size = new Size(100, 50);
+            HEA1.Size = new Size(68, 34);
             HEA1.TabIndex = 6;
             HEA1.Tag = "69";
             HEA1.Text = "A";
@@ -1674,9 +1811,10 @@
             // HEGs1
             // 
             HEGs1.BackColor = SystemColors.GradientInactiveCaption;
-            HEGs1.Location = new Point(402, 2);
+            HEGs1.Location = new Point(275, 1);
+            HEGs1.Margin = new Padding(2);
             HEGs1.Name = "HEGs1";
-            HEGs1.Size = new Size(100, 50);
+            HEGs1.Size = new Size(68, 34);
             HEGs1.TabIndex = 5;
             HEGs1.Tag = "68";
             HEGs1.Text = "G#";
@@ -1685,9 +1823,10 @@
             // HEG1
             // 
             HEG1.BackColor = SystemColors.GradientInactiveCaption;
-            HEG1.Location = new Point(302, 2);
+            HEG1.Location = new Point(207, 1);
+            HEG1.Margin = new Padding(2);
             HEG1.Name = "HEG1";
-            HEG1.Size = new Size(100, 50);
+            HEG1.Size = new Size(68, 34);
             HEG1.TabIndex = 4;
             HEG1.Tag = "67";
             HEG1.Text = "G";
@@ -1696,9 +1835,10 @@
             // HEFs1
             // 
             HEFs1.BackColor = SystemColors.GradientInactiveCaption;
-            HEFs1.Location = new Point(202, 2);
+            HEFs1.Location = new Point(138, 1);
+            HEFs1.Margin = new Padding(2);
             HEFs1.Name = "HEFs1";
-            HEFs1.Size = new Size(100, 50);
+            HEFs1.Size = new Size(68, 34);
             HEFs1.TabIndex = 3;
             HEFs1.Tag = "66";
             HEFs1.Text = "F#";
@@ -1707,9 +1847,10 @@
             // HEF1
             // 
             HEF1.BackColor = SystemColors.GradientInactiveCaption;
-            HEF1.Location = new Point(102, 2);
+            HEF1.Location = new Point(70, 1);
+            HEF1.Margin = new Padding(2);
             HEF1.Name = "HEF1";
-            HEF1.Size = new Size(100, 50);
+            HEF1.Size = new Size(68, 34);
             HEF1.TabIndex = 2;
             HEF1.Tag = "65";
             HEF1.Text = "F";
@@ -1718,9 +1859,10 @@
             // HEE1
             // 
             HEE1.BackColor = SystemColors.Info;
-            HEE1.Location = new Point(2, 2);
+            HEE1.Location = new Point(1, 1);
+            HEE1.Margin = new Padding(2);
             HEE1.Name = "HEE1";
-            HEE1.Size = new Size(100, 50);
+            HEE1.Size = new Size(68, 34);
             HEE1.TabIndex = 1;
             HEE1.Tag = "64";
             HEE1.Text = "E";
@@ -1731,9 +1873,10 @@
             guitarRollPanel.AutoScroll = true;
             guitarRollPanel.AutoScrollMinSize = new Size(5000, 600);
             guitarRollPanel.BackColor = Color.White;
-            guitarRollPanel.Location = new Point(42, 38);
+            guitarRollPanel.Location = new Point(29, 26);
+            guitarRollPanel.Margin = new Padding(2);
             guitarRollPanel.Name = "guitarRollPanel";
-            guitarRollPanel.Size = new Size(1999, 790);
+            guitarRollPanel.Size = new Size(1368, 538);
             guitarRollPanel.TabIndex = 6;
             guitarRollPanel.Scroll += guitarRollPanel_Scroll;
             guitarRollPanel.Paint += guitarRollPanel_Paint;
@@ -1745,16 +1888,18 @@
             // panel1
             // 
             panel1.Controls.Add(guitarRollPanel);
-            panel1.Location = new Point(122, 1082);
+            panel1.Location = new Point(83, 737);
+            panel1.Margin = new Padding(2);
             panel1.Name = "panel1";
-            panel1.Size = new Size(2066, 881);
+            panel1.Size = new Size(1414, 600);
             panel1.TabIndex = 8;
             // 
             // rondeButton
             // 
-            rondeButton.Location = new Point(3, 50);
+            rondeButton.Location = new Point(2, 34);
+            rondeButton.Margin = new Padding(2);
             rondeButton.Name = "rondeButton";
-            rondeButton.Size = new Size(188, 58);
+            rondeButton.Size = new Size(129, 39);
             rondeButton.TabIndex = 9;
             rondeButton.Text = "Whole";
             rondeButton.UseVisualStyleBackColor = true;
@@ -1763,9 +1908,10 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(3, 0);
+            label3.Location = new Point(2, 0);
+            label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
-            label3.Size = new Size(233, 47);
+            label3.Size = new Size(160, 32);
             label3.TabIndex = 10;
             label3.Text = "note duration";
             // 
@@ -1781,16 +1927,18 @@
             noteDuration.Controls.Add(blancheButton);
             noteDuration.Controls.Add(rondeButton);
             noteDuration.Controls.Add(label3);
-            noteDuration.Location = new Point(178, 2050);
+            noteDuration.Location = new Point(122, 1396);
+            noteDuration.Margin = new Padding(2);
             noteDuration.Name = "noteDuration";
-            noteDuration.Size = new Size(1723, 120);
+            noteDuration.Size = new Size(1179, 82);
             noteDuration.TabIndex = 11;
             // 
             // tripletButton
             // 
-            tripletButton.Location = new Point(1480, 50);
+            tripletButton.Location = new Point(1013, 34);
+            tripletButton.Margin = new Padding(2);
             tripletButton.Name = "tripletButton";
-            tripletButton.Size = new Size(188, 58);
+            tripletButton.Size = new Size(129, 39);
             tripletButton.TabIndex = 17;
             tripletButton.Text = "triplet";
             tripletButton.UseVisualStyleBackColor = true;
@@ -1798,9 +1946,10 @@
             // 
             // pointeeButton
             // 
-            pointeeButton.Location = new Point(1263, 50);
+            pointeeButton.Location = new Point(864, 34);
+            pointeeButton.Margin = new Padding(2);
             pointeeButton.Name = "pointeeButton";
-            pointeeButton.Size = new Size(188, 58);
+            pointeeButton.Size = new Size(129, 39);
             pointeeButton.TabIndex = 16;
             pointeeButton.Text = "dotted";
             pointeeButton.UseVisualStyleBackColor = true;
@@ -1808,9 +1957,10 @@
             // 
             // tripleCrocheButton
             // 
-            tripleCrocheButton.Location = new Point(1050, 50);
+            tripleCrocheButton.Location = new Point(718, 34);
+            tripleCrocheButton.Margin = new Padding(2);
             tripleCrocheButton.Name = "tripleCrocheButton";
-            tripleCrocheButton.Size = new Size(188, 58);
+            tripleCrocheButton.Size = new Size(129, 39);
             tripleCrocheButton.TabIndex = 15;
             tripleCrocheButton.Text = "32nd";
             tripleCrocheButton.UseVisualStyleBackColor = true;
@@ -1818,9 +1968,10 @@
             // 
             // doubleCrocheButton
             // 
-            doubleCrocheButton.Location = new Point(840, 50);
+            doubleCrocheButton.Location = new Point(575, 34);
+            doubleCrocheButton.Margin = new Padding(2);
             doubleCrocheButton.Name = "doubleCrocheButton";
-            doubleCrocheButton.Size = new Size(188, 58);
+            doubleCrocheButton.Size = new Size(129, 39);
             doubleCrocheButton.TabIndex = 14;
             doubleCrocheButton.Text = "sixteen";
             doubleCrocheButton.UseVisualStyleBackColor = true;
@@ -1828,9 +1979,10 @@
             // 
             // crocheButton
             // 
-            crocheButton.Location = new Point(635, 50);
+            crocheButton.Location = new Point(434, 34);
+            crocheButton.Margin = new Padding(2);
             crocheButton.Name = "crocheButton";
-            crocheButton.Size = new Size(188, 58);
+            crocheButton.Size = new Size(129, 39);
             crocheButton.TabIndex = 13;
             crocheButton.Text = "eigth";
             crocheButton.UseVisualStyleBackColor = true;
@@ -1838,9 +1990,10 @@
             // 
             // noireButton
             // 
-            noireButton.Location = new Point(412, 50);
+            noireButton.Location = new Point(282, 34);
+            noireButton.Margin = new Padding(2);
             noireButton.Name = "noireButton";
-            noireButton.Size = new Size(188, 58);
+            noireButton.Size = new Size(129, 39);
             noireButton.TabIndex = 12;
             noireButton.Text = "quarter";
             noireButton.UseVisualStyleBackColor = true;
@@ -1848,9 +2001,10 @@
             // 
             // blancheButton
             // 
-            blancheButton.Location = new Point(210, 50);
+            blancheButton.Location = new Point(144, 34);
+            blancheButton.Margin = new Padding(2);
             blancheButton.Name = "blancheButton";
-            blancheButton.Size = new Size(188, 58);
+            blancheButton.Size = new Size(129, 39);
             blancheButton.TabIndex = 11;
             blancheButton.Text = "Half";
             blancheButton.UseVisualStyleBackColor = true;
@@ -1862,58 +2016,73 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(3762, 55);
+            menuStrip1.Padding = new Padding(4, 1, 0, 1);
+            menuStrip1.Size = new Size(2574, 38);
             menuStrip1.TabIndex = 12;
             menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, exportAudioToolStripMenuItem, exportMIDIToolStripMenuItem, saveFretPatternsToolStripMenuItem, loadFretPatternsToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openToolStripMenuItem, saveToolStripMenuItem, exportAudioToolStripMenuItem, exportMIDIToolStripMenuItem, saveFretPatternsToolStripMenuItem, loadFretPatternsToolStripMenuItem, saveFingeringPatternsToolStripMenuItem, loadFingeringPatternsToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            fileToolStripMenuItem.Size = new Size(95, 51);
+            fileToolStripMenuItem.Size = new Size(71, 36);
             fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(469, 56);
+            openToolStripMenuItem.Size = new Size(398, 44);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(469, 56);
+            saveToolStripMenuItem.Size = new Size(398, 44);
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // exportAudioToolStripMenuItem
             // 
             exportAudioToolStripMenuItem.Name = "exportAudioToolStripMenuItem";
-            exportAudioToolStripMenuItem.Size = new Size(469, 56);
+            exportAudioToolStripMenuItem.Size = new Size(398, 44);
             exportAudioToolStripMenuItem.Text = "export audio";
             exportAudioToolStripMenuItem.Click += exportAudioToolStripMenuItem_Click;
             // 
             // exportMIDIToolStripMenuItem
             // 
             exportMIDIToolStripMenuItem.Name = "exportMIDIToolStripMenuItem";
-            exportMIDIToolStripMenuItem.Size = new Size(469, 56);
+            exportMIDIToolStripMenuItem.Size = new Size(398, 44);
             exportMIDIToolStripMenuItem.Text = "export MIDI";
             exportMIDIToolStripMenuItem.Click += exportMIDIToolStripMenuItem_Click;
             // 
             // saveFretPatternsToolStripMenuItem
             // 
             saveFretPatternsToolStripMenuItem.Name = "saveFretPatternsToolStripMenuItem";
-            saveFretPatternsToolStripMenuItem.Size = new Size(469, 56);
+            saveFretPatternsToolStripMenuItem.Size = new Size(398, 44);
             saveFretPatternsToolStripMenuItem.Text = "Save Fret Patterns";
             saveFretPatternsToolStripMenuItem.Click += saveFretPatternsToolStripMenuItem_Click;
             // 
             // loadFretPatternsToolStripMenuItem
             // 
             loadFretPatternsToolStripMenuItem.Name = "loadFretPatternsToolStripMenuItem";
-            loadFretPatternsToolStripMenuItem.Size = new Size(469, 56);
+            loadFretPatternsToolStripMenuItem.Size = new Size(398, 44);
             loadFretPatternsToolStripMenuItem.Text = "Load Fret Patterns";
             loadFretPatternsToolStripMenuItem.Click += loadFretPatternsToolStripMenuItem_Click;
+            // 
+            // saveFingeringPatternsToolStripMenuItem
+            // 
+            saveFingeringPatternsToolStripMenuItem.Name = "saveFingeringPatternsToolStripMenuItem";
+            saveFingeringPatternsToolStripMenuItem.Size = new Size(398, 44);
+            saveFingeringPatternsToolStripMenuItem.Text = "save Fingering Patterns";
+            saveFingeringPatternsToolStripMenuItem.Click += saveFingeringPatternsToolStripMenuItem_Click;
+            // 
+            // loadFingeringPatternsToolStripMenuItem
+            // 
+            loadFingeringPatternsToolStripMenuItem.Name = "loadFingeringPatternsToolStripMenuItem";
+            loadFingeringPatternsToolStripMenuItem.Size = new Size(398, 44);
+            loadFingeringPatternsToolStripMenuItem.Text = "Load Fingering Patterns";
+            loadFingeringPatternsToolStripMenuItem.Click += loadFingeringPatternsToolStripMenuItem_Click;
             // 
             // openFileDialog1
             // 
@@ -1921,20 +2090,22 @@
             // 
             // timeSignatureNumeratorNumericUpDown
             // 
-            timeSignatureNumeratorNumericUpDown.Location = new Point(45, 122);
+            timeSignatureNumeratorNumericUpDown.Location = new Point(31, 83);
+            timeSignatureNumeratorNumericUpDown.Margin = new Padding(2);
             timeSignatureNumeratorNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             timeSignatureNumeratorNumericUpDown.Name = "timeSignatureNumeratorNumericUpDown";
-            timeSignatureNumeratorNumericUpDown.Size = new Size(100, 54);
+            timeSignatureNumeratorNumericUpDown.Size = new Size(68, 39);
             timeSignatureNumeratorNumericUpDown.TabIndex = 13;
             timeSignatureNumeratorNumericUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
             timeSignatureNumeratorNumericUpDown.ValueChanged += timeSignatureNumeratorNumericUpDown_ValueChanged;
             // 
             // timeSignatureDenominatorNumericUpDown
             // 
-            timeSignatureDenominatorNumericUpDown.Location = new Point(45, 182);
+            timeSignatureDenominatorNumericUpDown.Location = new Point(31, 124);
+            timeSignatureDenominatorNumericUpDown.Margin = new Padding(2);
             timeSignatureDenominatorNumericUpDown.Minimum = new decimal(new int[] { 2, 0, 0, 0 });
             timeSignatureDenominatorNumericUpDown.Name = "timeSignatureDenominatorNumericUpDown";
-            timeSignatureDenominatorNumericUpDown.Size = new Size(100, 54);
+            timeSignatureDenominatorNumericUpDown.Size = new Size(68, 39);
             timeSignatureDenominatorNumericUpDown.TabIndex = 14;
             timeSignatureDenominatorNumericUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
             timeSignatureDenominatorNumericUpDown.ValueChanged += timeSignatureDenominatorNumericUpDown_ValueChanged;
@@ -1942,19 +2113,21 @@
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(45, 70);
+            label4.Location = new Point(31, 48);
+            label4.Margin = new Padding(2, 0, 2, 0);
             label4.Name = "label4";
-            label4.Size = new Size(242, 47);
+            label4.Size = new Size(168, 32);
             label4.TabIndex = 15;
             label4.Text = "time signature";
             // 
             // tempoNumericUpDown
             // 
-            tempoNumericUpDown.Location = new Point(198, 171);
+            tempoNumericUpDown.Location = new Point(135, 116);
+            tempoNumericUpDown.Margin = new Padding(2);
             tempoNumericUpDown.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
             tempoNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             tempoNumericUpDown.Name = "tempoNumericUpDown";
-            tempoNumericUpDown.Size = new Size(204, 54);
+            tempoNumericUpDown.Size = new Size(140, 39);
             tempoNumericUpDown.TabIndex = 16;
             tempoNumericUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
             tempoNumericUpDown.ValueChanged += tempoNumericUpDown_ValueChanged;
@@ -1962,83 +2135,92 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(196, 123);
+            label5.Location = new Point(134, 84);
+            label5.Margin = new Padding(2, 0, 2, 0);
             label5.Name = "label5";
-            label5.Size = new Size(122, 47);
+            label5.Size = new Size(84, 32);
             label5.TabIndex = 17;
             label5.Text = "tempo";
             // 
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(84, 612);
+            label6.Location = new Point(57, 417);
+            label6.Margin = new Padding(2, 0, 2, 0);
             label6.Name = "label6";
-            label6.Size = new Size(230, 47);
+            label6.Size = new Size(160, 32);
             label6.TabIndex = 18;
             label6.Text = "MIDI Channel";
             // 
             // stringOneMidiChannelUpDown
             // 
-            stringOneMidiChannelUpDown.Location = new Point(70, 680);
+            stringOneMidiChannelUpDown.Location = new Point(48, 463);
+            stringOneMidiChannelUpDown.Margin = new Padding(2);
             stringOneMidiChannelUpDown.Name = "stringOneMidiChannelUpDown";
-            stringOneMidiChannelUpDown.Size = new Size(99, 54);
+            stringOneMidiChannelUpDown.Size = new Size(68, 39);
             stringOneMidiChannelUpDown.TabIndex = 19;
             stringOneMidiChannelUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
             stringOneMidiChannelUpDown.ValueChanged += stringOneMidiChannelUpDown_ValueChanged;
             // 
             // stringTwoMidiChannelUpDown
             // 
-            stringTwoMidiChannelUpDown.Location = new Point(70, 731);
+            stringTwoMidiChannelUpDown.Location = new Point(48, 498);
+            stringTwoMidiChannelUpDown.Margin = new Padding(2);
             stringTwoMidiChannelUpDown.Name = "stringTwoMidiChannelUpDown";
-            stringTwoMidiChannelUpDown.Size = new Size(99, 54);
+            stringTwoMidiChannelUpDown.Size = new Size(68, 39);
             stringTwoMidiChannelUpDown.TabIndex = 20;
             stringTwoMidiChannelUpDown.Value = new decimal(new int[] { 2, 0, 0, 0 });
             stringTwoMidiChannelUpDown.ValueChanged += stringTwoMidiChannelUpDown_ValueChanged;
             // 
             // stringThreeMidiChannelUpDown
             // 
-            stringThreeMidiChannelUpDown.Location = new Point(70, 790);
+            stringThreeMidiChannelUpDown.Location = new Point(48, 538);
+            stringThreeMidiChannelUpDown.Margin = new Padding(2);
             stringThreeMidiChannelUpDown.Name = "stringThreeMidiChannelUpDown";
-            stringThreeMidiChannelUpDown.Size = new Size(99, 54);
+            stringThreeMidiChannelUpDown.Size = new Size(68, 39);
             stringThreeMidiChannelUpDown.TabIndex = 21;
             stringThreeMidiChannelUpDown.Value = new decimal(new int[] { 3, 0, 0, 0 });
             stringThreeMidiChannelUpDown.ValueChanged += stringThreeMidiChannelUpDown_ValueChanged;
             // 
             // stringFourMidiChannelUpDown
             // 
-            stringFourMidiChannelUpDown.Location = new Point(70, 846);
+            stringFourMidiChannelUpDown.Location = new Point(48, 576);
+            stringFourMidiChannelUpDown.Margin = new Padding(2);
             stringFourMidiChannelUpDown.Name = "stringFourMidiChannelUpDown";
-            stringFourMidiChannelUpDown.Size = new Size(99, 54);
+            stringFourMidiChannelUpDown.Size = new Size(68, 39);
             stringFourMidiChannelUpDown.TabIndex = 22;
             stringFourMidiChannelUpDown.Value = new decimal(new int[] { 4, 0, 0, 0 });
             stringFourMidiChannelUpDown.ValueChanged += stringFourMidiChannelUpDown_ValueChanged;
             // 
             // stringFiveMidiChannelUpDown
             // 
-            stringFiveMidiChannelUpDown.Location = new Point(70, 905);
+            stringFiveMidiChannelUpDown.Location = new Point(48, 616);
+            stringFiveMidiChannelUpDown.Margin = new Padding(2);
             stringFiveMidiChannelUpDown.Name = "stringFiveMidiChannelUpDown";
-            stringFiveMidiChannelUpDown.Size = new Size(99, 54);
+            stringFiveMidiChannelUpDown.Size = new Size(68, 39);
             stringFiveMidiChannelUpDown.TabIndex = 23;
             stringFiveMidiChannelUpDown.Value = new decimal(new int[] { 5, 0, 0, 0 });
             stringFiveMidiChannelUpDown.ValueChanged += stringFiveMidiChannelUpDown_ValueChanged;
             // 
             // stringSixMidiChannelUpDown
             // 
-            stringSixMidiChannelUpDown.Location = new Point(70, 958);
+            stringSixMidiChannelUpDown.Location = new Point(48, 652);
+            stringSixMidiChannelUpDown.Margin = new Padding(2);
             stringSixMidiChannelUpDown.Name = "stringSixMidiChannelUpDown";
-            stringSixMidiChannelUpDown.Size = new Size(99, 54);
+            stringSixMidiChannelUpDown.Size = new Size(68, 39);
             stringSixMidiChannelUpDown.TabIndex = 24;
             stringSixMidiChannelUpDown.Value = new decimal(new int[] { 6, 0, 0, 0 });
             stringSixMidiChannelUpDown.ValueChanged += stringSixMidiChannelUpDown_ValueChanged;
             // 
             // velocitySlider
             // 
-            velocitySlider.Location = new Point(2236, 1155);
+            velocitySlider.Location = new Point(1530, 786);
+            velocitySlider.Margin = new Padding(2);
             velocitySlider.Maximum = 127;
             velocitySlider.Minimum = 1;
             velocitySlider.Name = "velocitySlider";
             velocitySlider.Orientation = Orientation.Vertical;
-            velocitySlider.Size = new Size(114, 691);
+            velocitySlider.Size = new Size(90, 470);
             velocitySlider.TabIndex = 25;
             velocitySlider.Value = 64;
             velocitySlider.ValueChanged += velocitySlider_ValueChanged;
@@ -2046,17 +2228,19 @@
             // label7
             // 
             label7.AutoSize = true;
-            label7.Location = new Point(2236, 1859);
+            label7.Location = new Point(1530, 1266);
+            label7.Margin = new Padding(2, 0, 2, 0);
             label7.Name = "label7";
-            label7.Size = new Size(137, 47);
+            label7.Size = new Size(96, 32);
             label7.TabIndex = 26;
             label7.Text = "velocity";
             // 
             // startPlayingButton
             // 
-            startPlayingButton.Location = new Point(409, 64);
+            startPlayingButton.Location = new Point(280, 44);
+            startPlayingButton.Margin = new Padding(2);
             startPlayingButton.Name = "startPlayingButton";
-            startPlayingButton.Size = new Size(258, 58);
+            startPlayingButton.Size = new Size(177, 39);
             startPlayingButton.TabIndex = 27;
             startPlayingButton.Text = "Start Playing";
             startPlayingButton.UseVisualStyleBackColor = true;
@@ -2064,9 +2248,10 @@
             // 
             // StopPlayingButton
             // 
-            StopPlayingButton.Location = new Point(680, 64);
+            StopPlayingButton.Location = new Point(465, 44);
+            StopPlayingButton.Margin = new Padding(2);
             StopPlayingButton.Name = "StopPlayingButton";
-            StopPlayingButton.Size = new Size(302, 58);
+            StopPlayingButton.Size = new Size(207, 39);
             StopPlayingButton.TabIndex = 28;
             StopPlayingButton.Text = "Stop Playing";
             StopPlayingButton.UseVisualStyleBackColor = true;
@@ -2076,25 +2261,28 @@
             // 
             fretPatternPanel.BackColor = SystemColors.AppWorkspace;
             fretPatternPanel.Controls.Add(labelfretpattern);
-            fretPatternPanel.Location = new Point(19, 27);
+            fretPatternPanel.Location = new Point(13, 18);
+            fretPatternPanel.Margin = new Padding(2);
             fretPatternPanel.Name = "fretPatternPanel";
-            fretPatternPanel.Size = new Size(2362, 2305);
+            fretPatternPanel.Size = new Size(2303, 2244);
             fretPatternPanel.TabIndex = 29;
             // 
             // labelfretpattern
             // 
             labelfretpattern.AutoSize = true;
-            labelfretpattern.Location = new Point(496, 26);
+            labelfretpattern.Location = new Point(339, 18);
+            labelfretpattern.Margin = new Padding(2, 0, 2, 0);
             labelfretpattern.Name = "labelfretpattern";
-            labelfretpattern.Size = new Size(215, 47);
+            labelfretpattern.Size = new Size(147, 32);
             labelfretpattern.TabIndex = 0;
             labelfretpattern.Text = "Fret Patterns";
             // 
             // FingerPatternModeButton
             // 
-            FingerPatternModeButton.Location = new Point(163, 2247);
+            FingerPatternModeButton.Location = new Point(112, 1540);
+            FingerPatternModeButton.Margin = new Padding(2);
             FingerPatternModeButton.Name = "FingerPatternModeButton";
-            FingerPatternModeButton.Size = new Size(492, 58);
+            FingerPatternModeButton.Size = new Size(263, 46);
             FingerPatternModeButton.TabIndex = 31;
             FingerPatternModeButton.Text = "Finger Pattern Mode";
             FingerPatternModeButton.UseVisualStyleBackColor = true;
@@ -2109,14 +2297,20 @@
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Controls.Add(tabPage3);
-            tabControl1.Location = new Point(34, 108);
+            tabControl1.Location = new Point(23, 74);
+            tabControl1.Margin = new Padding(2);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(2900, 2670);
+            tabControl1.Size = new Size(2372, 2348);
             tabControl1.TabIndex = 32;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(editFingeringPatternButton);
+            tabPage1.Controls.Add(clearFingeringPatternButton);
+            tabPage1.Controls.Add(label8);
+            tabPage1.Controls.Add(addFingerinPatternToCompositionButton);
+            tabPage1.Controls.Add(selectedFingeringPatternNumericUpDown);
             tabPage1.Controls.Add(FingerPatternModeButton);
             tabPage1.Controls.Add(label7);
             tabPage1.Controls.Add(StopPlayingButton);
@@ -2142,10 +2336,11 @@
             tabPage1.Controls.Add(fretboard);
             tabPage1.Controls.Add(stringOneMidiChannelUpDown);
             tabPage1.Controls.Add(label6);
-            tabPage1.Location = new Point(10, 64);
+            tabPage1.Location = new Point(8, 46);
+            tabPage1.Margin = new Padding(2);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(2880, 2596);
+            tabPage1.Padding = new Padding(2);
+            tabPage1.Size = new Size(2356, 2294);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
@@ -2153,32 +2348,139 @@
             // tabPage2
             // 
             tabPage2.Controls.Add(fretPatternPanel);
-            tabPage2.Location = new Point(10, 64);
+            tabPage2.Location = new Point(8, 46);
+            tabPage2.Margin = new Padding(2);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(2880, 2596);
+            tabPage2.Padding = new Padding(2);
+            tabPage2.Size = new Size(2356, 2294);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Fret Patterns";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
-            tabPage3.Location = new Point(10, 64);
+            tabPage3.Controls.Add(fingeringPatternpanel5);
+            tabPage3.Controls.Add(fingeringPatternpanel4);
+            tabPage3.Controls.Add(fingeringPatternPanel3);
+            tabPage3.Controls.Add(fingeringPatternPanel2);
+            tabPage3.Controls.Add(fingeringPatternPanel1);
+            tabPage3.Location = new Point(8, 46);
+            tabPage3.Margin = new Padding(2);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(2880, 2596);
+            tabPage3.Size = new Size(2356, 2294);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Fingering Patterns";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // fingeringPatternpanel5
+            // 
+            fingeringPatternpanel5.Location = new Point(32, 1826);
+            fingeringPatternpanel5.Name = "fingeringPatternpanel5";
+            fingeringPatternpanel5.Size = new Size(2284, 408);
+            fingeringPatternpanel5.TabIndex = 1;
+            fingeringPatternpanel5.Tag = "5";
+            fingeringPatternpanel5.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel4
+            // 
+            fingeringPatternpanel4.Location = new Point(32, 1362);
+            fingeringPatternpanel4.Name = "fingeringPatternpanel4";
+            fingeringPatternpanel4.Size = new Size(2284, 408);
+            fingeringPatternpanel4.TabIndex = 1;
+            fingeringPatternpanel4.Tag = "4";
+            fingeringPatternpanel4.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternPanel3
+            // 
+            fingeringPatternPanel3.Location = new Point(32, 912);
+            fingeringPatternPanel3.Name = "fingeringPatternPanel3";
+            fingeringPatternPanel3.Size = new Size(2284, 408);
+            fingeringPatternPanel3.TabIndex = 1;
+            fingeringPatternPanel3.Tag = "3";
+            fingeringPatternPanel3.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternPanel2
+            // 
+            fingeringPatternPanel2.Location = new Point(32, 468);
+            fingeringPatternPanel2.Name = "fingeringPatternPanel2";
+            fingeringPatternPanel2.Size = new Size(2284, 408);
+            fingeringPatternPanel2.TabIndex = 1;
+            fingeringPatternPanel2.Tag = "2";
+            fingeringPatternPanel2.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternPanel1
+            // 
+            fingeringPatternPanel1.Location = new Point(32, 34);
+            fingeringPatternPanel1.Name = "fingeringPatternPanel1";
+            fingeringPatternPanel1.Size = new Size(2284, 408);
+            fingeringPatternPanel1.TabIndex = 0;
+            fingeringPatternPanel1.Tag = "1";
+            fingeringPatternPanel1.Paint += fingeringPatternPanelPaint;
+            // 
+            // openFingeringPatternsFileDialog
+            // 
+            openFingeringPatternsFileDialog.FileName = "openFileDialog2";
+            // 
+            // selectedFingeringPatternNumericUpDown
+            // 
+            selectedFingeringPatternNumericUpDown.Location = new Point(392, 1547);
+            selectedFingeringPatternNumericUpDown.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            selectedFingeringPatternNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            selectedFingeringPatternNumericUpDown.Name = "selectedFingeringPatternNumericUpDown";
+            selectedFingeringPatternNumericUpDown.Size = new Size(89, 39);
+            selectedFingeringPatternNumericUpDown.TabIndex = 32;
+            selectedFingeringPatternNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            selectedFingeringPatternNumericUpDown.ValueChanged += selectedFingeringPatternNumericUpDown_ValueChanged;
+            // 
+            // addFingerinPatternToCompositionButton
+            // 
+            addFingerinPatternToCompositionButton.Location = new Point(505, 1542);
+            addFingerinPatternToCompositionButton.Name = "addFingerinPatternToCompositionButton";
+            addFingerinPatternToCompositionButton.Size = new Size(97, 46);
+            addFingerinPatternToCompositionButton.TabIndex = 33;
+            addFingerinPatternToCompositionButton.Text = "Add ";
+            addFingerinPatternToCompositionButton.UseVisualStyleBackColor = true;
+            addFingerinPatternToCompositionButton.Click += addFingerinPatternToCompositionButton_Click;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(410, 1502);
+            label8.Name = "label8";
+            label8.Size = new Size(110, 32);
+            label8.TabIndex = 34;
+            label8.Text = "Pattern #";
+            // 
+            // clearFingeringPatternButton
+            // 
+            clearFingeringPatternButton.Location = new Point(617, 1542);
+            clearFingeringPatternButton.Name = "clearFingeringPatternButton";
+            clearFingeringPatternButton.Size = new Size(114, 46);
+            clearFingeringPatternButton.TabIndex = 35;
+            clearFingeringPatternButton.Text = "Clear";
+            clearFingeringPatternButton.UseVisualStyleBackColor = true;
+            clearFingeringPatternButton.Click += clearFingeringPatternButton_Click;
+            // 
+            // editFingeringPatternButton
+            // 
+            editFingeringPatternButton.Location = new Point(740, 1547);
+            editFingeringPatternButton.Name = "editFingeringPatternButton";
+            editFingeringPatternButton.Size = new Size(150, 46);
+            editFingeringPatternButton.TabIndex = 36;
+            editFingeringPatternButton.Text = "Edit";
+            editFingeringPatternButton.UseVisualStyleBackColor = true;
+            editFingeringPatternButton.Click += editFingeringPatternButton_Click;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(19F, 47F);
+            AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            ClientSize = new Size(3762, 2779);
+            ClientSize = new Size(2574, 2444);
             Controls.Add(tabControl1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
+            Margin = new Padding(2);
             Name = "Form1";
             Tag = "40";
             Text = "Guitarap";
@@ -2208,6 +2510,8 @@
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
+            tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -2390,5 +2694,19 @@
         private TabPage tabPage1;
         private TabPage tabPage2;
         private TabPage tabPage3;
+        private Panel fingeringPatternPanel1;
+        private ToolStripMenuItem saveFingeringPatternsToolStripMenuItem;
+        private ToolStripMenuItem loadFingeringPatternsToolStripMenuItem;
+        private OpenFileDialog openFingeringPatternsFileDialog;
+        private SaveFileDialog saveFingeringPatternsFileDialog;
+        private Panel fingeringPatternpanel5;
+        private Panel fingeringPatternpanel4;
+        private Panel fingeringPatternPanel3;
+        private Panel fingeringPatternPanel2;
+        private Button addFingerinPatternToCompositionButton;
+        private NumericUpDown selectedFingeringPatternNumericUpDown;
+        private Label label8;
+        private Button clearFingeringPatternButton;
+        private Button editFingeringPatternButton;
     }
 }
