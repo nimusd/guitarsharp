@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 
@@ -18,8 +19,12 @@ namespace Guitarsharp
         public double StartTime { get; set; }
         public double EndTime { get; set; }
         public int Velocity { get; set; }
+        [JsonIgnore]
         public Rectangle DrawingRectangle { get; set; }
-
+        public int RectangleX { get; set; }
+        public int RectangleY { get; set; }
+        public int RectangleWidth { get; set; }
+        public int RectangleHeight { get; set; }
         public bool IsSelected { get; set; } = false;
         public int MidiChannel;
 
@@ -61,6 +66,8 @@ namespace Guitarsharp
         }
 
     }
+
+    [Serializable]
     public class NoteDTO
     {
         public int StartTime { get; set; }

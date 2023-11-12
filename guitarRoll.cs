@@ -5,7 +5,8 @@ namespace Guitarsharp
 {
     using NAudio.Midi;
     using NAudio.Wave;
-   
+    using System.Diagnostics;
+
     public partial class Form1 : Form
     {
         private void guitarRollPanel_Paint(object sender, PaintEventArgs e)
@@ -33,8 +34,12 @@ namespace Guitarsharp
                 e.Graphics.DrawLine(Pens.Gray, 0, i * laneHeight, guitarRollPanel.Width, i * laneHeight);
             }
 
-            // Draw each note in the composition
-            foreach (Note note in composition.Notes)
+
+            // Determine which composition to use based on the fingering pattern mode
+            var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+
+            // Draw each note in the current composition
+            foreach (Note note in currentComposition.Notes)
             {
                 int noteStartX = (int)(note.StartTime * PixelsPerSecond) + guitarRollPanel.AutoScrollPosition.X;
                 DrawNoteOnGuitarRoll(note, e.Graphics);
@@ -126,14 +131,21 @@ namespace Guitarsharp
                 float nearestBeatStartTime = (float)Math.Round(adjustedClickX / beatPixelSpacing) * beatPixelSpacing;
 
                 // Set the currentTime to the nearest beat
-                currentTime = nearestBeatStartTime / PixelsPerSecond;
+                // currentTime = nearestBeatStartTime / PixelsPerSecond;
+
+                // Set the currentTime to the exact click position instead of the nearest beat
+                currentTime = adjustedClickX / PixelsPerSecond;
 
                 guitarRollPanel.Invalidate(); // Redraw to reflect the change in "Now Time"
                 return; // Skip the rest of the method
             }
 
             // Handling clicks on notes
-            foreach (Note note in composition.Notes)
+            // Determine which composition to use based on the fingering pattern mode
+            var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+
+            // Draw each note in the current composition
+            foreach (Note note in currentComposition.Notes)
             {
                 if (note.DrawingRectangle.Contains(e.Location))
                 {
@@ -164,21 +176,24 @@ namespace Guitarsharp
         {
             guitarRollPanel.Refresh(); // Force a complete redraw
         }
-       
 
 
 
-        private int GetStringNumberFromButtonY(int yPosition)
+        private int GetStringNumberFromButton(Button button)
         {
-            if (yPosition >= 0 && yPosition < 50) return 0;   // High E string
-            if (yPosition >= 50 && yPosition < 100) return 1; // B string
-            if (yPosition >= 100 && yPosition < 150) return 2; // G string
-            if (yPosition >= 150 && yPosition < 200) return 3; // D string
-            if (yPosition >= 200 && yPosition < 250) return 4; // A string
-            if (yPosition >= 250 && yPosition < 300) return 5; // Low E string
-
-            throw new Exception("Invalid Y position for string determination.");
+            // Extract the string number from the button's name
+            string name = button.Name;
+            string stringNumberPart = name.Substring(6, name.IndexOf("fret") - 6);
+            if (int.TryParse(stringNumberPart, out int stringNumber))
+            {
+                return stringNumber;
+            }
+            else
+            {
+                throw new Exception("Invalid button name for string determination.");
+            }
         }
+
         private void DrawNoteOnGuitarRoll(Note note, Graphics g)
         {
             int laneHeight = (guitarRollPanel.Height -50)/ 7;
@@ -193,8 +208,12 @@ namespace Guitarsharp
 
             // Calculate the Y position based on the string number and adjusted for the note's height
             int noteY = (note.StringNumber * laneHeight) + (laneHeight - noteHeight);
-
+           // Debug.WriteLine(noteY.ToString());
             note.DrawingRectangle = new Rectangle(noteStartX, noteY, noteWidth, noteHeight);
+            note.RectangleX = noteStartX;
+            note.RectangleWidth = noteWidth;
+            note.RectangleY = noteY;
+            note.RectangleHeight = noteHeight;
 
             Brush noteBrush = note.IsSelected ? Brushes.Green : Brushes.Blue;
 
@@ -210,53 +229,62 @@ namespace Guitarsharp
 
 
 
-
-
         private void FretboardButton_Click(object sender, EventArgs e)
         {
-            if (sender is Button button && int.TryParse(button.Tag.ToString(), out int midiNoteNumber))
+            if (sender is Button button)
             {
-                // Determine the fret and string from the button's name or another property
-                int stringNumber = GetStringNumberFromButtonY(button.Top);
-
-                int fretWidth = 100; // Each button has a width of 100
-                int fretNumber = button.Left / fretWidth; // not +1 because fret numbers typically start from 1 and first button is open string
-                float beatDuration = CalculateBeatDuration();
-                float nearestBeatStartTime = (float)Math.Round(currentTime / beatDuration) * beatDuration;
-                float frequency = (float)MidiUtilities.GetFrequencyFromMidiNote(midiNoteNumber);
-                int MidichannelPerString = midiChannelPerString[stringNumber];
-                
-                // Create a new Note object with the nearest beat start time
-                Note newNote = new Note(stringNumber, fretNumber, currentTime, currentTime + activeNoteDuration, velocitySlider.Value, frequency, midiNoteNumber, MidichannelPerString);
-
-                // Add the note to the composition's Notes list
-                composition.Notes.Add(newNote);
-
-                // Find the corresponding GuitarString in the composition
-                GuitarString guitarString = composition.Strings.FirstOrDefault(s => s.StringNumber == stringNumber);
-                if (guitarString == null)
+                if (button.Tag is Tuple<int, int> tagData)
                 {
-                    // If the string doesn't exist, create it and add to the composition
-                    guitarString = new GuitarString { StringNumber = stringNumber };
-                    composition.Strings.Add(guitarString);
+                    int midiNoteNumber = tagData.Item1;
+                    int stringNumber = tagData.Item2;
+
+                    int fretWidth = 100; // Each button has a width of 100
+                    int fretNumber = button.Left / fretWidth; // not +1 because fret numbers typically start from 1 and first button is open string
+                    float beatDuration = CalculateBeatDuration();
+                    float nearestBeatStartTime = (float)Math.Round(currentTime / beatDuration) * beatDuration;
+                    float frequency = (float)MidiUtilities.GetFrequencyFromMidiNote(midiNoteNumber);
+                    int Midichannel = midiChannelPerString[stringNumber];
+
+
+                    // Create a new Note object with the nearest beat start time
+                    // Note newNote = new Note(stringNumber, fretNumber, nearestBeatStartTime, nearestBeatStartTime + activeNoteDuration, velocitySlider.Value, frequency, midiNoteNumber, Midichannel);
+                    Note newNote = new Note(stringNumber, fretNumber, currentTime, currentTime + activeNoteDuration, velocitySlider.Value, frequency, midiNoteNumber, Midichannel);
+
+                    // Determine which composition to add the note to based on the fingering pattern mode
+                    var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+                     Debug.WriteLine("currentComposition composition: "+ currentComposition.Title + currentComposition.Notes.Count);
+                    // Add the note to the current composition's Notes list
+                    currentComposition.Notes.Add(newNote);
+
+                    // Find the corresponding GuitarString in the current composition
+                    GuitarString guitarString = currentComposition.Strings.FirstOrDefault(s => s.StringNumber == stringNumber);
+                    if (guitarString == null)
+                    {
+                        // If the string doesn't exist, create it and add to the current composition
+                        guitarString = new GuitarString { StringNumber = stringNumber };
+                        currentComposition.Strings.Add(guitarString);
+                    }
+
+                    // Add the note to the guitar string's Notes list
+                    guitarString.Notes.Add(newNote);
+
+                    // Draw the note on the guitarRollPanel
+                    using (Graphics g = guitarRollPanel.CreateGraphics())
+                    {
+                        DrawNoteOnGuitarRoll(newNote, g);
+                    }
+
+                    // Play the note (if you want this functionality)
+                    PlayFromFretboard(midiNoteNumber);
+                    guitarRollPanel.Invalidate(true);
                 }
-
-                // Add the note to the guitar string's Notes list
-                guitarString.Notes.Add(newNote);
-
-                // Draw the note on the guitarRollPanel
-                using (Graphics g = guitarRollPanel.CreateGraphics())
+                else
                 {
-                    DrawNoteOnGuitarRoll(newNote, g);
+                    // Handle the case where the Tag is not in the expected format
+                    MessageBox.Show("Button tag data is not in the expected format.");
                 }
-
-                // Play the note (if you want this functionality)
-                PlayFromFretboard(midiNoteNumber);
-                guitarRollPanel.Invalidate(true);
             }
         }
-
-
 
 
 
@@ -270,9 +298,13 @@ namespace Guitarsharp
 
             // Increment the currentTime by the note duration
             currentTime += noteDurationInSeconds;
-           
-            foreach (Note note in composition.Notes)
-            {
+
+            // Determine which composition to use based on the fingering pattern mode
+            var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+
+            // Draw each note in the current composition
+            foreach (Note note in currentComposition.Notes)
+            { 
                 note.StartTime -= shiftAmount / PixelsPerSecond; // Convert pixels to seconds
                 note.EndTime -= shiftAmount / PixelsPerSecond;   // Convert pixels to seconds
             }
@@ -305,7 +337,11 @@ namespace Guitarsharp
         {
             Note newlySelectedNote = null; // To track the note that was clicked on
 
-            foreach (Note note in composition.Notes)
+            // Determine which composition to use based on the fingering pattern mode
+            var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+
+            // Draw each note in the current composition
+            foreach (Note note in currentComposition.Notes)
             {
                 if (note.DrawingRectangle.Contains(e.Location))
                 {
@@ -429,7 +465,9 @@ namespace Guitarsharp
 
 
         private float CalculateBeatDuration()
+
         {
+
             // If the denominator is 4 (like in 3/4 or 4/4), a beat is a quarter note.
             if (timeSignatureDenominator == 4)
             {

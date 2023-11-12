@@ -32,6 +32,8 @@ namespace Guitarsharp
             return new FingeringPattern();
         }
     }
+
+    [Serializable]
     public class FingeringPatternDTO
     {
         public List<NoteDTO> Notes { get; set; }
