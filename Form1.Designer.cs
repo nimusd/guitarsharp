@@ -89,6 +89,7 @@
             loadFretPatternsDialog = new OpenFileDialog();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            statusLabel = new Label();
             nextNoteButton = new Button();
             deleteSelectedNoteButton = new Button();
             clearCompositionButton = new Button();
@@ -131,7 +132,7 @@
             // 
             // buttonPlayMidi
             // 
-            buttonPlayMidi.Location = new Point(928, 56);
+            buttonPlayMidi.Location = new Point(1115, 76);
             buttonPlayMidi.Name = "buttonPlayMidi";
             buttonPlayMidi.Size = new Size(169, 50);
             buttonPlayMidi.TabIndex = 0;
@@ -586,7 +587,7 @@
             // 
             // startPlayingButton
             // 
-            startPlayingButton.Location = new Point(366, 56);
+            startPlayingButton.Location = new Point(368, 76);
             startPlayingButton.Name = "startPlayingButton";
             startPlayingButton.Size = new Size(231, 50);
             startPlayingButton.TabIndex = 27;
@@ -596,7 +597,7 @@
             // 
             // StopPlayingButton
             // 
-            StopPlayingButton.Location = new Point(608, 56);
+            StopPlayingButton.Location = new Point(605, 73);
             StopPlayingButton.Name = "StopPlayingButton";
             StopPlayingButton.Size = new Size(271, 50);
             StopPlayingButton.TabIndex = 28;
@@ -649,6 +650,7 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(statusLabel);
             tabPage1.Controls.Add(nextNoteButton);
             tabPage1.Controls.Add(deleteSelectedNoteButton);
             tabPage1.Controls.Add(clearCompositionButton);
@@ -690,6 +692,15 @@
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // statusLabel
+            // 
+            statusLabel.AutoSize = true;
+            statusLabel.Location = new Point(375, 18);
+            statusLabel.Name = "statusLabel";
+            statusLabel.Size = new Size(370, 41);
+            statusLabel.TabIndex = 40;
+            statusLabel.Text = "Playing Status                     ";
+            // 
             // nextNoteButton
             // 
             nextNoteButton.Location = new Point(2167, 1187);
@@ -712,7 +723,7 @@
             // 
             // clearCompositionButton
             // 
-            clearCompositionButton.Location = new Point(1123, 45);
+            clearCompositionButton.Location = new Point(1310, 65);
             clearCompositionButton.Name = "clearCompositionButton";
             clearCompositionButton.Size = new Size(390, 58);
             clearCompositionButton.TabIndex = 37;
@@ -977,5 +988,6 @@
         private Label label9;
         private Button nextNoteButton;
         private Button deleteSelectedNoteButton;
+        private Label statusLabel;
     }
 }

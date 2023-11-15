@@ -9,7 +9,7 @@ namespace Guitarsharp
 {
 
     [Serializable]
-    public class KarplusStrong
+    public class KarplusStrong : ISampleProvider
     {
         private readonly double decay = 0.998;
         private readonly List<float> delayLine;
@@ -18,6 +18,7 @@ namespace Guitarsharp
         public float frequency;
         private int envelopePosition = 0;
         public int envelopeLength;
+        public WaveFormat WaveFormat { get; } = GlobalConfig.GlobalWaveFormat;
 
         public KarplusStrong(int sampleRate, float thefrequency)
         {
@@ -35,6 +36,17 @@ namespace Guitarsharp
             }
         }
 
+        public void Stop()
+        {
+            // Quickly decay the remaining samples in the delay line to zero to stop the sound
+            for (int i = 0; i < delayLine.Count; i++)
+            {
+                delayLine[i] *= 0.1f; // Apply a strong damping factor to each sample
+            }
+
+            // Reset envelope position to prevent the sound from starting again
+            envelopePosition = envelopeLength;
+        }
         public float NextSample()
         {
             int nextPos = (pos + 1) % delayLine.Count;
@@ -102,6 +114,14 @@ namespace Guitarsharp
             return 0.998 - (0.001 * (frequency / 1000.0f));
         }
 
+        public int Read(float[] buffer, int offset, int count)
+        {
+            for (int n = 0; n < count; n++)
+            {
+                buffer[n + offset] = NextSample();
+            }
+            return count;
+        }
 
     }
 

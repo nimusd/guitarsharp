@@ -18,6 +18,7 @@ namespace Guitarsharp
     using Microsoft.VisualBasic;
     using System.Linq;
     using System.Diagnostics;
+    using NAudio.Utils;
 
     [Serializable]
     public partial class Form1 : Form
@@ -25,6 +26,7 @@ namespace Guitarsharp
         public KarplusStrong karplusStrong;
         private MidiHandler midiHandler;
         private WaveOut waveOut;
+        private WaveOut playWaveOut;
         private System.Windows.Forms.Timer midiPlaybackTimer = new System.Windows.Forms.Timer();
         private float currentTime = 0;
         private int currentEventIndex = 0;
@@ -36,9 +38,9 @@ namespace Guitarsharp
 
         private float PixelsPerSecond = 150.0f;  // zoom factor: adjust this value as needed
         private bool noNoteAddedSinceLastSpacePress;
-        Note selectedNote = null;
-        Note noteToDelete = null;
-        Point initialMousePosition;
+        public Note selectedNote = null;
+        public Note noteToDelete = null;
+        public Point initialMousePosition;
         public int version = 1;
         public float activeNoteDuration = 1f;
         bool isDraggingLeft = false;
@@ -60,9 +62,10 @@ namespace Guitarsharp
         private int initialNoteWidth = 0;
         private int numberOfBars = 100;
         private IWavePlayer waveOutDevice;
+        private IWavePlayer PlayWaveOutDevice;
         private MixingSampleProvider mixer;
 
-        private System.Windows.Forms.Timer playbackTimer = new System.Windows.Forms.Timer();
+
         private int currentNoteIndex = 0;
         private float currentPlaybackTime = 0;
 
@@ -77,7 +80,9 @@ namespace Guitarsharp
         public bool sexatupePerBeatMode = false;
         public bool septatuplePerBeatMode = false;
 
-
+        private string currentAudioFilePath;
+        private AudioFileReader audioFileReader;
+        private int filenumber = 1;
 
         public Form1()
         {
@@ -120,8 +125,8 @@ namespace Guitarsharp
             midiPlaybackTimer.Interval = 10; // Check every 10ms
             midiPlaybackTimer.Tick += MidiPlaybackTimer_Tick;
 
-            playbackTimer.Interval = 10; // Check every 10ms, adjust as needed
-            playbackTimer.Tick += PlaybackTimer_Tick;
+
+
             InitializeComposition();
 
             noNoteAddedSinceLastSpacePress = true;
@@ -245,14 +250,9 @@ namespace Guitarsharp
                 Tempo = this.tempo,
                 TimeSignatureNumerator = this.timeSignatureNumerator,
                 TimeSignatureDenominator = this.timeSignatureDenominator,
-                Strings = new List<GuitarString>()
+                //Strings = new List<GuitarString>()
             };
 
-            // Initialize GuitarString objects for a 6-string guitar
-            for (int i = 1; i <= 6; i++)
-            {
-                composition.Strings.Add(new GuitarString { StringNumber = i });
-            }
 
             // ... You can also initialize Notes here if needed ...
         }
@@ -619,7 +619,7 @@ namespace Guitarsharp
             blancheButton.BackColor = Color.LightGreen;
             rondeButton.BackColor = Color.LightGreen;
             noireButton.BackColor = Color.LightGreen;
-            crocheButton.BackColor = Color.Coral    ;
+            crocheButton.BackColor = Color.Coral;
             doubleCrocheButton.BackColor = Color.LightGreen;
             tripleCrocheButton.BackColor = Color.LightGreen;
         }
@@ -631,7 +631,7 @@ namespace Guitarsharp
             rondeButton.BackColor = Color.LightGreen;
             noireButton.BackColor = Color.LightGreen;
             crocheButton.BackColor = Color.LightGreen;
-            doubleCrocheButton.BackColor = Color.Coral                    ;
+            doubleCrocheButton.BackColor = Color.Coral;
             tripleCrocheButton.BackColor = Color.LightGreen;
         }
 
@@ -791,73 +791,191 @@ namespace Guitarsharp
         // Initialize NAudio components
         private void InitializeAudio()
         {
-            waveOutDevice = new WaveOutEvent();
+            PlayWaveOutDevice = new WaveOutEvent();
             mixer = new MixingSampleProvider(GlobalConfig.GlobalWaveFormat);
             mixer.ReadFully = true;
-            waveOutDevice.Init(mixer);
-            waveOutDevice.Play();
+            PlayWaveOutDevice.Init(mixer);
+            PlayWaveOutDevice.Play();
         }
+
 
         // Start playing
-        private void startPlayingButton_Click(object sender, EventArgs e)
+        private async void startPlayingButton_Click(object sender, EventArgs e)
         {
-
-            currentNoteIndex = 0;
-            currentPlaybackTime = 0;
-            playbackTimer.Start();
-        }
-
-
-        private void PlaybackTimer_Tick(object sender, EventArgs e)
-        {
-            // Play notes that should start at the current playback time
-            while (currentNoteIndex < composition.Notes.Count && composition.Notes[currentNoteIndex].StartTime <= currentPlaybackTime)
+            try
             {
-                Note note = composition.Notes[currentNoteIndex];
+                startPlayingButton.Enabled = false;
+                SetStatusMessage("Generating audio...");
 
-                // Find the GuitarString that corresponds to the Note's StringNumber
-                GuitarString guitarString = composition.Strings.FirstOrDefault(s => s.StringNumber == note.StringNumber);
-                if (guitarString != null)
-                {
+                // Generate the WAV file instead of a MemoryStream
+                string audioFilePath = await Task.Run(() => GenerateCompositionAudioFile(composition));
 
-                    ISampleProvider audio = guitarString.GenerateAudioForNote(note);
-                    mixer.AddMixerInput(audio);
-                }
+               // SetStatusMessage("Playing audio...");
 
-                currentNoteIndex++;
+                // Play the generated WAV file
+                PlayAudioFile(audioFilePath);
             }
-
-            // Logic to stop notes that have reached their end time
-            // This part needs to be implemented based on how you handle audio playback
-            // For example, you might need to remove the note's audio from the mixer or stop its playback
-
-            currentPlaybackTime += playbackTimer.Interval / 1000.0f; // Increment time in seconds
-
-            if (currentNoteIndex >= composition.Notes.Count)
+            catch (Exception ex)
             {
-                playbackTimer.Stop(); // Stop the timer if all notes have been played
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                startPlayingButton.Enabled = true;
+                SetStatusMessage("playing audio");
             }
         }
 
 
 
+        // Method to play the audio file
+        private void PlayAudioFile(string filePath)
+        {
+            DisposeAudioResources();
+
+            // Store the path to the current audio file
+            //currentAudioFilePath = "composition.wav";//filePath;
+
+            PlayWaveOutDevice = new WaveOutEvent();
+            var audioFileReader = new AudioFileReader(filePath);
+
+            PlayWaveOutDevice.Init(audioFileReader);
+            PlayWaveOutDevice.PlaybackStopped += OnPlaybackStopped;
+            PlayWaveOutDevice.Play();
+        }
+
+        // This method is the event handler for the PlaybackStopped event
+        private void OnPlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            // Clean up resources after playback has naturally finished
+            CleanUpAfterPlayback();
+        }
         // Stop playing
 
+        // This method is the event handler for the Stop Playing button click
         private void StopPlayingButton_Click(object sender, EventArgs e)
         {
-            playbackTimer.Stop();
-            waveOutDevice.Stop();
-            mixer.RemoveAllMixerInputs(); // Optional, to clear the mixer for the next play
+            // Stop the audio playback if it's currently playing
+            if (PlayWaveOutDevice != null && PlayWaveOutDevice.PlaybackState == PlaybackState.Playing)
+            {
+                PlayWaveOutDevice.Stop(); // This will eventually trigger the OnPlaybackStopped event
+            }
+            else
+            {
+                // If not playing, clean up right away
+                CleanUpAfterPlayback();
+            }
         }
+
+        // This method handles the cleanup
+        private void CleanUpAfterPlayback()
+        {
+            DisposeAudioResources();
+
+            SetStatusMessage("Playback stopped. " + currentAudioFilePath);
+            // absolute strangeness... but it works!!!!!
+            if(filenumber > 2)
+            File.Delete("composition" + filenumber-- + ".wav");
+           
+
+
+            // Delete the file if it exists
+            if (!string.IsNullOrEmpty(currentAudioFilePath) && File.Exists(currentAudioFilePath))
+            {
+                try
+                {
+                    File.Delete(currentAudioFilePath);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error deleting temp file: {ex.Message}");
+                }
+            }
+
+            //currentAudioFilePath = null; // Clear the file path
+        }
+
 
         // Dispose resources when done
         private void DisposeAudioResources()
         {
-            if (waveOutDevice != null)
+            if (audioFileReader != null)
             {
-                waveOutDevice.Stop();
-                waveOutDevice.Dispose();
-                waveOutDevice = null;
+                audioFileReader.Dispose();
+                audioFileReader = null;
+            }
+
+            if (PlayWaveOutDevice != null)
+            {
+                PlayWaveOutDevice.Dispose();
+                PlayWaveOutDevice = null;
+            }
+
+            // Clear the file path after disposing of the resources
+            // currentAudioFilePath = null;
+        }
+
+
+
+
+
+
+        private string GenerateCompositionAudioFile(Composition composition)
+        {
+            string filePath = "composition" + filenumber++ +".wav";//"Path.Combine(Path.GetTempPath(), "composition.wav");
+            currentAudioFilePath = filePath;
+            Debug.WriteLine(filePath);
+            // ... code to generate audioData ...
+            // Create a new instance of the Guitar class
+            Guitar guitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
+
+            // Create a list to accumulate the audio samples
+            List<float> audioData = new List<float>();
+
+            // Iterate through all the notes in the composition
+            foreach (var note in composition.Notes)
+            {
+                // Calculate the number of samples for this note's duration
+                float noteDuration = (float)(note.EndTime - note.StartTime);
+                int samplesForNote = (int)(noteDuration * GlobalConfig.GlobalWaveFormat.SampleRate);
+
+                // Pluck the string for this note, adjusting for zero-based indexing
+                guitar.PluckString(note.StringNumber, note.Velocity * .02f);  // If note.StringNumber is already zero-based
+
+                // Add silence for the time before the note starts
+                // int samplesBeforeNote = (int)(note.StartTime * GlobalConfig.GlobalWaveFormat.SampleRate);
+                // audioData.AddRange(new float[samplesBeforeNote]);
+
+                // Generate the samples for this note and add them to the audio data list
+                for (int i = 0; i < samplesForNote; i++)
+                {
+                    float sample = guitar.strings[note.StringNumber].NextSample();
+                    audioData.Add(sample);
+                }
+            }
+
+            // Write the audio data to a WAV file
+            using (var fileStream = new FileStream(currentAudioFilePath, FileMode.Create))
+            {
+                using (var writer = new WaveFileWriter(fileStream, GlobalConfig.GlobalWaveFormat))
+                {
+                    writer.WriteSamples(audioData.ToArray(), 0, audioData.Count);
+                }
+            }
+
+            return currentAudioFilePath;
+        }
+
+        // Update the UI to show a message to the user
+        private void SetStatusMessage(string message)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action<string>(SetStatusMessage), message);
+            }
+            else
+            {
+                statusLabel.Text = message;
             }
         }
 
@@ -880,36 +998,6 @@ namespace Guitarsharp
                 List<ISampleProvider> sampleProviders = new List<ISampleProvider>();
 
 
-
-
-
-                // Iterate through each string and generate audio for each note
-                foreach (GuitarString guitarString in composition.Strings)
-                {
-                    foreach (Note note in guitarString.Notes)
-                    {
-                        ISampleProvider noteSampleProvider = guitarString.GenerateAudioForNote(note);
-                        if (noteSampleProvider != null)
-                        {
-                            // Add silence before the note according to its start time
-                            ISampleProvider noteWithSilence = new SilencePrependedSampleProvider(noteSampleProvider, (float)note.StartTime, waveFormat);
-                            sampleProviders.Add(noteWithSilence);
-                        }
-                    }
-                }
-
-                // Check if there are any sample providers
-                if (sampleProviders.Count == 0)
-                {
-                    // Handle the case where there are no sample providers
-                    MessageBox.Show("No sample providers generated.");
-                    return;
-                }
-
-                // Create a MixingSampleProvider from the list of ISampleProviders
-                MixingSampleProvider mixer = new MixingSampleProvider(sampleProviders);
-                mixer.ReadFully = true; // Ensure all samples are read
-                                        // Export to .wav format
 
 
 
@@ -940,7 +1028,7 @@ namespace Guitarsharp
                 }
 
                 //MessageBox.Show("Audio export completed successfully.", "Audio Export", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                ;
+
             }
         }
 
@@ -1602,7 +1690,7 @@ namespace Guitarsharp
 
     public static class GlobalConfig
     {
-        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(44100, 1);
+        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);//cd quality stereo
 
     }
 
@@ -1663,6 +1751,64 @@ namespace Guitarsharp
             return samplesRead;
         }
     }
+
+    public class IgnoreDisposeStream : Stream
+    {
+        private Stream _underlyingStream;
+
+        public IgnoreDisposeStream(Stream underlyingStream)
+        {
+            _underlyingStream = underlyingStream ?? throw new ArgumentNullException(nameof(underlyingStream));
+        }
+
+        // Override the Dispose method to prevent disposing of the underlying stream
+        protected override void Dispose(bool disposing)
+        {
+            // Do not dispose the underlying stream
+        }
+
+        // Pass through all other methods to the underlying stream
+
+        public override void Flush()
+        {
+            _underlyingStream.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            return _underlyingStream.Read(buffer, offset, count);
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            return _underlyingStream.Seek(offset, origin);
+        }
+
+        public override void SetLength(long value)
+        {
+            _underlyingStream.SetLength(value);
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            _underlyingStream.Write(buffer, offset, count);
+        }
+
+        public override bool CanRead => _underlyingStream.CanRead;
+
+        public override bool CanSeek => _underlyingStream.CanSeek;
+
+        public override bool CanWrite => _underlyingStream.CanWrite;
+
+        public override long Length => _underlyingStream.Length;
+
+        public override long Position
+        {
+            get => _underlyingStream.Position;
+            set => _underlyingStream.Position = value;
+        }
+    }
+
 }
 
 

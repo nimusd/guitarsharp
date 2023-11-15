@@ -256,17 +256,7 @@ namespace Guitarsharp
                     // Add the note to the current composition's Notes list
                     currentComposition.Notes.Add(newNote);
 
-                    // Find the corresponding GuitarString in the current composition
-                    GuitarString guitarString = currentComposition.Strings.FirstOrDefault(s => s.StringNumber == stringNumber);
-                    if (guitarString == null)
-                    {
-                        // If the string doesn't exist, create it and add to the current composition
-                        guitarString = new GuitarString { StringNumber = stringNumber };
-                        currentComposition.Strings.Add(guitarString);
-                    }
 
-                    // Add the note to the guitar string's Notes list
-                    guitarString.Notes.Add(newNote);
 
                     // Draw the note on the guitarRollPanel
                     using (Graphics g = guitarRollPanel.CreateGraphics())
