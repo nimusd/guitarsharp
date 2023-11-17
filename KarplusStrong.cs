@@ -108,6 +108,61 @@ namespace Guitarsharp
                 excitationSample[i] = (float)(random.NextDouble() * 2.0 - 1.0);
             }
         }
+        public List<float> TransitionToFrequency(float newFrequency, int transitionSamples)
+        {
+            List<float> transitionedSamples = new List<float>();
+            int originalDelayLineLength = delayLine.Count;
+            int newDelayLineLength = (int)Math.Round(WaveFormat.SampleRate / newFrequency);
+            float delayLineChangePerSample = (newDelayLineLength - originalDelayLineLength) / (float)transitionSamples;
+
+            for (int i = 0; i < transitionSamples; i++)
+            {
+                // Calculate the new length for this sample
+                int currentDelayLineLength = originalDelayLineLength + (int)(i * delayLineChangePerSample);
+                delayLine.Resize(currentDelayLineLength);
+
+                // Generate the current sample with the current delay line length
+                float currentSample = NextSample();
+
+                // Add the current sample to the transitioned samples list
+                transitionedSamples.Add(currentSample);
+            }
+
+            // Once the transition is complete, set the delay line to the final length
+            delayLine.Resize(newDelayLineLength);
+            frequency = newFrequency;
+
+            return transitionedSamples;
+        }
+        public void UpdateFrequencySmoothly(float newFrequency)
+        {
+            // Calculate the number of samples over which to spread the frequency transition
+            int transitionLength = WaveFormat.SampleRate / 10; // for example, over a tenth of a second
+
+            // Calculate the difference in delay line length
+            int oldDelayLineLength = delayLine.Count;
+            int newDelayLineLength = (int)Math.Round(WaveFormat.SampleRate / newFrequency);
+            int delayLineDifference = newDelayLineLength - oldDelayLineLength;
+
+            // Calculate the amount to adjust the delay line length each sample
+            float delayLineAdjustmentPerSample = (float)delayLineDifference / transitionLength;
+
+            // Adjust the delay line length gradually over the transitionLength samples
+            for (int i = 0; i < transitionLength; i++)
+            {
+                // Adjust the delay line length
+                int adjustedDelayLineLength = oldDelayLineLength + (int)(i * delayLineAdjustmentPerSample);
+                delayLine.Resize(adjustedDelayLineLength);
+
+                // Generate the next sample as normal, which will incorporate the new delay line length
+                NextSample();
+            }
+
+            // After the transition, set the frequency and delay line length to their final values
+            frequency = newFrequency;
+            delayLine.Resize(newDelayLineLength);
+        }
+
 
         private double GetDecayFactor(float frequency)
         {

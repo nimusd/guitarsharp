@@ -123,6 +123,7 @@ namespace Guitarsharp
                     {
                         string noteName = GetNoteName(stringIndex, fretIndex + newBaseFret);
                         button.Text = noteName;
+                        button.Tag = new Tuple<int, int>(stringIndex, fretIndex + newBaseFret);
                     }
                 }
             }
@@ -176,7 +177,7 @@ namespace Guitarsharp
                 // Deactivate other patterns using Form1Instance
                 foreach (var pattern in form1Instance.allFretPatterns)
                 {
-                    Debug.WriteLine("deactivate");
+                   // Debug.WriteLine("deactivate");
 
                     if (pattern.ActivateButton.Tag != clickedButton.Tag)
                         pattern.Deactivate();

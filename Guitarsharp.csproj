@@ -11,6 +11,12 @@
   <ItemGroup>
     <Compile Remove="fretboard.cs" />
     <Compile Remove="FretButton.cs" />
+    <Compile Remove="GuitarString.cs" />
+    <Compile Remove="StringSynthesiser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="XguitarRoll.resx" />
   </ItemGroup>
 
   <ItemGroup>

@@ -26,6 +26,8 @@ namespace Guitarsharp
         public int RectangleWidth { get; set; }
         public int RectangleHeight { get; set; }
         public bool IsSelected { get; set; } = false;
+        public bool IsStaccato { get; set; } = false;
+
         public int MidiChannel;
 
 
@@ -35,7 +37,7 @@ namespace Guitarsharp
 
         //Ensure they have a parameterless default constructor, which is required for deserialization.  
         public Note() { } // Default constructor
-        public Note(int stringNumber, int fretNumber, float startTime, float endTime, int velocity, float frequency, int midiNoteNumber, int midiChannel)
+        public Note(int stringNumber, int fretNumber, float startTime, float endTime, bool isStaccato, int velocity, float frequency, int midiNoteNumber, int midiChannel)
         {
             StringNumber = stringNumber;
             FretNumber = fretNumber;
@@ -44,6 +46,7 @@ namespace Guitarsharp
             Velocity = velocity;
             Frequency = frequency;
             MidiChannel = midiChannel;
+            IsStaccato = isStaccato;
 
             // Calculate the frequency 
            // frequency =  (float) MidiUtilities.GetFrequencyFromMidiNote( midiNoteNumber);
@@ -82,6 +85,7 @@ namespace Guitarsharp
         public int RectangleY { get; set; }
         public int RectangleWidth { get; set; }
         public int RectangleHeight { get; set; }
+        public bool IsStaccato { get; set; }
 
         public NoteDTO() { }
 
@@ -90,15 +94,16 @@ namespace Guitarsharp
         {
             return new NoteDTO
             {
-                StartTime =(int) note.StartTime,
-                EndTime = (int) note.EndTime,
+                StartTime = (int)note.StartTime,
+                EndTime = (int)note.EndTime,
                 Velocity = note.Velocity,
                 StringNumber = note.StringNumber,
                 MidiChannelNumber = note.MidiChannel,
                 RectangleX = note.DrawingRectangle.X,
                 RectangleY = note.DrawingRectangle.Y,
                 RectangleWidth = note.DrawingRectangle.Width,
-                RectangleHeight = note.DrawingRectangle.Height
+                RectangleHeight = note.DrawingRectangle.Height,
+                IsStaccato = note.IsStaccato
             };
         }
 
@@ -109,6 +114,7 @@ namespace Guitarsharp
             {
                 StartTime = this.StartTime,
                 EndTime = this.EndTime,
+                IsStaccato = this.IsStaccato,
                 Velocity = this.Velocity,
                 StringNumber = this.StringNumber,
                 MidiChannel = this.MidiChannelNumber,

@@ -23,4 +23,3 @@ D:\c# code\Guitarsharp\obj\Debug\net7.0-windows\refint\Guitarsharp.dll
 D:\c# code\Guitarsharp\obj\Debug\net7.0-windows\Guitarsharp.pdb
 D:\c# code\Guitarsharp\obj\Debug\net7.0-windows\Guitarsharp.genruntimeconfig.cache
 D:\c# code\Guitarsharp\obj\Debug\net7.0-windows\ref\Guitarsharp.dll
-D:\c# code\Guitarsharp\obj\Debug\net7.0-windows\Guitarsharp.XguitarRoll.resources

@@ -39,6 +39,7 @@
             rondeButton = new Button();
             label3 = new Label();
             noteDuration = new Panel();
+            staccatoButton = new Button();
             label9 = new Label();
             setptatuplePerBeatButton = new Button();
             sexatuplePerBeatButton = new Button();
@@ -93,7 +94,6 @@
             nextNoteButton = new Button();
             deleteSelectedNoteButton = new Button();
             clearCompositionButton = new Button();
-            editFingeringPatternButton = new Button();
             clearFingeringPatternButton = new Button();
             label8 = new Label();
             addFingerinPatternToCompositionButton = new Button();
@@ -236,6 +236,7 @@
             // noteDuration
             // 
             noteDuration.BackColor = SystemColors.ActiveCaption;
+            noteDuration.Controls.Add(staccatoButton);
             noteDuration.Controls.Add(label9);
             noteDuration.Controls.Add(setptatuplePerBeatButton);
             noteDuration.Controls.Add(sexatuplePerBeatButton);
@@ -254,6 +255,17 @@
             noteDuration.Name = "noteDuration";
             noteDuration.Size = new Size(1542, 279);
             noteDuration.TabIndex = 11;
+            // 
+            // staccatoButton
+            // 
+            staccatoButton.BackColor = SystemColors.Control;
+            staccatoButton.Location = new Point(1151, 117);
+            staccatoButton.Name = "staccatoButton";
+            staccatoButton.Size = new Size(254, 142);
+            staccatoButton.TabIndex = 23;
+            staccatoButton.Text = "Staccato Mode";
+            staccatoButton.UseVisualStyleBackColor = false;
+            staccatoButton.Click += staccatoButton_Click;
             // 
             // label9
             // 
@@ -381,7 +393,7 @@
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new Padding(5, 1, 0, 1);
-            menuStrip1.Size = new Size(3366, 47);
+            menuStrip1.Size = new Size(4250, 47);
             menuStrip1.TabIndex = 12;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -642,10 +654,10 @@
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Controls.Add(tabPage3);
-            tabControl1.Location = new Point(30, 95);
+            tabControl1.Location = new Point(30, 50);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(3102, 3008);
+            tabControl1.Size = new Size(4182, 3053);
             tabControl1.TabIndex = 32;
             // 
             // tabPage1
@@ -654,7 +666,6 @@
             tabPage1.Controls.Add(nextNoteButton);
             tabPage1.Controls.Add(deleteSelectedNoteButton);
             tabPage1.Controls.Add(clearCompositionButton);
-            tabPage1.Controls.Add(editFingeringPatternButton);
             tabPage1.Controls.Add(clearFingeringPatternButton);
             tabPage1.Controls.Add(label8);
             tabPage1.Controls.Add(addFingerinPatternToCompositionButton);
@@ -687,7 +698,7 @@
             tabPage1.Location = new Point(10, 58);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(3082, 2940);
+            tabPage1.Size = new Size(4162, 2985);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
@@ -730,17 +741,6 @@
             clearCompositionButton.Text = "Clear the composition";
             clearCompositionButton.UseVisualStyleBackColor = true;
             clearCompositionButton.Click += clearCompositionButton_Click;
-            // 
-            // editFingeringPatternButton
-            // 
-            editFingeringPatternButton.Location = new Point(1263, 185);
-            editFingeringPatternButton.Margin = new Padding(4);
-            editFingeringPatternButton.Name = "editFingeringPatternButton";
-            editFingeringPatternButton.Size = new Size(196, 59);
-            editFingeringPatternButton.TabIndex = 36;
-            editFingeringPatternButton.Text = "Edit";
-            editFingeringPatternButton.UseVisualStyleBackColor = true;
-            editFingeringPatternButton.Click += editFingeringPatternButton_Click;
             // 
             // clearFingeringPatternButton
             // 
@@ -870,7 +870,7 @@
             AutoScaleDimensions = new SizeF(17F, 41F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            ClientSize = new Size(3366, 3131);
+            ClientSize = new Size(4250, 3131);
             Controls.Add(tabControl1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
@@ -979,7 +979,6 @@
         private NumericUpDown selectedFingeringPatternNumericUpDown;
         private Label label8;
         private Button clearFingeringPatternButton;
-        private Button editFingeringPatternButton;
         private Button clearCompositionButton;
         private Button setptatuplePerBeatButton;
         private Button sexatuplePerBeatButton;
@@ -989,5 +988,6 @@
         private Button nextNoteButton;
         private Button deleteSelectedNoteButton;
         private Label statusLabel;
+        private Button staccatoButton;
     }
 }

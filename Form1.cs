@@ -83,6 +83,7 @@ namespace Guitarsharp
         private string currentAudioFilePath;
         private AudioFileReader audioFileReader;
         private int filenumber = 1;
+        private bool staccatoMode = false;
 
         public Form1()
         {
@@ -230,6 +231,9 @@ namespace Guitarsharp
             // Check if the string index is valid
             if (stringIndex < 0 || stringIndex >= openStringMidiNotes.Length)
                 throw new ArgumentOutOfRangeException(nameof(stringIndex), "Invalid string index for MIDI note calculation.");
+
+            int midiNoteNumber = openStringMidiNotes[stringIndex] + fretIndex;
+           // Debug.WriteLine("note number form get midi note number: " +midiNoteNumber);
 
             // Calculate the MIDI note number for the given string and fret
             return openStringMidiNotes[stringIndex] + fretIndex;
@@ -802,15 +806,16 @@ namespace Guitarsharp
         // Start playing
         private async void startPlayingButton_Click(object sender, EventArgs e)
         {
+            string audioFilePath = "";
             try
             {
                 startPlayingButton.Enabled = false;
                 SetStatusMessage("Generating audio...");
 
                 // Generate the WAV file instead of a MemoryStream
-                string audioFilePath = await Task.Run(() => GenerateCompositionAudioFile(composition));
+                 audioFilePath = GenerateCompositionAudioFile(composition); // await Task.Run(() => GenerateCompositionAudioFile(composition));
 
-               // SetStatusMessage("Playing audio...");
+                SetStatusMessage("Playing the audio...");
 
                 // Play the generated WAV file
                 PlayAudioFile(audioFilePath);
@@ -822,7 +827,7 @@ namespace Guitarsharp
             finally
             {
                 startPlayingButton.Enabled = true;
-                SetStatusMessage("playing audio");
+                SetStatusMessage("playing audio: " + audioFilePath);
             }
         }
 
@@ -871,12 +876,13 @@ namespace Guitarsharp
         private void CleanUpAfterPlayback()
         {
             DisposeAudioResources();
-
+            
             SetStatusMessage("Playback stopped. " + currentAudioFilePath);
-            // absolute strangeness... but it works!!!!!
-            if(filenumber > 2)
-            File.Delete("composition" + filenumber-- + ".wav");
-           
+            // absolute strangeness... but it works!!!!! mmmm... sometimes..
+            /*
+            if (filenumber > 2)
+                File.Delete("composition" + filenumber-- + ".wav");
+
 
 
             // Delete the file if it exists
@@ -893,6 +899,7 @@ namespace Guitarsharp
             }
 
             //currentAudioFilePath = null; // Clear the file path
+            */
         }
 
 
@@ -919,52 +926,158 @@ namespace Guitarsharp
 
 
 
-
         private string GenerateCompositionAudioFile(Composition composition)
         {
-            string filePath = "composition" + filenumber++ +".wav";//"Path.Combine(Path.GetTempPath(), "composition.wav");
-            currentAudioFilePath = filePath;
-            Debug.WriteLine(filePath);
-            // ... code to generate audioData ...
-            // Create a new instance of the Guitar class
+            // Step 1: Organize notes by string
+            List<Note>[] notesPerString = new List<Note>[6];
+            for (int i = 0; i < notesPerString.Length; i++)
+            {
+                notesPerString[i] = composition.Notes.Where(n => n.StringNumber == i ).OrderBy(n => n.StartTime).ToList();
+            }
+
+            // Step 2: Generate audio for each string
+            List<float>[] audioDataPerString = new List<float>[6];
             Guitar guitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
 
-            // Create a list to accumulate the audio samples
-            List<float> audioData = new List<float>();
-
-            // Iterate through all the notes in the composition
-            foreach (var note in composition.Notes)
+            for (int i = 0; i < notesPerString.Length; i++)
             {
-                // Calculate the number of samples for this note's duration
-                float noteDuration = (float)(note.EndTime - note.StartTime);
-                int samplesForNote = (int)(noteDuration * GlobalConfig.GlobalWaveFormat.SampleRate);
-
-                // Pluck the string for this note, adjusting for zero-based indexing
-                guitar.PluckString(note.StringNumber, note.Velocity * .02f);  // If note.StringNumber is already zero-based
-
-                // Add silence for the time before the note starts
-                // int samplesBeforeNote = (int)(note.StartTime * GlobalConfig.GlobalWaveFormat.SampleRate);
-                // audioData.AddRange(new float[samplesBeforeNote]);
-
-                // Generate the samples for this note and add them to the audio data list
-                for (int i = 0; i < samplesForNote; i++)
-                {
-                    float sample = guitar.strings[note.StringNumber].NextSample();
-                    audioData.Add(sample);
-                }
+                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], guitar.strings[i]);
             }
 
-            // Write the audio data to a WAV file
-            using (var fileStream = new FileStream(currentAudioFilePath, FileMode.Create))
-            {
-                using (var writer = new WaveFileWriter(fileStream, GlobalConfig.GlobalWaveFormat))
-                {
-                    writer.WriteSamples(audioData.ToArray(), 0, audioData.Count);
-                }
-            }
+            // Step 3: Mix audio from all strings
+            List<float> mixedAudioData = MixAudioData(audioDataPerString);
 
-            return currentAudioFilePath;
+            // Step 4: Write mixed audio to file
+            string filePath = WriteAudioToFile(mixedAudioData, "composition " + filenumber++ +".wav");
+
+            // Return the file path of the generated audio file
+            return filePath;
         }
+
+        private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth)
+        {
+            List<float> stringAudio = new List<float>();
+
+
+            // If the first note starts after time zero, add silence up to the start time of the first note
+            if (notes.Any() && notes.First().StartTime > 0)
+            {
+                int silenceSamples = (int)(notes.First().StartTime * GlobalConfig.GlobalWaveFormat.SampleRate);
+                stringAudio.AddRange(new float[silenceSamples]);
+            }
+
+
+            for (int i = 0; i < notes.Count; i++)
+            {
+                Note currentNote = notes[i];
+                Note nextNote = (i < notes.Count - 1) ? notes[i + 1] : null;
+
+                // Update the frequency for the note
+                stringSynth.UpdateFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(currentNote.MidiNoteNumber));
+
+               
+                stringSynth.Pluck((float) currentNote.Velocity / 127 *.8f);
+                // Determine the duration to generate based on staccato flag or gap to next note
+                int samplesToGenerate = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
+                //int transitionSamples = samplesToGenerate / 2;
+               // samplesToGenerate -= transitionSamples;
+
+                // Generate audio for the note or silence
+                for (int j = 0; j < samplesToGenerate; j++)
+                {
+                    stringAudio.Add(stringSynth.NextSample());
+                    
+                }
+                //if ( nextNote != null)
+                //stringAudio.AddRange(stringSynth.TransitionToFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(nextNote.MidiNoteNumber), transitionSamples));
+
+
+            }
+
+            return stringAudio;
+        }
+
+        private int CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
+            {
+                // Calculate samples for the current note's duration
+                int samplesForCurrentNote = (int)((currentNote.EndTime - currentNote.StartTime) * sampleRate);
+
+                // If the note is staccato, return samples just for the note's duration
+                if (currentNote.IsStaccato)
+                {
+                    return samplesForCurrentNote;
+                }
+                else if (nextNote != null)
+                {
+                    int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
+                    return samplesForCurrentNote + samplesUntilNextNoteStarts;
+                }
+                return samplesForCurrentNote + (sampleRate*5);
+                /*
+                // For legato, if there is a next note, calculate the samples to reach the start of the next note
+                if (nextNote != null)
+                {
+                    int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
+                    // Ensure there's no gap between the notes for legato playing
+                    if (samplesUntilNextNoteStarts < 0)
+                    {
+                        samplesUntilNextNoteStarts = 0;
+                    }
+                    return samplesForCurrentNote + samplesUntilNextNoteStarts;
+                }
+
+                // If there is no next note, just return samples for the current note's duration
+                return samplesForCurrentNote;
+                */
+            }
+
+
+        private List<float> MixAudioData(List<float>[] audioDataPerString)
+            {
+                // Determine the longest audio data list
+                int maxSamples = audioDataPerString.Max(a => a.Count);
+
+                List<float> mixedAudio = new List<float>(maxSamples);
+
+                for (int i = 0; i < maxSamples; i++)
+                {
+                    float mixedSample = 0f;
+
+                    // Mix samples from each string
+                    foreach (var stringAudio in audioDataPerString)
+                    {
+                        if (i < stringAudio.Count)
+                        {
+                            mixedSample += stringAudio[i];
+                        }
+                    }
+
+                    // Normalize if necessary to prevent clipping
+                    mixedSample = NormalizeSample(mixedSample);
+
+                    mixedAudio.Add(mixedSample);
+                }
+
+                return mixedAudio;
+            }
+
+      
+
+        private string WriteAudioToFile(List<float> audioData, string fileName)
+        {
+            string filePath = fileName; // Path.Combine(Path.GetTempPath(), fileName);
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            using (var writer = new WaveFileWriter(fileStream, GlobalConfig.GlobalWaveFormat))
+            {
+                writer.WriteSamples(audioData.ToArray(), 0, audioData.Count);
+              
+            }
+            ;
+            return filePath;
+        }
+
+
+
 
         // Update the UI to show a message to the user
         private void SetStatusMessage(string message)
@@ -1576,7 +1689,7 @@ namespace Guitarsharp
             {
                 if (button.Tag is Tuple<int, int> tag)
                 {
-                    Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}");
+                    Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = "+ tag.Item2);
                 }
                 else
                 {
@@ -1588,7 +1701,7 @@ namespace Guitarsharp
             foreach (var note in activeFingeringPattern.Notes)
             {
                 // Find the corresponding button in the fret pattern based on the string number
-                Debug.WriteLine($"Looking for fret button for note on string {note.StringNumber}");
+                //Debug.WriteLine($"Looking for fret button for note on string {note.StringNumber}");
                 // Find the end time of the last note in the composition
 
 
@@ -1599,18 +1712,20 @@ namespace Guitarsharp
 
                 if (fretButton == null)
                 {
-                    Debug.WriteLine($"No active fret button found for string {note.StringNumber}");
+                  // Debug.WriteLine($"No active fret button found for string {note.StringNumber}");
                 }
                 else
                 {
 
 
-                    Debug.WriteLine("Fingering pattern note found and fret button is active");
+                  //  Debug.WriteLine("Fingering pattern note found and fret button is active");
                     // Extract the fretIndex from the button's Tag
                     int fretIndex = ((Tuple<int, int>)fretButton.Tag).Item2;
-
+                   
                     // Get the MIDI note number from the fret pattern (you'll need to implement GetMidiNoteNumber)
                     int midiNoteNumber = GetMidiNoteNumber(note.StringNumber, fretIndex);
+                    Debug.WriteLine("String number: "+ note.StringNumber + "fret number: "+fretIndex);
+
                     // Step 4: Merge the information to create a new Note object
                     Note newNote = new Note
                     {
@@ -1666,7 +1781,18 @@ namespace Guitarsharp
             guitarRollPanel.Invalidate();
         }
 
-
+        private void staccatoButton_Click(object sender, EventArgs e)
+        {
+            staccatoMode = !staccatoMode;
+            if (staccatoMode)
+            {
+                staccatoButton.BackColor = Color.Crimson;
+            }
+            else
+            {
+                staccatoButton.BackColor = SystemColors.Control;
+            }
+        }
     }
 
     public static class MidiUtilities
@@ -1752,62 +1878,6 @@ namespace Guitarsharp
         }
     }
 
-    public class IgnoreDisposeStream : Stream
-    {
-        private Stream _underlyingStream;
-
-        public IgnoreDisposeStream(Stream underlyingStream)
-        {
-            _underlyingStream = underlyingStream ?? throw new ArgumentNullException(nameof(underlyingStream));
-        }
-
-        // Override the Dispose method to prevent disposing of the underlying stream
-        protected override void Dispose(bool disposing)
-        {
-            // Do not dispose the underlying stream
-        }
-
-        // Pass through all other methods to the underlying stream
-
-        public override void Flush()
-        {
-            _underlyingStream.Flush();
-        }
-
-        public override int Read(byte[] buffer, int offset, int count)
-        {
-            return _underlyingStream.Read(buffer, offset, count);
-        }
-
-        public override long Seek(long offset, SeekOrigin origin)
-        {
-            return _underlyingStream.Seek(offset, origin);
-        }
-
-        public override void SetLength(long value)
-        {
-            _underlyingStream.SetLength(value);
-        }
-
-        public override void Write(byte[] buffer, int offset, int count)
-        {
-            _underlyingStream.Write(buffer, offset, count);
-        }
-
-        public override bool CanRead => _underlyingStream.CanRead;
-
-        public override bool CanSeek => _underlyingStream.CanSeek;
-
-        public override bool CanWrite => _underlyingStream.CanWrite;
-
-        public override long Length => _underlyingStream.Length;
-
-        public override long Position
-        {
-            get => _underlyingStream.Position;
-            set => _underlyingStream.Position = value;
-        }
-    }
 
 }
 

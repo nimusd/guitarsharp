@@ -248,11 +248,11 @@ namespace Guitarsharp
 
                     // Create a new Note object with the nearest beat start time
                     // Note newNote = new Note(stringNumber, fretNumber, nearestBeatStartTime, nearestBeatStartTime + activeNoteDuration, velocitySlider.Value, frequency, midiNoteNumber, Midichannel);
-                    Note newNote = new Note(stringNumber, fretNumber, currentTime, currentTime + activeNoteDuration, velocitySlider.Value, frequency, midiNoteNumber, Midichannel);
+                    Note newNote = new Note(stringNumber, fretNumber, currentTime, currentTime + activeNoteDuration,staccatoMode, velocitySlider.Value, frequency, midiNoteNumber, Midichannel);
 
                     // Determine which composition to add the note to based on the fingering pattern mode
                     var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
-                     Debug.WriteLine("currentComposition composition: "+ currentComposition.Title + currentComposition.Notes.Count);
+                    // Debug.WriteLine("currentComposition composition: "+ currentComposition.Title + currentComposition.Notes.Count);
                     // Add the note to the current composition's Notes list
                     currentComposition.Notes.Add(newNote);
 
