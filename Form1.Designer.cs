@@ -90,6 +90,10 @@
             loadFretPatternsDialog = new OpenFileDialog();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            label11 = new Label();
+            label10 = new Label();
+            fretPatternSelectionNumericUpDown = new NumericUpDown();
+            baseFretForFretActivePatternNumericUpDown = new NumericUpDown();
             statusLabel = new Label();
             nextNoteButton = new Button();
             deleteSelectedNoteButton = new Button();
@@ -125,6 +129,8 @@
             fretPatternPanel.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).BeginInit();
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
@@ -142,7 +148,7 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(41, 345);
+            lowPassFilterAlpha.Location = new Point(2627, 593);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
@@ -154,7 +160,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(25, 281);
+            label1.Location = new Point(2636, 527);
             label1.Name = "label1";
             label1.Size = new Size(302, 41);
             label1.TabIndex = 2;
@@ -162,7 +168,7 @@
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(707, 345);
+            EnvelopeLengthSlider.Location = new Point(2627, 866);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
@@ -174,7 +180,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(701, 281);
+            label2.Location = new Point(2642, 787);
             label2.Name = "label2";
             label2.Size = new Size(233, 41);
             label2.TabIndex = 4;
@@ -662,6 +668,10 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(label11);
+            tabPage1.Controls.Add(label10);
+            tabPage1.Controls.Add(fretPatternSelectionNumericUpDown);
+            tabPage1.Controls.Add(baseFretForFretActivePatternNumericUpDown);
             tabPage1.Controls.Add(statusLabel);
             tabPage1.Controls.Add(nextNoteButton);
             tabPage1.Controls.Add(deleteSelectedNoteButton);
@@ -702,6 +712,42 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label11
+            // 
+            label11.AutoSize = true;
+            label11.Location = new Point(415, 387);
+            label11.Name = "label11";
+            label11.Size = new Size(282, 41);
+            label11.TabIndex = 44;
+            label11.Text = "base fret for pattern";
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new Point(63, 387);
+            label10.Name = "label10";
+            label10.Size = new Size(193, 41);
+            label10.TabIndex = 43;
+            label10.Text = "fret pattern #";
+            // 
+            // fretPatternSelectionNumericUpDown
+            // 
+            fretPatternSelectionNumericUpDown.Location = new Point(63, 446);
+            fretPatternSelectionNumericUpDown.Maximum = new decimal(new int[] { 11, 0, 0, 0 });
+            fretPatternSelectionNumericUpDown.Name = "fretPatternSelectionNumericUpDown";
+            fretPatternSelectionNumericUpDown.Size = new Size(300, 47);
+            fretPatternSelectionNumericUpDown.TabIndex = 42;
+            fretPatternSelectionNumericUpDown.ValueChanged += fretPatternSelectionNumericUpDown_ValueChanged;
+            // 
+            // baseFretForFretActivePatternNumericUpDown
+            // 
+            baseFretForFretActivePatternNumericUpDown.Location = new Point(415, 446);
+            baseFretForFretActivePatternNumericUpDown.Maximum = new decimal(new int[] { 23, 0, 0, 0 });
+            baseFretForFretActivePatternNumericUpDown.Name = "baseFretForFretActivePatternNumericUpDown";
+            baseFretForFretActivePatternNumericUpDown.Size = new Size(300, 47);
+            baseFretForFretActivePatternNumericUpDown.TabIndex = 41;
+            baseFretForFretActivePatternNumericUpDown.ValueChanged += baseFretForFretActivePatternNumericUpDown_ValueChanged;
             // 
             // statusLabel
             // 
@@ -792,7 +838,7 @@
             tabPage2.Location = new Point(10, 58);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(3082, 2940);
+            tabPage2.Size = new Size(4162, 2985);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Fret Patterns";
             tabPage2.UseVisualStyleBackColor = true;
@@ -806,7 +852,7 @@
             tabPage3.Controls.Add(fingeringPatternPanel1);
             tabPage3.Location = new Point(10, 58);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(3082, 2940);
+            tabPage3.Size = new Size(4162, 2985);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Fingering Patterns";
             tabPage3.UseVisualStyleBackColor = true;
@@ -901,6 +947,8 @@
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).EndInit();
             tabPage2.ResumeLayout(false);
             tabPage3.ResumeLayout(false);
@@ -989,5 +1037,9 @@
         private Button deleteSelectedNoteButton;
         private Label statusLabel;
         private Button staccatoButton;
+        private Label label11;
+        private Label label10;
+        private NumericUpDown fretPatternSelectionNumericUpDown;
+        private NumericUpDown baseFretForFretActivePatternNumericUpDown;
     }
 }

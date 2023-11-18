@@ -19,6 +19,7 @@ namespace Guitarsharp
     using System.Linq;
     using System.Diagnostics;
     using NAudio.Utils;
+    using System.Security.Principal;
 
     [Serializable]
     public partial class Form1 : Form
@@ -223,6 +224,130 @@ namespace Guitarsharp
         }
 
 
+        private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            int midiNoteNumber;
+            int stringIndex;
+            int fretIndex;
+
+            // Assuming bisqueColor is the ARGB value for Color.Bisque
+            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
+
+            //clear the active fret pattern
+            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+             if (activeFretPattern != null ) activeFretPattern.IsActive = false;
+             //activate the new one and select it
+            allFretPatterns[(int) fretPatternSelectionNumericUpDown.Value].IsActive = true;
+            activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+
+            baseFretForFretActivePatternNumericUpDown.Value = activeFretPattern.BaseFret;
+
+            foreach ( Button button in fretboardPanel.Controls)
+            {
+                button.BackColor = SystemColors.Control;
+            }
+            //Debug the button tags and colors
+            foreach (var button in activeFretPattern.Buttons)
+            {
+
+                if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
+                {
+                    stringIndex = tag.Item1;
+                    fretIndex = tag.Item2;
+                    midiNoteNumber = GetMidiNoteNumber(stringIndex, fretIndex);
+                    FindButtonByStringAndNote(stringIndex, midiNoteNumber);
+
+                    //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
+                }
+                else
+                {
+                    // Debug.WriteLine("Button has no tag or incorrect tag format");
+                }
+            }
+
+
+        }
+
+
+
+        private Button FindButtonByStringAndNote(int stringNumber, int midiNoteNumber)
+        {
+            foreach (Button btn in fretboardPanel.Controls)
+            {
+                if (btn.Tag is Tuple<int, int> tag)
+                {
+                    int btnMidiNoteNumber = tag.Item1;
+                    int btnStringNumber = tag.Item2;
+                    if (btnMidiNoteNumber == midiNoteNumber && btnStringNumber == stringNumber)
+                    {
+                        btn.BackColor = Color.Bisque;
+                        return btn; // Button found
+                    }
+                }
+            }
+            return null; // Button not found
+        }
+
+        private void baseFretForFretActivePatternNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown baseFretUpDown = sender as NumericUpDown;
+            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+            int midiNoteNumber;
+            int stringIndex1;
+            int fretIndex1;
+            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
+
+
+            if (baseFretUpDown != null)
+            {
+                int newBaseFret = (int)baseFretUpDown.Value;
+                int fretChange = newBaseFret - activeFretPattern.BaseFret; // Calculate the change in frets
+               
+                foreach (Button button in activeFretPattern.Buttons)
+                {
+                    Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
+                    int stringIndex = tag.Item1;
+                    int fretIndex = tag.Item2 + fretChange; // Update the fret index based on the change
+
+                    // Ensure fretIndex stays within valid range
+                    fretIndex = Math.Max(0, fretIndex);
+                    fretIndex = Math.Min(fretIndex, 23); // Assuming a maximum of 24 frets
+
+                    // Update the button tag and text with the new fret index
+                    button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    button.Text = activeFretPattern.GetNoteName(stringIndex, fretIndex);
+                }
+
+                activeFretPattern.BaseFret = newBaseFret; // Update the BaseFret property to the new value
+
+
+                foreach (Button button in fretboardPanel.Controls)
+                {
+                    button.BackColor = SystemColors.Control;
+                }
+                //Debug the button tags and colors
+                foreach (var button in activeFretPattern.Buttons)
+                {
+
+                    if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
+                    {
+                        stringIndex1 = tag.Item1;
+                        fretIndex1 = tag.Item2;
+                        midiNoteNumber = GetMidiNoteNumber(stringIndex1, fretIndex1);
+                        FindButtonByStringAndNote(stringIndex1, midiNoteNumber);
+
+                        //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
+                    }
+                    else
+                    {
+                        // Debug.WriteLine("Button has no tag or incorrect tag format");
+                    }
+                }
+            }
+
+        }
+
+
         private int GetMidiNoteNumber(int stringIndex, int fretIndex)
         {
             // MIDI note numbers for open strings in standard tuning
@@ -233,7 +358,7 @@ namespace Guitarsharp
                 throw new ArgumentOutOfRangeException(nameof(stringIndex), "Invalid string index for MIDI note calculation.");
 
             int midiNoteNumber = openStringMidiNotes[stringIndex] + fretIndex;
-           // Debug.WriteLine("note number form get midi note number: " +midiNoteNumber);
+            // Debug.WriteLine("note number form get midi note number: " +midiNoteNumber);
 
             // Calculate the MIDI note number for the given string and fret
             return openStringMidiNotes[stringIndex] + fretIndex;
@@ -813,7 +938,7 @@ namespace Guitarsharp
                 SetStatusMessage("Generating audio...");
 
                 // Generate the WAV file instead of a MemoryStream
-                 audioFilePath = GenerateCompositionAudioFile(composition); // await Task.Run(() => GenerateCompositionAudioFile(composition));
+                audioFilePath = GenerateCompositionAudioFile(composition); // await Task.Run(() => GenerateCompositionAudioFile(composition));
 
                 SetStatusMessage("Playing the audio...");
 
@@ -876,7 +1001,7 @@ namespace Guitarsharp
         private void CleanUpAfterPlayback()
         {
             DisposeAudioResources();
-            
+
             SetStatusMessage("Playback stopped. " + currentAudioFilePath);
             // absolute strangeness... but it works!!!!! mmmm... sometimes..
             /*
@@ -932,7 +1057,7 @@ namespace Guitarsharp
             List<Note>[] notesPerString = new List<Note>[6];
             for (int i = 0; i < notesPerString.Length; i++)
             {
-                notesPerString[i] = composition.Notes.Where(n => n.StringNumber == i ).OrderBy(n => n.StartTime).ToList();
+                notesPerString[i] = composition.Notes.Where(n => n.StringNumber == i).OrderBy(n => n.StartTime).ToList();
             }
 
             // Step 2: Generate audio for each string
@@ -948,7 +1073,7 @@ namespace Guitarsharp
             List<float> mixedAudioData = MixAudioData(audioDataPerString);
 
             // Step 4: Write mixed audio to file
-            string filePath = WriteAudioToFile(mixedAudioData, "composition " + filenumber++ +".wav");
+            string filePath = WriteAudioToFile(mixedAudioData, "composition " + filenumber++ + ".wav");
 
             // Return the file path of the generated audio file
             return filePath;
@@ -975,18 +1100,18 @@ namespace Guitarsharp
                 // Update the frequency for the note
                 stringSynth.UpdateFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(currentNote.MidiNoteNumber));
 
-               
-                stringSynth.Pluck((float) currentNote.Velocity / 127 *.8f);
+
+                stringSynth.Pluck((float)currentNote.Velocity / 127 * .8f);
                 // Determine the duration to generate based on staccato flag or gap to next note
                 int samplesToGenerate = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
                 //int transitionSamples = samplesToGenerate / 2;
-               // samplesToGenerate -= transitionSamples;
+                // samplesToGenerate -= transitionSamples;
 
                 // Generate audio for the note or silence
                 for (int j = 0; j < samplesToGenerate; j++)
                 {
                     stringAudio.Add(stringSynth.NextSample());
-                    
+
                 }
                 //if ( nextNote != null)
                 //stringAudio.AddRange(stringSynth.TransitionToFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(nextNote.MidiNoteNumber), transitionSamples));
@@ -998,70 +1123,70 @@ namespace Guitarsharp
         }
 
         private int CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
+        {
+            // Calculate samples for the current note's duration
+            int samplesForCurrentNote = (int)((currentNote.EndTime - currentNote.StartTime) * sampleRate);
+
+            // If the note is staccato, return samples just for the note's duration
+            if (currentNote.IsStaccato)
             {
-                // Calculate samples for the current note's duration
-                int samplesForCurrentNote = (int)((currentNote.EndTime - currentNote.StartTime) * sampleRate);
-
-                // If the note is staccato, return samples just for the note's duration
-                if (currentNote.IsStaccato)
-                {
-                    return samplesForCurrentNote;
-                }
-                else if (nextNote != null)
-                {
-                    int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
-                    return samplesForCurrentNote + samplesUntilNextNoteStarts;
-                }
-                return samplesForCurrentNote + (sampleRate*5);
-                /*
-                // For legato, if there is a next note, calculate the samples to reach the start of the next note
-                if (nextNote != null)
-                {
-                    int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
-                    // Ensure there's no gap between the notes for legato playing
-                    if (samplesUntilNextNoteStarts < 0)
-                    {
-                        samplesUntilNextNoteStarts = 0;
-                    }
-                    return samplesForCurrentNote + samplesUntilNextNoteStarts;
-                }
-
-                // If there is no next note, just return samples for the current note's duration
                 return samplesForCurrentNote;
-                */
             }
+            else if (nextNote != null)
+            {
+                int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
+                return samplesForCurrentNote + samplesUntilNextNoteStarts;
+            }
+            return samplesForCurrentNote + (sampleRate * 5);
+            /*
+            // For legato, if there is a next note, calculate the samples to reach the start of the next note
+            if (nextNote != null)
+            {
+                int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
+                // Ensure there's no gap between the notes for legato playing
+                if (samplesUntilNextNoteStarts < 0)
+                {
+                    samplesUntilNextNoteStarts = 0;
+                }
+                return samplesForCurrentNote + samplesUntilNextNoteStarts;
+            }
+
+            // If there is no next note, just return samples for the current note's duration
+            return samplesForCurrentNote;
+            */
+        }
 
 
         private List<float> MixAudioData(List<float>[] audioDataPerString)
+        {
+            // Determine the longest audio data list
+            int maxSamples = audioDataPerString.Max(a => a.Count);
+
+            List<float> mixedAudio = new List<float>(maxSamples);
+
+            for (int i = 0; i < maxSamples; i++)
             {
-                // Determine the longest audio data list
-                int maxSamples = audioDataPerString.Max(a => a.Count);
+                float mixedSample = 0f;
 
-                List<float> mixedAudio = new List<float>(maxSamples);
-
-                for (int i = 0; i < maxSamples; i++)
+                // Mix samples from each string
+                foreach (var stringAudio in audioDataPerString)
                 {
-                    float mixedSample = 0f;
-
-                    // Mix samples from each string
-                    foreach (var stringAudio in audioDataPerString)
+                    if (i < stringAudio.Count)
                     {
-                        if (i < stringAudio.Count)
-                        {
-                            mixedSample += stringAudio[i];
-                        }
+                        mixedSample += stringAudio[i];
                     }
-
-                    // Normalize if necessary to prevent clipping
-                    mixedSample = NormalizeSample(mixedSample);
-
-                    mixedAudio.Add(mixedSample);
                 }
 
-                return mixedAudio;
+                // Normalize if necessary to prevent clipping
+                mixedSample = NormalizeSample(mixedSample);
+
+                mixedAudio.Add(mixedSample);
             }
 
-      
+            return mixedAudio;
+        }
+
+
 
         private string WriteAudioToFile(List<float> audioData, string fileName)
         {
@@ -1070,7 +1195,7 @@ namespace Guitarsharp
             using (var writer = new WaveFileWriter(fileStream, GlobalConfig.GlobalWaveFormat))
             {
                 writer.WriteSamples(audioData.ToArray(), 0, audioData.Count);
-              
+
             }
             ;
             return filePath;
@@ -1246,14 +1371,14 @@ namespace Guitarsharp
                 FretPattern pattern = new FretPattern($"Pattern {i + 1}", 0, this);
                 allFretPatterns.Add(pattern); // Add the pattern to the list
                 Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
-                pattern.CreateFretboard(6, 4, pattern.BaseFret, location, i);
+                pattern.CreateFretboard(6, 5, pattern.BaseFret, location, i);
 
                 // Add fret buttons, activation button, and base fret control to the panel
                 foreach (Button button in pattern.Buttons)
                 {
                     fretPatternPanel.Controls.Add(button);
                 }
-                fretPatternPanel.Controls.Add(pattern.ActivateButton);
+               
                 fretPatternPanel.Controls.Add(pattern.BaseFretControl);
             }
         }
@@ -1274,7 +1399,7 @@ namespace Guitarsharp
         private void ClearFretPatternsUI()
         {
             // Clear the UI elements that represent the fret patterns
-            // This will depend on how your UI is structured
+
             fretPatternPanel.Controls.Clear(); // Example for clearing a panel
         }
         private void saveFretPatternsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1689,7 +1814,7 @@ namespace Guitarsharp
             {
                 if (button.Tag is Tuple<int, int> tag)
                 {
-                    Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = "+ tag.Item2);
+                    Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
                 }
                 else
                 {
@@ -1712,19 +1837,19 @@ namespace Guitarsharp
 
                 if (fretButton == null)
                 {
-                  // Debug.WriteLine($"No active fret button found for string {note.StringNumber}");
+                    // Debug.WriteLine($"No active fret button found for string {note.StringNumber}");
                 }
                 else
                 {
 
 
-                  //  Debug.WriteLine("Fingering pattern note found and fret button is active");
+                    //  Debug.WriteLine("Fingering pattern note found and fret button is active");
                     // Extract the fretIndex from the button's Tag
                     int fretIndex = ((Tuple<int, int>)fretButton.Tag).Item2;
-                   
+
                     // Get the MIDI note number from the fret pattern (you'll need to implement GetMidiNoteNumber)
                     int midiNoteNumber = GetMidiNoteNumber(note.StringNumber, fretIndex);
-                    Debug.WriteLine("String number: "+ note.StringNumber + "fret number: "+fretIndex);
+                    //Debug.WriteLine("String number: "+ note.StringNumber + "fret number: "+fretIndex);
 
                     // Step 4: Merge the information to create a new Note object
                     Note newNote = new Note
@@ -1793,6 +1918,8 @@ namespace Guitarsharp
                 staccatoButton.BackColor = SystemColors.Control;
             }
         }
+
+
     }
 
     public static class MidiUtilities

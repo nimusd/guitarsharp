@@ -12,7 +12,7 @@ namespace Guitarsharp
 
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; }
-        public int BaseFret { get; set; }
+        public int BaseFret { get; set; } = 0;
         public bool IsActive { get; set; }
         private Form1 form1Instance;
         public List<Button> Buttons { get; private set; } = new List<Button>();
@@ -55,19 +55,6 @@ namespace Guitarsharp
             int buttonWidth = 50; // Width of each button
             int buttonHeight = 100; // Height of each button
 
-            // Create open string buttons
-            for (int stringIndex = 0; stringIndex < numberOfStrings; stringIndex++)
-            {
-                Button openStringButton = new Button();
-                openStringButton.Width = buttonWidth;
-                openStringButton.Height = buttonHeight;
-                openStringButton.BackColor = Color.LightBlue;
-                openStringButton.Tag = new Tuple<int, int>(stringIndex, -1); // -1 indicates open string
-                openStringButton.Location = new Point((stringIndex * buttonWidth) + location.X, location.Y - buttonHeight - 10);
-                openStringButton.Text = GetNoteName(stringIndex, 0); // Open string note
-                openStringButton.Click += FretButton_Click;
-                Buttons.Add(openStringButton);
-            }
 
             // Create fret buttons
             for (int fretIndex = 0; fretIndex < numberOfFrets; fretIndex++)
@@ -78,32 +65,18 @@ namespace Guitarsharp
                     fretButton.Width = buttonWidth;
                     fretButton.Height = buttonHeight;
                     fretButton.BackColor = Color.Beige;
-                    fretButton.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    //fretButton.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    // Invert stringIndex for the UI representation
+                    fretButton.Tag = new Tuple<int, int>(numberOfStrings - 1 - stringIndex, fretIndex);
+
                     fretButton.Location = new Point((stringIndex * buttonWidth) + location.X, (fretIndex * buttonHeight) + location.Y);
-                    fretButton.Text = GetNoteName(stringIndex, (fretIndex + baseFret) + 1);
+                    fretButton.Text = GetNoteName(stringIndex, (fretIndex + baseFret) );
                     fretButton.Click += FretButton_Click;
                     Buttons.Add(fretButton);
                 }
             }
 
-            // Create and configure the activation button
-            ActivateButton = new Button();
-            ActivateButton.Width = 300;
-            ActivateButton.Height = 50;
-            ActivateButton.BackColor = Color.Beige;
-            ActivateButton.Text = "Activate";
-            ActivateButton.Tag = patternNumber;
-            ActivateButton.Location = new Point(location.X, location.Y + (numberOfFrets * buttonHeight) + 25);
-            ActivateButton.Click += ActivateButton_Click;
 
-            // Create and configure the numeric up/down control for base fret
-            BaseFretControl = new NumericUpDown();
-            BaseFretControl.Location = new Point(location.X + 110, location.Y + (numberOfFrets * buttonHeight) + 100);
-            BaseFretControl.Width = 100;
-            BaseFretControl.Minimum = 1;
-            BaseFretControl.Maximum = 24; // Assuming a maximum of 24 frets
-            BaseFretControl.Value = baseFret > 0 ? baseFret : 1; // Ensure base fret is at least 1
-            BaseFretControl.ValueChanged += BaseFretUpDown_ValueChanged;
         }
 
         private void BaseFretUpDown_ValueChanged(object sender, EventArgs e)
@@ -112,23 +85,52 @@ namespace Guitarsharp
             if (baseFretUpDown != null)
             {
                 int newBaseFret = (int)baseFretUpDown.Value;
+                int fretChange = newBaseFret - BaseFret; // Calculate the change in frets
 
                 foreach (Button button in Buttons)
                 {
                     Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
                     int stringIndex = tag.Item1;
-                    int fretIndex = tag.Item2;
+                    int fretIndex = tag.Item2 + fretChange; // Update the fret index based on the change
 
-                    if (fretIndex != -1) // Update note names only for non-open string buttons
-                    {
-                        string noteName = GetNoteName(stringIndex, fretIndex + newBaseFret);
-                        button.Text = noteName;
-                        button.Tag = new Tuple<int, int>(stringIndex, fretIndex + newBaseFret);
-                    }
+                    // Ensure fretIndex stays within valid range
+                    fretIndex = Math.Max(0, fretIndex);
+                    fretIndex = Math.Min(fretIndex, 23); // Assuming a maximum of 24 frets
+
+                    // Update the button tag and text with the new fret index
+                    button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    button.Text = GetNoteName(stringIndex, fretIndex);
                 }
+
+                BaseFret = newBaseFret; // Update the BaseFret property to the new value
             }
         }
 
+        public void BaseFretValueChanged(int newBaseFret)
+        {
+            
+          
+               
+                int fretChange = newBaseFret - BaseFret; // Calculate the change in frets
+
+                foreach (Button button in Buttons)
+                {
+                    Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
+                    int stringIndex = tag.Item1;
+                    int fretIndex = tag.Item2 + fretChange; // Update the fret index based on the change
+
+                    // Ensure fretIndex stays within valid range
+                    fretIndex = Math.Max(0, fretIndex);
+                    fretIndex = Math.Min(fretIndex, 23); // Assuming a maximum of 24 frets
+
+                    // Update the button tag and text with the new fret index
+                    button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    button.Text = GetNoteName(stringIndex, fretIndex);
+                }
+
+                BaseFret = newBaseFret; // Update the BaseFret property to the new value
+            
+        }
 
         private void FretButton_Click(object sender, EventArgs e)
         {
@@ -145,19 +147,14 @@ namespace Guitarsharp
                     Tuple<int, int> buttonTag = (Tuple<int, int>)button.Tag;
                     if (buttonTag.Item1 == stringIndex && button != clickedButton)
                     {
-                        button.BackColor = buttonTag.Item2 == -1 ? Color.LightBlue : Color.Beige; // Reset color based on fret index
+                        button.BackColor =  Color.Beige; // Reset color
                     }
                 }
 
-                // Toggle the selection state of the clicked button
-                if (fretIndex == -1) // Open string button
-                {
-                    clickedButton.BackColor = clickedButton.BackColor == Color.LightBlue ? Color.Bisque : Color.LightBlue;
-                }
-                else // Regular fret button
-                {
+                // Toggle the selection state of the clicked button            
+                
                     clickedButton.BackColor = clickedButton.BackColor == Color.Beige ? Color.Bisque : Color.Beige;
-                }
+                
             }
         }
 
@@ -169,7 +166,7 @@ namespace Guitarsharp
 
             if (clickedButton != null)
             {
-                Debug.WriteLine(clickedButton.Text);
+               // Debug.WriteLine(clickedButton.Text);
                 clickedButton.BackColor = Color.Red;
                 clickedButton.Text = "Active";
 
@@ -197,7 +194,18 @@ namespace Guitarsharp
         {
             // Assuming standard tuning (EADGBE)
             int[] stringNotes = { 4, 9, 2, 7, 11, 4 }; // E, A, D, G, B, E
-            string[] noteNames = { "C", "#", "D", "#", "E", "F", "#", "G", "#", "A", "#", "B" };
+            string[] noteNames = {  "C" + Environment.NewLine + " ",
+                                    "C" + Environment.NewLine + "#", 
+                                    "D"+ Environment.NewLine + " ", 
+                                    "D"+ Environment.NewLine + "#", 
+                                    "E" + Environment.NewLine + " ", 
+                                    "F" + Environment.NewLine + " ", 
+                                    "F"+ Environment.NewLine + "#", 
+                                    "G" + Environment.NewLine + " ", 
+                                    "G"+ Environment.NewLine + "#", 
+                                    "A" + Environment.NewLine + " ", 
+                                    "A"+ Environment.NewLine + "#", 
+                                    "B" + Environment.NewLine + " " };
 
             int noteIndex = (stringNotes[stringIndex] + fret) % 12;
             return noteNames[noteIndex];
