@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿using MathNet.Numerics.IntegralTransforms;
+using System.Numerics;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,12 +14,15 @@ namespace Guitarsharp
     public class KarplusStrong : ISampleProvider
     {
         private readonly double decay = 0.998;
-        private readonly List<float> delayLine;
+        public readonly List<float> delayLine;
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
         private int envelopePosition = 0;
         public int envelopeLength;
+        private float previousSample = 0.0f;
+        public float alpha = 0.1f;
+        private Complex[] impulseResponseFrequency;
         public WaveFormat WaveFormat { get; } = GlobalConfig.GlobalWaveFormat;
 
         public KarplusStrong(int sampleRate, float thefrequency)
@@ -35,7 +40,12 @@ namespace Guitarsharp
                 excitationSample[i] = (float)(random.NextDouble() * 2.0 - 1.0);
             }
         }
-
+        public void SetImpulseResponse(float[] impulseResponse)
+        {
+            Complex[] impulseResponseComplex = impulseResponse.Select(x => new Complex(x, 0)).ToArray();
+            Fourier.Forward(impulseResponseComplex, FourierOptions.Matlab);
+            this.impulseResponseFrequency = impulseResponseComplex;
+        }
         public void Stop()
         {
             // Quickly decay the remaining samples in the delay line to zero to stop the sound
@@ -68,8 +78,7 @@ namespace Guitarsharp
 
             return output;
         }
-        private float previousSample = 0.0f;
-        public float alpha = 0.1f;
+
         private float lowPassFilter(float sample)
         {
             //float alpha = 0.1f; // You can adjust this value for more or less filtering

@@ -90,6 +90,8 @@
             loadFretPatternsDialog = new OpenFileDialog();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            panel2 = new Panel();
+            stringSynthroupBox = new GroupBox();
             label11 = new Label();
             label10 = new Label();
             fretPatternSelectionNumericUpDown = new NumericUpDown();
@@ -111,6 +113,8 @@
             fingeringPatternPanel1 = new Panel();
             openFingeringPatternsFileDialog = new OpenFileDialog();
             saveFingeringPatternsFileDialog = new SaveFileDialog();
+            loadGuitarBodyButton = new Button();
+            loadGuitarBodyOpenFileDialog = new OpenFileDialog();
             ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             panel1.SuspendLayout();
@@ -129,6 +133,7 @@
             fretPatternPanel.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
+            panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).BeginInit();
@@ -148,19 +153,20 @@
             // 
             // lowPassFilterAlpha
             // 
-            lowPassFilterAlpha.Location = new Point(2627, 593);
+            lowPassFilterAlpha.Location = new Point(13, 302);
             lowPassFilterAlpha.Maximum = 100;
             lowPassFilterAlpha.Minimum = 1;
             lowPassFilterAlpha.Name = "lowPassFilterAlpha";
-            lowPassFilterAlpha.Size = new Size(628, 114);
+            lowPassFilterAlpha.Size = new Size(1130, 114);
             lowPassFilterAlpha.TabIndex = 1;
             lowPassFilterAlpha.Value = 1;
+            lowPassFilterAlpha.Scroll += lowPassFilterAlpha_Scroll;
             lowPassFilterAlpha.ValueChanged += lowPassFilterAlpha_ValueChanged;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(2636, 527);
+            label1.Location = new Point(27, 247);
             label1.Name = "label1";
             label1.Size = new Size(302, 41);
             label1.TabIndex = 2;
@@ -168,11 +174,11 @@
             // 
             // EnvelopeLengthSlider
             // 
-            EnvelopeLengthSlider.Location = new Point(2627, 866);
+            EnvelopeLengthSlider.Location = new Point(27, 483);
             EnvelopeLengthSlider.Maximum = 100;
             EnvelopeLengthSlider.Minimum = 1;
             EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
-            EnvelopeLengthSlider.Size = new Size(612, 114);
+            EnvelopeLengthSlider.Size = new Size(1127, 114);
             EnvelopeLengthSlider.TabIndex = 3;
             EnvelopeLengthSlider.Value = 1;
             EnvelopeLengthSlider.ValueChanged += EnvelopeLengthSlider_ValueChanged;
@@ -180,7 +186,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(2642, 787);
+            label2.Location = new Point(29, 403);
             label2.Name = "label2";
             label2.Size = new Size(233, 41);
             label2.TabIndex = 4;
@@ -668,6 +674,7 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(panel2);
             tabPage1.Controls.Add(label11);
             tabPage1.Controls.Add(label10);
             tabPage1.Controls.Add(fretPatternSelectionNumericUpDown);
@@ -691,14 +698,10 @@
             tabPage1.Controls.Add(startPlayingButton);
             tabPage1.Controls.Add(tempoNumericUpDown);
             tabPage1.Controls.Add(label5);
-            tabPage1.Controls.Add(label1);
             tabPage1.Controls.Add(noteDuration);
             tabPage1.Controls.Add(stringSixMidiChannelUpDown);
-            tabPage1.Controls.Add(lowPassFilterAlpha);
             tabPage1.Controls.Add(stringFiveMidiChannelUpDown);
-            tabPage1.Controls.Add(EnvelopeLengthSlider);
             tabPage1.Controls.Add(stringFourMidiChannelUpDown);
-            tabPage1.Controls.Add(label2);
             tabPage1.Controls.Add(stringThreeMidiChannelUpDown);
             tabPage1.Controls.Add(panel1);
             tabPage1.Controls.Add(stringTwoMidiChannelUpDown);
@@ -712,6 +715,29 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // panel2
+            // 
+            panel2.BackColor = Color.Linen;
+            panel2.Controls.Add(loadGuitarBodyButton);
+            panel2.Controls.Add(stringSynthroupBox);
+            panel2.Controls.Add(label1);
+            panel2.Controls.Add(lowPassFilterAlpha);
+            panel2.Controls.Add(label2);
+            panel2.Controls.Add(EnvelopeLengthSlider);
+            panel2.Location = new Point(2638, 206);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(1200, 1348);
+            panel2.TabIndex = 46;
+            // 
+            // stringSynthroupBox
+            // 
+            stringSynthroupBox.Location = new Point(0, 99);
+            stringSynthroupBox.Name = "stringSynthroupBox";
+            stringSynthroupBox.Size = new Size(1182, 132);
+            stringSynthroupBox.TabIndex = 45;
+            stringSynthroupBox.TabStop = false;
+            stringSynthroupBox.Text = "Per String Synthetizer Settings (low E = 1)";
             // 
             // label11
             // 
@@ -911,6 +937,20 @@
             // 
             openFingeringPatternsFileDialog.FileName = "openFileDialog2";
             // 
+            // loadGuitarBodyButton
+            // 
+            loadGuitarBodyButton.Location = new Point(70, 592);
+            loadGuitarBodyButton.Name = "loadGuitarBodyButton";
+            loadGuitarBodyButton.Size = new Size(295, 58);
+            loadGuitarBodyButton.TabIndex = 46;
+            loadGuitarBodyButton.Text = "Load Guitar Body";
+            loadGuitarBodyButton.UseVisualStyleBackColor = true;
+            loadGuitarBodyButton.Click += loadGuitarBodyButton_Click;
+            // 
+            // loadGuitarBodyOpenFileDialog
+            // 
+            loadGuitarBodyOpenFileDialog.FileName = "*.wav";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(17F, 41F);
@@ -947,6 +987,8 @@
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).EndInit();
@@ -1041,5 +1083,9 @@
         private Label label10;
         private NumericUpDown fretPatternSelectionNumericUpDown;
         private NumericUpDown baseFretForFretActivePatternNumericUpDown;
+        private GroupBox stringSynthroupBox;
+        private Panel panel2;
+        private Button loadGuitarBodyButton;
+        private OpenFileDialog loadGuitarBodyOpenFileDialog;
     }
 }

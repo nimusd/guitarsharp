@@ -11,7 +11,7 @@ namespace Guitarsharp
 {
     public class Guitar
     {
-        public KarplusStrong[] strings;
+       public KarplusStrong[] strings;
        public MixingSampleProvider mixer;
 
         public Guitar(int sampleRate)

@@ -20,6 +20,8 @@ namespace Guitarsharp
     using System.Diagnostics;
     using NAudio.Utils;
     using System.Security.Principal;
+    using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+    using RadioButton = RadioButton;
 
     [Serializable]
     public partial class Form1 : Form
@@ -85,7 +87,8 @@ namespace Guitarsharp
         private AudioFileReader audioFileReader;
         private int filenumber = 1;
         private bool staccatoMode = false;
-
+        private int selectedStringIndex = 0;
+        private Guitar theGuitar;
         public Form1()
         {
             InitializeComponent();
@@ -176,8 +179,17 @@ namespace Guitarsharp
             InitFretBoard();
             fingerPatternComposition.Title = "fingering pattern";
 
-
-
+            for (int i = 0; i < 6; i++)
+            {
+                RadioButton radioButton = new RadioButton();
+                radioButton.Height = 50;
+                radioButton.Width = 200;
+                radioButton.Text = $"String {i + 1}";
+                radioButton.Location = new Point((i * 200), 80); // Adjust the location for each button
+                radioButton.CheckedChanged += new EventHandler(radioButton_CheckedChanged);
+                stringSynthroupBox.Controls.Add(radioButton);
+            }
+            theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
 
             Debug.WriteLine("Init completed");
 
@@ -222,6 +234,17 @@ namespace Guitarsharp
                 }
             }
         }
+        private void radioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton radioButton = sender as RadioButton;
+            if (radioButton != null && radioButton.Checked)
+            {
+                // Determine which string is selected based on the Text or Name of the radioButton
+                // Update selectedStringIndex accordingly
+                selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
+                // Now selectedStringIndex will reflect the selected string (0 for String 1, 1 for String 2, etc.)
+            }
+        }
 
 
         private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -235,14 +258,14 @@ namespace Guitarsharp
 
             //clear the active fret pattern
             var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
-             if (activeFretPattern != null ) activeFretPattern.IsActive = false;
-             //activate the new one and select it
-            allFretPatterns[(int) fretPatternSelectionNumericUpDown.Value].IsActive = true;
+            if (activeFretPattern != null) activeFretPattern.IsActive = false;
+            //activate the new one and select it
+            allFretPatterns[(int)fretPatternSelectionNumericUpDown.Value].IsActive = true;
             activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
 
             baseFretForFretActivePatternNumericUpDown.Value = activeFretPattern.BaseFret;
 
-            foreach ( Button button in fretboardPanel.Controls)
+            foreach (Button button in fretboardPanel.Controls)
             {
                 button.BackColor = SystemColors.Control;
             }
@@ -302,7 +325,7 @@ namespace Guitarsharp
             {
                 int newBaseFret = (int)baseFretUpDown.Value;
                 int fretChange = newBaseFret - activeFretPattern.BaseFret; // Calculate the change in frets
-               
+
                 foreach (Button button in activeFretPattern.Buttons)
                 {
                     Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
@@ -496,6 +519,8 @@ namespace Guitarsharp
         private void lowPassFilterAlpha_ValueChanged(object sender, EventArgs e)
         {
             karplusStrong.alpha = (float)lowPassFilterAlpha.Value / 100;
+            theGuitar.strings[selectedStringIndex].alpha = (float)lowPassFilterAlpha.Value / 100;
+
         }
 
         private void EnvelopeLengthSlider_ValueChanged(object sender, EventArgs e)
@@ -1062,11 +1087,11 @@ namespace Guitarsharp
 
             // Step 2: Generate audio for each string
             List<float>[] audioDataPerString = new List<float>[6];
-            Guitar guitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
+
 
             for (int i = 0; i < notesPerString.Length; i++)
             {
-                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], guitar.strings[i]);
+                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i]);
             }
 
             // Step 3: Mix audio from all strings
@@ -1103,15 +1128,32 @@ namespace Guitarsharp
 
                 stringSynth.Pluck((float)currentNote.Velocity / 127 * .8f);
                 // Determine the duration to generate based on staccato flag or gap to next note
-                int samplesToGenerate = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
+                var (samplesForNote, samplesForSilence) = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
                 //int transitionSamples = samplesToGenerate / 2;
                 // samplesToGenerate -= transitionSamples;
 
                 // Generate audio for the note or silence
-                for (int j = 0; j < samplesToGenerate; j++)
+                if (currentNote.IsStaccato)
                 {
-                    stringAudio.Add(stringSynth.NextSample());
+                    for (int j = 0; j < samplesForNote - stringSynth.delayLine.Count; j++)
+                    {
+                        stringAudio.Add(stringSynth.NextSample());
 
+                    }
+                    stringSynth.Stop();// Quickly decay the remaining samples in the delay line to zero to stop the sound
+                    // Add silence if necessary
+                    if (samplesForSilence > 0)
+                    {
+                        stringAudio.AddRange(new float[samplesForSilence]);
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < samplesForNote + samplesForSilence; j++)
+                    {
+                        stringAudio.Add(stringSynth.NextSample());
+
+                    }
                 }
                 //if ( nextNote != null)
                 //stringAudio.AddRange(stringSynth.TransitionToFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(nextNote.MidiNoteNumber), transitionSamples));
@@ -1122,7 +1164,7 @@ namespace Guitarsharp
             return stringAudio;
         }
 
-        private int CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
+        private (int samplesForNote, int samplesForSilence) CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
         {
             // Calculate samples for the current note's duration
             int samplesForCurrentNote = (int)((currentNote.EndTime - currentNote.StartTime) * sampleRate);
@@ -1130,14 +1172,24 @@ namespace Guitarsharp
             // If the note is staccato, return samples just for the note's duration
             if (currentNote.IsStaccato)
             {
-                return samplesForCurrentNote;
+                // For staccato, calculate the silence period until the next note starts
+                if (nextNote != null)
+                {
+                    int samplesForSilence = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
+                    return (samplesForCurrentNote, samplesForSilence);
+                }
+                else
+                {
+                    // If there is no next note, return samples just for the current note's duration
+                    return (samplesForCurrentNote, 0);
+                }
             }
             else if (nextNote != null)
             {
                 int samplesUntilNextNoteStarts = (int)((nextNote.StartTime - currentNote.EndTime) * sampleRate);
-                return samplesForCurrentNote + samplesUntilNextNoteStarts;
+                return (samplesForCurrentNote + samplesUntilNextNoteStarts, 0);
             }
-            return samplesForCurrentNote + (sampleRate * 5);
+            return (samplesForCurrentNote + (sampleRate * 10), 0);
             /*
             // For legato, if there is a next note, calculate the samples to reach the start of the next note
             if (nextNote != null)
@@ -1378,7 +1430,7 @@ namespace Guitarsharp
                 {
                     fretPatternPanel.Controls.Add(button);
                 }
-               
+
                 fretPatternPanel.Controls.Add(pattern.BaseFretControl);
             }
         }
@@ -1919,7 +1971,37 @@ namespace Guitarsharp
             }
         }
 
+        private void lowPassFilterAlpha_Scroll(object sender, EventArgs e)
+        {
 
+        }
+
+        private void loadGuitarBodyButton_Click(object sender, EventArgs e)
+        {
+            loadGuitarBodyOpenFileDialog.Filter = "Guitar Impulse Responses (*.wav)|*.wav";
+            loadGuitarBodyOpenFileDialog.DefaultExt = "wav";
+
+            if (loadGuitarBodyOpenFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = loadGuitarBodyOpenFileDialog.FileName;
+                float[] impulseResponse = LoadWaveFile(fileName);
+                // Now, you can pass this impulseResponse to your KarplusStrong class
+            }
+        }
+        private float[] LoadWaveFile(string fileName)
+        {
+            using (var reader = new NAudio.Wave.AudioFileReader(fileName))
+            {
+                var samples = new List<float>((int)reader.Length);
+                var buffer = new float[reader.WaveFormat.SampleRate]; // Buffer for one second
+                int read;
+                while ((read = reader.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    samples.AddRange(buffer.Take(read));
+                }
+                return samples.ToArray();
+            }
+        }
     }
 
     public static class MidiUtilities
