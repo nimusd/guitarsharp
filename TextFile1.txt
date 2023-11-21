@@ -6,6 +6,114 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth)
+        {
+            List<float> stringAudio = new List<float>();
+
+
+            // If the first note starts after time zero, add silence up to the start time of the first note
+            if (notes.Any() && notes.First().StartTime > 0)
+            {
+                int silenceSamples = (int)(notes.First().StartTime * GlobalConfig.GlobalWaveFormat.SampleRate);
+                stringAudio.AddRange(new float[silenceSamples]);
+            }
+
+
+            for (int i = 0; i < notes.Count; i++)
+            {
+                Note currentNote = notes[i];
+                Note nextNote = (i < notes.Count - 1) ? notes[i + 1] : null;
+
+                // Update the frequency for the note
+                stringSynth.UpdateFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(currentNote.MidiNoteNumber));
+
+
+                stringSynth.Pluck(((float)currentNote.Velocity / 127));
+                // Determine the duration to generate based on staccato flag or gap to next note
+
+
+                var (samplesForNote, samplesForSilence) = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
+
+
+
+                //int transitionSamples = samplesToGenerate / 2;
+                // samplesToGenerate -= transitionSamples;
+
+                // Generate audio for the note or silence
+                if (currentNote.IsStaccato)
+                {
+                    for (int j = 0; j < samplesForNote - stringSynth.delayLine.Count; j++)
+                    {
+                        stringAudio.Add(stringSynth.NextSample());
+
+                    }
+                    stringSynth.Stop();// Quickly decay the remaining samples in the delay line to zero to stop the sound
+                    // Add silence if necessary
+                    if (samplesForSilence > 0)
+                    {
+                        stringAudio.AddRange(new float[samplesForSilence]);
+                    }
+                }
+                else
+                {
+                    for (int j = 0; j < samplesForNote + samplesForSilence; j++)
+                    {
+                        stringAudio.Add(stringSynth.NextSample());
+
+                    }
+                }
+                //if ( nextNote != null)
+                //stringAudio.AddRange(stringSynth.TransitionToFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(nextNote.MidiNoteNumber), transitionSamples));
+
+
+            }
+
+            return stringAudio;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 using System.Diagnostics;
 
 namespace Guitarsharp
@@ -19,15 +127,18 @@ namespace Guitarsharp
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
-        
+        private int envelopePosition = 0;
+        public int envelopeLength;
         private float previousSample = 0.0f;
-        
+        public float alpha = 0.1f;
         public Complex[] impulseResponseFrequency;
         private List<float> sampleBuffer = new List<float>();
         private int bufferLength = 1024; // Example size, adjust as needed
         public float dryWetMix =.5f; // Value from 0 (fully dry) to 1 (fully wet)
         public WaveFormat WaveFormat { get; } = GlobalConfig.GlobalWaveFormat;
-       
+        private float filterState = 0.0f;
+        
+        private float attackFilterCutoff = 0.99999f; // Adjust this for desired filter strength
 
 
 
@@ -67,22 +178,61 @@ namespace Guitarsharp
             }
 
             // Reset envelope position to prevent the sound from starting again
-           
+            envelopePosition = envelopeLength;
         }
         public float NextSample()
         {
-            float output;
             int nextPos = (pos + 1) % delayLine.Count;
             double currentDecay = GetDecayFactor(frequency);
-            output= delayLine[nextPos] = (float)(currentDecay * 0.5 * (delayLine[nextPos] + delayLine[pos]));
-          
-         
+            delayLine[nextPos] = (float)(currentDecay * 0.5 * (delayLine[nextPos] + delayLine[pos]));
+            int attackPhaseLength = delayLine.Count /5;
+            float output;
+
+            // Apply the attack-phase low-pass filter only during the initial phase
+            if (envelopePosition < attackPhaseLength)
+            {
+                output = AttackPhaseLowPassFilter(delayLine[pos]);
+            }
+            else
+            {
+                output = lowPassFilter(delayLine[pos]);
+            }
+
+            // Apply the envelope
+            if (envelopePosition < envelopeLength)
+            {
+                output *= (float)Math.Sin(Math.PI * envelopePosition / envelopeLength);
+                envelopePosition++;
+            }
 
             pos = nextPos;
 
             return output;
         }
+        private float AttackPhaseLowPassFilter(float sample)
+        {
+            // Simple low-pass filter
+            float filteredSample = attackFilterCutoff * sample + (1 - attackFilterCutoff) * previousSample;
+            previousSample = filteredSample;
+            return filteredSample;
+        }
+        private float ApplyLowPassFilter(float sample, float cutoffFrequency)
+        {
+            // Simple one-pole low-pass filter
+            float rc = 1.0f / (cutoffFrequency * 2 * (float)Math.PI);
+            float dt = 1.0f / GlobalConfig.GlobalWaveFormat.SampleRate;
+            float alpha = dt / (rc + dt);
 
+            filterState = alpha * sample + (1 - alpha) * filterState;
+            return filterState;
+        }
+        private float lowPassFilter(float sample)
+        {
+            //float alpha = 0.1f; // You can adjust this value for more or less filtering
+            float filteredSample = alpha * sample + (0.1f - alpha) * previousSample;
+            previousSample = filteredSample;
+            return filteredSample;
+        }
 
         public void Pluck(float amplitude)
         {
@@ -90,7 +240,10 @@ namespace Guitarsharp
             {
                 delayLine[i] = amplitude * excitationSample[i];
             }
-           
+            envelopePosition = 0; // Reset the envelope position
+
+           // Reset filter state for new pluck
+            filterState = 0.0f;
         }
 
         public void UpdateFrequency(float newFrequency)
@@ -99,7 +252,8 @@ namespace Guitarsharp
 
             frequency = newFrequency;
             int newDelayLineLength = (int)Math.Round(format.SampleRate / frequency);
-            
+            envelopeLength = (int)(format.SampleRate / frequency); // Example calculation
+            envelopePosition = 0; // Reset the envelope position
             // Resize the delayLine and excitationSample
             delayLine.Resize(newDelayLineLength);
             excitationSample.Resize(newDelayLineLength);

@@ -29,10 +29,6 @@
         private void InitializeComponent()
         {
             buttonPlayMidi = new Button();
-            lowPassFilterAlpha = new TrackBar();
-            label1 = new Label();
-            EnvelopeLengthSlider = new TrackBar();
-            label2 = new Label();
             fretboardPanel = new Panel();
             guitarRollPanel = new Panel();
             panel1 = new Panel();
@@ -91,6 +87,9 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             panel2 = new Panel();
+            label12 = new Label();
+            dryWetImpulseTrackBar = new TrackBar();
+            loadGuitarBodyButton = new Button();
             stringSynthroupBox = new GroupBox();
             label11 = new Label();
             label10 = new Label();
@@ -113,10 +112,7 @@
             fingeringPatternPanel1 = new Panel();
             openFingeringPatternsFileDialog = new OpenFileDialog();
             saveFingeringPatternsFileDialog = new SaveFileDialog();
-            loadGuitarBodyButton = new Button();
             loadGuitarBodyOpenFileDialog = new OpenFileDialog();
-            ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).BeginInit();
             panel1.SuspendLayout();
             noteDuration.SuspendLayout();
             menuStrip1.SuspendLayout();
@@ -134,6 +130,7 @@
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dryWetImpulseTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).BeginInit();
@@ -150,47 +147,6 @@
             buttonPlayMidi.Text = "play MIDI";
             buttonPlayMidi.UseVisualStyleBackColor = true;
             buttonPlayMidi.Click += buttonPlayMidi_Click;
-            // 
-            // lowPassFilterAlpha
-            // 
-            lowPassFilterAlpha.Location = new Point(13, 302);
-            lowPassFilterAlpha.Maximum = 100;
-            lowPassFilterAlpha.Minimum = 1;
-            lowPassFilterAlpha.Name = "lowPassFilterAlpha";
-            lowPassFilterAlpha.Size = new Size(1130, 114);
-            lowPassFilterAlpha.TabIndex = 1;
-            lowPassFilterAlpha.Value = 1;
-            lowPassFilterAlpha.Scroll += lowPassFilterAlpha_Scroll;
-            lowPassFilterAlpha.ValueChanged += lowPassFilterAlpha_ValueChanged;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(27, 247);
-            label1.Name = "label1";
-            label1.Size = new Size(302, 41);
-            label1.TabIndex = 2;
-            label1.Text = "Low Pass Filter Alpha ";
-            // 
-            // EnvelopeLengthSlider
-            // 
-            EnvelopeLengthSlider.Location = new Point(27, 483);
-            EnvelopeLengthSlider.Maximum = 100;
-            EnvelopeLengthSlider.Minimum = 1;
-            EnvelopeLengthSlider.Name = "EnvelopeLengthSlider";
-            EnvelopeLengthSlider.Size = new Size(1127, 114);
-            EnvelopeLengthSlider.TabIndex = 3;
-            EnvelopeLengthSlider.Value = 1;
-            EnvelopeLengthSlider.ValueChanged += EnvelopeLengthSlider_ValueChanged;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(29, 403);
-            label2.Name = "label2";
-            label2.Size = new Size(233, 41);
-            label2.TabIndex = 4;
-            label2.Text = "envelope length";
             // 
             // fretboardPanel
             // 
@@ -719,16 +675,42 @@
             // panel2
             // 
             panel2.BackColor = Color.Linen;
+            panel2.Controls.Add(label12);
+            panel2.Controls.Add(dryWetImpulseTrackBar);
             panel2.Controls.Add(loadGuitarBodyButton);
             panel2.Controls.Add(stringSynthroupBox);
-            panel2.Controls.Add(label1);
-            panel2.Controls.Add(lowPassFilterAlpha);
-            panel2.Controls.Add(label2);
-            panel2.Controls.Add(EnvelopeLengthSlider);
             panel2.Location = new Point(2638, 206);
             panel2.Name = "panel2";
             panel2.Size = new Size(1200, 1348);
             panel2.TabIndex = 46;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(399, 263);
+            label12.Name = "label12";
+            label12.Size = new Size(241, 41);
+            label12.TabIndex = 48;
+            label12.Text = "Dry/Wet impulse";
+            // 
+            // dryWetImpulseTrackBar
+            // 
+            dryWetImpulseTrackBar.Location = new Point(399, 328);
+            dryWetImpulseTrackBar.Maximum = 100;
+            dryWetImpulseTrackBar.Name = "dryWetImpulseTrackBar";
+            dryWetImpulseTrackBar.Size = new Size(692, 114);
+            dryWetImpulseTrackBar.TabIndex = 47;
+            dryWetImpulseTrackBar.ValueChanged += dryWetImpulseTrackBar_ValueChanged;
+            // 
+            // loadGuitarBodyButton
+            // 
+            loadGuitarBodyButton.Location = new Point(25, 285);
+            loadGuitarBodyButton.Name = "loadGuitarBodyButton";
+            loadGuitarBodyButton.Size = new Size(295, 58);
+            loadGuitarBodyButton.TabIndex = 46;
+            loadGuitarBodyButton.Text = "Load Guitar Body";
+            loadGuitarBodyButton.UseVisualStyleBackColor = true;
+            loadGuitarBodyButton.Click += loadGuitarBodyButton_Click;
             // 
             // stringSynthroupBox
             // 
@@ -737,7 +719,7 @@
             stringSynthroupBox.Size = new Size(1182, 132);
             stringSynthroupBox.TabIndex = 45;
             stringSynthroupBox.TabStop = false;
-            stringSynthroupBox.Text = "Per String Synthetizer Settings (low E = 1)";
+            stringSynthroupBox.Text = "Per String Synthetizer Settings (low E = 6)";
             // 
             // label11
             // 
@@ -937,16 +919,6 @@
             // 
             openFingeringPatternsFileDialog.FileName = "openFileDialog2";
             // 
-            // loadGuitarBodyButton
-            // 
-            loadGuitarBodyButton.Location = new Point(70, 592);
-            loadGuitarBodyButton.Name = "loadGuitarBodyButton";
-            loadGuitarBodyButton.Size = new Size(295, 58);
-            loadGuitarBodyButton.TabIndex = 46;
-            loadGuitarBodyButton.Text = "Load Guitar Body";
-            loadGuitarBodyButton.UseVisualStyleBackColor = true;
-            loadGuitarBodyButton.Click += loadGuitarBodyButton_Click;
-            // 
             // loadGuitarBodyOpenFileDialog
             // 
             loadGuitarBodyOpenFileDialog.FileName = "*.wav";
@@ -965,8 +937,6 @@
             Text = "Guitarap";
             Load += Form1_Load;
             KeyDown += Form1_KeyDown;
-            ((System.ComponentModel.ISupportInitialize)lowPassFilterAlpha).EndInit();
-            ((System.ComponentModel.ISupportInitialize)EnvelopeLengthSlider).EndInit();
             panel1.ResumeLayout(false);
             noteDuration.ResumeLayout(false);
             noteDuration.PerformLayout();
@@ -989,6 +959,7 @@
             tabPage1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dryWetImpulseTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)selectedFingeringPatternNumericUpDown).EndInit();
@@ -1001,10 +972,6 @@
         #endregion
 
         private Button buttonPlayMidi;
-        private TrackBar lowPassFilterAlpha;
-        private Label label1;
-        private TrackBar EnvelopeLengthSlider;
-        private Label label2;
         private Panel fretboardPanel;
         private Panel guitarRollPanel;
         private Panel panel1;
@@ -1087,5 +1054,7 @@
         private Panel panel2;
         private Button loadGuitarBodyButton;
         private OpenFileDialog loadGuitarBodyOpenFileDialog;
+        private Label label12;
+        private TrackBar dryWetImpulseTrackBar;
     }
 }

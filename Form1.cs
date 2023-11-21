@@ -22,6 +22,17 @@ namespace Guitarsharp
     using System.Security.Principal;
     using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
     using RadioButton = RadioButton;
+    using NWaves.Signals;
+    using NWaves.Operations.Convolution;
+    using NWaves.Signals.Builders;
+    using MathNet.Numerics.IntegralTransforms;
+    
+    using System.Numerics;
+    using NWaves.Effects.Base;
+    using NWaves.Filters;
+    using NWaves.Filters.Fda;
+    using NWaves.Windows;
+    using NWaves.Filters.Bessel;
 
     [Serializable]
     public partial class Form1 : Form
@@ -191,6 +202,8 @@ namespace Guitarsharp
             }
             theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
 
+
+            loadfilesfortesting();
             Debug.WriteLine("Init completed");
 
 
@@ -199,6 +212,37 @@ namespace Guitarsharp
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+        }
+        private void loadfilesfortesting()
+        {
+            string guitarbody = "Yamaha_LL16_48000.wav";
+            string reverb = "Performance Hall - XY Close.wav";
+            float[] impulseResponse = LoadWaveFile("Yamaha_LL16_48000.wav");
+            for (int i = 0; i < 6; i++)
+            {
+
+                // Now, pass this impulseResponse to the KarplusStrong 
+                theGuitar.strings[i].SetImpulseResponse(impulseResponse);
+            }
+
+
+            string jsonString = File.ReadAllText("teset.gur");
+            Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
+
+            this.allNotes = data.AllNotes;
+            this.composition = data.Composition;
+            //this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
+            //this.PixelsPerSecond = data.PixelsPerSecond;
+            //this.midiChannelPerString = data.MidiChannelPerString;
+           // this.timeSignatureNumerator = data.timeSignatureNumerator;
+           // this.timeSignatureDenominator = data.timeSignatureNumerator;
+            //this.tempo = data.tempo;
+
+            //check the version and handle older versions accordingly(e.g., provide default values for new properties or convert data from old formats).
+            if (this.version != data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+
+            guitarRollPanel.Invalidate(); // Refresh the panel to reflect the loaded data
 
         }
         private void InitFretBoard()
@@ -239,14 +283,21 @@ namespace Guitarsharp
             RadioButton radioButton = sender as RadioButton;
             if (radioButton != null && radioButton.Checked)
             {
-                // Determine which string is selected based on the Text or Name of the radioButton
-                // Update selectedStringIndex accordingly
                 selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
-                // Now selectedStringIndex will reflect the selected string (0 for String 1, 1 for String 2, etc.)
+
+                
+                int dryWet = (int)(theGuitar.strings[selectedStringIndex].dryWetMix * 100);
+
+                // Ensure Value is within the TrackBar's range
+               
+                dryWet = Math.Max(dryWetImpulseTrackBar.Minimum, Math.Min(dryWet, dryWetImpulseTrackBar.Maximum));
+
+                
+                dryWetImpulseTrackBar.Value = dryWet;
             }
         }
 
-
+       
         private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int midiNoteNumber;
@@ -516,21 +567,8 @@ namespace Guitarsharp
 
         }
 
-        private void lowPassFilterAlpha_ValueChanged(object sender, EventArgs e)
-        {
-            karplusStrong.alpha = (float)lowPassFilterAlpha.Value / 100;
-            theGuitar.strings[selectedStringIndex].alpha = (float)lowPassFilterAlpha.Value / 100;
 
-        }
 
-        private void EnvelopeLengthSlider_ValueChanged(object sender, EventArgs e)
-        {
-            double minLog = Math.Log10(441);       // Logarithm of the minimum value
-            double maxLog = Math.Log10(220500);    // Logarithm of the maximum value
-            double scaledValue = minLog + (maxLog - minLog) * EnvelopeLengthSlider.Value / 100;  // sliderValue is between 0 and 1
-            karplusStrong.envelopeLength = (int)Math.Pow(10, scaledValue);
-
-        }
 
 
 
@@ -1078,6 +1116,8 @@ namespace Guitarsharp
 
         private string GenerateCompositionAudioFile(Composition composition)
         {
+
+
             // Step 1: Organize notes by string
             List<Note>[] notesPerString = new List<Note>[6];
             for (int i = 0; i < notesPerString.Length; i++)
@@ -1092,7 +1132,53 @@ namespace Guitarsharp
             for (int i = 0; i < notesPerString.Length; i++)
             {
                 audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i]);
+
+
+
             }
+
+            // Assuming you have your audio signal and impulse response as float arrays
+
+            for (int i = 0; i < 6; i++)
+            {
+                //  wetDryMix is a float variable representing the wet/dry mix ratio
+                float wetDryMix = theGuitar.strings[i].dryWetMix; // Set this based on user input, ranging from 0.0 (dry) to 1.0 (wet)
+               //Debug.WriteLine("wetdrymix: " + wetDryMix);
+                // Create NWaves signals
+                var audioSignal = new DiscreteSignal(GlobalConfig.GlobalWaveFormat.SampleRate, audioDataPerString[i]);
+                // Assuming impulseResponseFrequency is a Complex[] array
+                Complex[] impulse = (Complex[])theGuitar.strings[i].impulseResponseFrequency.Clone();
+
+                Complex[] frequencyDomainSignal = impulse;
+
+                // Apply inverse Fourier transform
+                Fourier.Inverse(frequencyDomainSignal, FourierOptions.Matlab);
+
+                // Extract the real part
+                float[] timeDomainSignal = frequencyDomainSignal.Select(c => (float)c.Real).ToArray();
+
+                // Create a DiscreteSignal object
+                var impulseResponse = new DiscreteSignal(GlobalConfig.GlobalWaveFormat.SampleRate, timeDomainSignal);
+
+
+                // Perform convolution
+                var convolver = new Convolver();
+                var convolvedSignal = convolver.Convolve(audioSignal, impulseResponse);
+
+                // Apply a more gradual mix curve
+                float adjustedWetDryMix = (float)Math.Pow(wetDryMix, 3); // Example of an exponential curve
+
+                for (int j = 0; j < audioDataPerString[i].Count; j++)
+                {
+                    float drySample = audioDataPerString[i][j];
+                    float wetSample = j < convolvedSignal.Samples.Length ? convolvedSignal.Samples[j] : 0f;
+                    audioDataPerString[i][j] = drySample * (1 - adjustedWetDryMix) + wetSample * adjustedWetDryMix;
+                }
+
+
+            }
+
+
 
             // Step 3: Mix audio from all strings
             List<float> mixedAudioData = MixAudioData(audioDataPerString);
@@ -1104,10 +1190,10 @@ namespace Guitarsharp
             return filePath;
         }
 
+
         private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth)
         {
             List<float> stringAudio = new List<float>();
-
 
             // If the first note starts after time zero, add silence up to the start time of the first note
             if (notes.Any() && notes.First().StartTime > 0)
@@ -1115,6 +1201,12 @@ namespace Guitarsharp
                 int silenceSamples = (int)(notes.First().StartTime * GlobalConfig.GlobalWaveFormat.SampleRate);
                 stringAudio.AddRange(new float[silenceSamples]);
             }
+
+            // Define the duration of the attack phase in samples (e.g., 0.1 seconds)
+            int attackPhaseSamples = (int)(0.5 * GlobalConfig.GlobalWaveFormat.SampleRate);
+            // Design a low-pass FIR filter for the attack phase
+            var lowPassFilter = new LowPassFilter(.01, 5);
+
 
 
             for (int i = 0; i < notes.Count; i++)
@@ -1125,44 +1217,36 @@ namespace Guitarsharp
                 // Update the frequency for the note
                 stringSynth.UpdateFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(currentNote.MidiNoteNumber));
 
+                stringSynth.Pluck(((float)currentNote.Velocity / 127));
 
-                stringSynth.Pluck((float)currentNote.Velocity / 127 * .8f);
                 // Determine the duration to generate based on staccato flag or gap to next note
                 var (samplesForNote, samplesForSilence) = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
-                //int transitionSamples = samplesToGenerate / 2;
-                // samplesToGenerate -= transitionSamples;
 
-                // Generate audio for the note or silence
-                if (currentNote.IsStaccato)
+                // Generate audio for the note
+                for (int j = 0; j < samplesForNote; j++)
                 {
-                    for (int j = 0; j < samplesForNote - stringSynth.delayLine.Count; j++)
-                    {
-                        stringAudio.Add(stringSynth.NextSample());
-
-                    }
-                    stringSynth.Stop();// Quickly decay the remaining samples in the delay line to zero to stop the sound
-                    // Add silence if necessary
-                    if (samplesForSilence > 0)
-                    {
-                        stringAudio.AddRange(new float[samplesForSilence]);
-                    }
+                    stringAudio.Add(stringSynth.NextSample());
                 }
-                else
+
+                // Apply low-pass filter to the attack phase of the note
+                int noteStartIndex = stringAudio.Count - samplesForNote;
+                //for (int j = noteStartIndex; j < Math.Min(noteStartIndex + attackPhaseSamples, stringAudio.Count); j++)
+                for (int j = 0; j < samplesForNote; j++)
                 {
-                    for (int j = 0; j < samplesForNote + samplesForSilence; j++)
-                    {
-                        stringAudio.Add(stringSynth.NextSample());
-
-                    }
+                    stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
                 }
-                //if ( nextNote != null)
-                //stringAudio.AddRange(stringSynth.TransitionToFrequency((float)MidiUtilities.GetFrequencyFromMidiNote(nextNote.MidiNoteNumber), transitionSamples));
 
-
+                // Add silence if necessary
+                if (samplesForSilence > 0)
+                {
+                    stringAudio.AddRange(new float[samplesForSilence]);
+                }
             }
 
             return stringAudio;
         }
+
+
 
         private (int samplesForNote, int samplesForSilence) CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
         {
@@ -1985,22 +2069,38 @@ namespace Guitarsharp
             {
                 string fileName = loadGuitarBodyOpenFileDialog.FileName;
                 float[] impulseResponse = LoadWaveFile(fileName);
-                // Now, you can pass this impulseResponse to your KarplusStrong class
+                // Now, pass this impulseResponse to the KarplusStrong 
+                theGuitar.strings[selectedStringIndex].SetImpulseResponse(impulseResponse);
+
             }
         }
         private float[] LoadWaveFile(string fileName)
         {
             using (var reader = new NAudio.Wave.AudioFileReader(fileName))
             {
-                var samples = new List<float>((int)reader.Length);
-                var buffer = new float[reader.WaveFormat.SampleRate]; // Buffer for one second
-                int read;
-                while ((read = reader.Read(buffer, 0, buffer.Length)) > 0)
+                // Calculate the total number of samples in the file
+                int totalSamples = (int)(reader.Length / (reader.WaveFormat.BitsPerSample / 8));
+
+                // Initialize the buffer to the total number of samples
+                var buffer = new float[totalSamples];
+
+                // Read the entire file into the buffer
+                int read = reader.Read(buffer, 0, buffer.Length);
+
+                // If the read samples are less than the buffer size, resize the array
+                if (read < totalSamples)
                 {
-                    samples.AddRange(buffer.Take(read));
+                    Array.Resize(ref buffer, read);
                 }
-                return samples.ToArray();
+
+                return buffer;
             }
+        }
+
+
+        private void dryWetImpulseTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].SetDryWetMix(dryWetImpulseTrackBar.Value);//divided by 100 in karplusstrong
         }
     }
 
