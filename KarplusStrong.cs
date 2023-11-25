@@ -19,7 +19,8 @@ namespace Guitarsharp
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
-        
+        public float lowPassCutOffValue = 0.06f;//default value
+        public float secondLowPassCutOffValue = 0.06f; //default value
         private float previousSample = 0.0f;
         
         public Complex[] impulseResponseFrequency;
@@ -57,6 +58,11 @@ namespace Guitarsharp
         {
             dryWetMix = mix/100;
            
+        }
+        public void SetlowPassCutOffValue(float sliderValue)
+        {
+           
+            lowPassCutOffValue = (float)  (0.05 + 0.45 * (sliderValue - 1) / 99.0)  ;  //cutoff must be between .05 and 0.5
         }
         public void Stop()
         {

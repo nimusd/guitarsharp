@@ -9,9 +9,13 @@ namespace Guitarsharp
 
     public partial class Form1 : Form
     {
+        private bool isDraggingVelocity = false;
+        private List<Note> previouslySelectedNotes = new List<Note>();
+        private Note selectedNoteForVelocity = null;
+        private Note currentDraggingNote = null;
         private void guitarRollPanel_Paint(object sender, PaintEventArgs e)
         {
-            int numberOfStrings = 7;
+           int numberOfStrings = 7;
             if (activeFretPattern != null && activeFretPattern.IsActive)
             {
                 // Logic to highlight the frets based on the active fret pattern
@@ -22,8 +26,11 @@ namespace Guitarsharp
                 //     // Draw or highlight the frets here
                 // }
             }
-            int laneHeight = (guitarRollPanel.Height-50) / numberOfStrings;
-            float contentWidth = 0;
+             int laneHeight = (guitarRollPanel.Height-400) / numberOfStrings;          
+                                 
+            //int velocityLaneHeight = totalHeight + infoLaneHeight; // Height of the velocity lane (8th lane)
+
+           float contentWidth = 0;
 
             // Clear the panel
             e.Graphics.Clear(guitarRollPanel.BackColor);
@@ -34,6 +41,9 @@ namespace Guitarsharp
                 e.Graphics.DrawLine(Pens.Gray, 0, i * laneHeight, guitarRollPanel.Width, i * laneHeight);
             }
 
+            // Draw the horizontal line for the info lane
+            e.Graphics.DrawLine(Pens.Gray, 0, (numberOfStrings * laneHeight) , guitarRollPanel.Width, (numberOfStrings * laneHeight) );
+
 
             // Determine which composition to use based on the fingering pattern mode
             var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
@@ -41,8 +51,14 @@ namespace Guitarsharp
             // Draw each note in the current composition
             foreach (Note note in currentComposition.Notes)
             {
+                int noteWidth = (int)((note.EndTime - note.StartTime) * PixelsPerSecond);
                 int noteStartX = (int)(note.StartTime * PixelsPerSecond) + guitarRollPanel.AutoScrollPosition.X;
                 DrawNoteOnGuitarRoll(note, e.Graphics);
+
+                // Draw velocity bar in the eighth lane
+                int velocityBarHeight = (int)(400 * (note.Velocity / 127.0)); // Scale the height based on velocity 400 is lane height
+                int velocityBarY = guitarRollPanel.Height - velocityBarHeight; // Position at the bottom of the panel
+                e.Graphics.FillRectangle(Brushes.Gold, new Rectangle(noteStartX, velocityBarY, 4, velocityBarHeight));
             }
 
             // Calculate the position of the "Now Time" line based on currentTime and scroll position
@@ -51,7 +67,7 @@ namespace Guitarsharp
             // Draw the "Now Time" line
             using (Pen thickRedPen = new Pen(Color.Red, 3))
             {
-                e.Graphics.DrawLine(thickRedPen, nowTimeX, 0, nowTimeX, guitarRollPanel.Height);
+                e.Graphics.DrawLine(thickRedPen, nowTimeX, 0, nowTimeX, guitarRollPanel.Height-400);
             }
 
 
@@ -120,7 +136,7 @@ namespace Guitarsharp
         private void guitarRollPanel_MouseClick(object sender, MouseEventArgs e)
         {
             int numberOfStrings = 7; // Including the information lane
-            int laneHeight = (guitarRollPanel.Height - 50) / numberOfStrings;
+            int laneHeight = (guitarRollPanel.Height - 400) / numberOfStrings;
             float beatPixelSpacing = CalculateBeatDuration() * PixelsPerSecond;
 
             // Check if the click is in the seventh lane
@@ -196,7 +212,8 @@ namespace Guitarsharp
 
         private void DrawNoteOnGuitarRoll(Note note, Graphics g)
         {
-            int laneHeight = (guitarRollPanel.Height -50)/ 7;
+            
+            int laneHeight = (guitarRollPanel.Height - 400) / 7;
             int noteStartX = (int)(note.StartTime * PixelsPerSecond) + guitarRollPanel.AutoScrollPosition.X;
             int noteWidth = (int)((note.EndTime - note.StartTime) * PixelsPerSecond);
 
@@ -252,7 +269,7 @@ namespace Guitarsharp
 
                     // Determine which composition to add the note to based on the fingering pattern mode
                     var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
-                    // Debug.WriteLine("currentComposition composition: "+ currentComposition.Title + currentComposition.Notes.Count);
+                    
                     // Add the note to the current composition's Notes list
                     currentComposition.Notes.Add(newNote);
 
@@ -308,10 +325,7 @@ namespace Guitarsharp
 
 
         
-        private bool isDraggingVelocity = false;
 
-        private List<Note> previouslySelectedNotes = new List<Note>();
-        private bool isProgrammaticSliderChange = false;
 
         private void velocitySlider_ValueChanged(object sender, EventArgs e)
         {
@@ -382,6 +396,14 @@ namespace Guitarsharp
                 //noteToDelete = null; // Clear the noteToDelete variable
             }
 
+            // Check if the click is in the eighth lane
+            if (e.Y > guitarRollPanel.Height - 400) // Assuming 400 is the height of the eighth lane
+            {
+               
+                isDraggingVelocity = true;
+                
+            }
+
             guitarRollPanel.Invalidate(); // Redraw to reflect the selection/deselection and color change
         }
 
@@ -394,12 +416,12 @@ namespace Guitarsharp
 
                 if (isDraggingRight)
                 {
-                    float newEndTime = (e.X - guitarRollPanel.AutoScrollPosition.X) / PixelsPerSecond;
+                    float newEndTime = e.X / PixelsPerSecond;
                     selectedNote.EndTime = newEndTime;
                 }
                 else if (isDraggingLeft)
                 {
-                    float newStartTime = (e.X - guitarRollPanel.AutoScrollPosition.X) / PixelsPerSecond;
+                    float newStartTime = e.X / PixelsPerSecond;
                     selectedNote.StartTime = newStartTime;
                 }
                 else if (initialMousePosition != Point.Empty)
@@ -424,7 +446,42 @@ namespace Guitarsharp
                 // Invalidate only the area that needs to be redrawn
                 guitarRollPanel.Invalidate(updateArea);
             }
+
+            if (isDraggingVelocity)
+            {
+                selectedNoteForVelocity = FindNoteAtPosition(e.X);
+               
+                if (selectedNoteForVelocity != null)
+                {
+                   // Debug.WriteLine("Note selected for velocity: " + selectedNoteForVelocity.MidiNoteNumber);
+                    int newVelocity = CalculateVelocityFromPosition(e.Y);
+                    int noteStartX = (int)(selectedNoteForVelocity.StartTime * PixelsPerSecond);
+                    selectedNoteForVelocity.Velocity = newVelocity;
+                    // Redraw only the velocity bar of the current dragging note
+
+                    RedrawVelocityBar(selectedNoteForVelocity, e.X,e.Y);
+                }
+            }
         }
+        private void RedrawVelocityBar(Note note, int x, int y)
+        {
+            if (note == null) return;
+            // Adjust the x-coordinate for the horizontal scroll offset
+            int noteStartX = x;
+            int adjustedX = noteStartX + guitarRollPanel.AutoScrollOffset.X;
+
+            using (Graphics g = guitarRollPanel.CreateGraphics())
+            {
+                
+                int velocityBarHeight = (int)(400 * (note.Velocity / 127.0)); // Scale the height based on velocity
+                int velocityBarY = guitarRollPanel.Height - velocityBarHeight; // Position at the bottom of the panel
+                // Clear the previous velocity bar
+                g.FillRectangle(new SolidBrush(guitarRollPanel.BackColor), new Rectangle(adjustedX, guitarRollPanel.Height - 400, 4, 400));
+                // Draw the new velocity bar
+                g.FillRectangle(Brushes.Gold, new Rectangle(adjustedX, velocityBarY, 4, velocityBarHeight));
+            }
+        }
+
 
 
         private void guitarRollPanel_MouseUp(object sender, MouseEventArgs e)
@@ -446,10 +503,64 @@ namespace Guitarsharp
                 isDraggingLeft = false;
                 isDraggingRight = false;
                 initialMousePosition = Point.Empty;
-
                 
+                
+
             }
+            isDraggingVelocity = false;
+            selectedNoteForVelocity = null;
+           // Debug.WriteLine("mouse up");
         }
+
+        private int CalculateVelocityFromPosition(int y)
+        {
+            int velocityLaneHeight = 400; // Height of the velocity lane
+            int relativeY = guitarRollPanel.Height - y; // Y position relative to the bottom of the panel
+           //Debug.WriteLine("velocity from position" + ((int)((relativeY / (float)velocityLaneHeight) * 127)));
+            return (int)((relativeY / (float)velocityLaneHeight) * 127); // Scale to MIDI velocity range
+        }
+        private Note FindNoteAtPosition(int x)
+        {
+            // Adjust the x-coordinate for the horizontal scroll offset
+            int adjustedX = x + guitarRollPanel.AutoScrollOffset.X;
+            Console.WriteLine("Adjusted Mouse X: " + adjustedX); // Debugging: Print adjusted mouse x-coordinate
+            if(fingeringPatternMode)
+            {
+                foreach (Note note in fingerPatternComposition.Notes)
+                {
+                    int stripStartX = note.DrawingRectangle.X;
+                    int stripEndX = stripStartX + 4; // 4 pixels wide for the velocity strip
+
+                    Console.WriteLine($"Note Strip X Range: {stripStartX} to {stripEndX}"); // Debugging
+
+                    if (adjustedX >= stripStartX && adjustedX <= stripEndX)
+                    {
+                        return note;
+                    }
+                }
+            }
+            else
+            {
+                foreach (Note note in composition.Notes)
+                {
+                    int stripStartX = note.DrawingRectangle.X;
+                    int stripEndX = stripStartX + 4; // 4 pixels wide for the velocity strip
+
+                    Console.WriteLine($"Note Strip X Range: {stripStartX} to {stripEndX}"); // Debugging
+
+                    if (adjustedX >= stripStartX && adjustedX <= stripEndX)
+                    {
+                        return note;
+                    }
+                }
+            }
+
+
+
+            return null;
+        }
+
+
 
 
 

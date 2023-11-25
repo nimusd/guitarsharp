@@ -86,7 +86,14 @@
             loadFretPatternsDialog = new OpenFileDialog();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            label1 = new Label();
             panel2 = new Panel();
+            label13 = new Label();
+            secondLowPassTrackBar = new TrackBar();
+            bypassSecondLowPassButton = new Button();
+            applyToAllStringsButton = new Button();
+            label2 = new Label();
+            LowPassCutOffTrackBar = new TrackBar();
             label12 = new Label();
             dryWetImpulseTrackBar = new TrackBar();
             loadGuitarBodyButton = new Button();
@@ -105,6 +112,13 @@
             selectedFingeringPatternNumericUpDown = new NumericUpDown();
             tabPage2 = new TabPage();
             tabPage3 = new TabPage();
+            fingeringPatternpanel12 = new Panel();
+            fingeringPatternpanel11 = new Panel();
+            fingeringPatternpanel10 = new Panel();
+            fingeringPatternpanel9 = new Panel();
+            fingeringPatternpanel8 = new Panel();
+            fingeringPatternpanel7 = new Panel();
+            fingeringPatternpanel6 = new Panel();
             fingeringPatternpanel5 = new Panel();
             fingeringPatternpanel4 = new Panel();
             fingeringPatternPanel3 = new Panel();
@@ -130,6 +144,8 @@
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)secondLowPassTrackBar).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)LowPassCutOffTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dryWetImpulseTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).BeginInit();
@@ -163,9 +179,9 @@
             guitarRollPanel.AutoScroll = true;
             guitarRollPanel.AutoScrollMinSize = new Size(5000, 600);
             guitarRollPanel.BackColor = Color.White;
-            guitarRollPanel.Location = new Point(38, 33);
+            guitarRollPanel.Location = new Point(20, 42);
             guitarRollPanel.Name = "guitarRollPanel";
-            guitarRollPanel.Size = new Size(1808, 722);
+            guitarRollPanel.Size = new Size(1800, 1200);
             guitarRollPanel.TabIndex = 6;
             guitarRollPanel.Scroll += guitarRollPanel_Scroll;
             guitarRollPanel.Paint += guitarRollPanel_Paint;
@@ -179,7 +195,7 @@
             panel1.Controls.Add(guitarRollPanel);
             panel1.Location = new Point(108, 1014);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1849, 769);
+            panel1.Size = new Size(1849, 1285);
             panel1.TabIndex = 8;
             // 
             // rondeButton
@@ -219,7 +235,7 @@
             noteDuration.Controls.Add(blancheButton);
             noteDuration.Controls.Add(rondeButton);
             noteDuration.Controls.Add(label3);
-            noteDuration.Location = new Point(159, 1859);
+            noteDuration.Location = new Point(2187, 1609);
             noteDuration.Name = "noteDuration";
             noteDuration.Size = new Size(1542, 279);
             noteDuration.TabIndex = 11;
@@ -361,7 +377,7 @@
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Padding = new Padding(5, 1, 0, 1);
-            menuStrip1.Size = new Size(4250, 47);
+            menuStrip1.Size = new Size(4342, 47);
             menuStrip1.TabIndex = 12;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -589,9 +605,9 @@
             // 
             fretPatternPanel.BackColor = SystemColors.AppWorkspace;
             fretPatternPanel.Controls.Add(labelfretpattern);
-            fretPatternPanel.Location = new Point(17, 23);
+            fretPatternPanel.Location = new Point(80, 49);
             fretPatternPanel.Name = "fretPatternPanel";
-            fretPatternPanel.Size = new Size(3012, 2875);
+            fretPatternPanel.Size = new Size(3012, 3147);
             fretPatternPanel.TabIndex = 29;
             // 
             // labelfretpattern
@@ -622,14 +638,15 @@
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Controls.Add(tabPage3);
-            tabControl1.Location = new Point(30, 50);
+            tabControl1.Location = new Point(12, 50);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(4182, 3053);
+            tabControl1.Size = new Size(4330, 3350);
             tabControl1.TabIndex = 32;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(label1);
             tabPage1.Controls.Add(panel2);
             tabPage1.Controls.Add(label11);
             tabPage1.Controls.Add(label10);
@@ -667,14 +684,29 @@
             tabPage1.Location = new Point(10, 58);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(4162, 2985);
+            tabPage1.Size = new Size(4310, 3282);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Main Page";
             tabPage1.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(137, 2302);
+            label1.Name = "label1";
+            label1.Size = new Size(119, 41);
+            label1.TabIndex = 48;
+            label1.Text = "velocity";
+            // 
             // panel2
             // 
             panel2.BackColor = Color.Linen;
+            panel2.Controls.Add(label13);
+            panel2.Controls.Add(secondLowPassTrackBar);
+            panel2.Controls.Add(bypassSecondLowPassButton);
+            panel2.Controls.Add(applyToAllStringsButton);
+            panel2.Controls.Add(label2);
+            panel2.Controls.Add(LowPassCutOffTrackBar);
             panel2.Controls.Add(label12);
             panel2.Controls.Add(dryWetImpulseTrackBar);
             panel2.Controls.Add(loadGuitarBodyButton);
@@ -684,27 +716,84 @@
             panel2.Size = new Size(1200, 1348);
             panel2.TabIndex = 46;
             // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(90, 733);
+            label13.Name = "label13";
+            label13.Size = new Size(371, 41);
+            label13.TabIndex = 54;
+            label13.Text = "second low pass per string";
+            // 
+            // secondLowPassTrackBar
+            // 
+            secondLowPassTrackBar.Location = new Point(77, 647);
+            secondLowPassTrackBar.Name = "secondLowPassTrackBar";
+            secondLowPassTrackBar.Size = new Size(1004, 114);
+            secondLowPassTrackBar.TabIndex = 53;
+            secondLowPassTrackBar.ValueChanged += secondLowPassTrackBar_ValueChanged;
+            // 
+            // bypassSecondLowPassButton
+            // 
+            bypassSecondLowPassButton.Location = new Point(574, 744);
+            bypassSecondLowPassButton.Name = "bypassSecondLowPassButton";
+            bypassSecondLowPassButton.Size = new Size(351, 58);
+            bypassSecondLowPassButton.TabIndex = 52;
+            bypassSecondLowPassButton.Text = "Bypass second low pass";
+            bypassSecondLowPassButton.UseVisualStyleBackColor = true;
+            bypassSecondLowPassButton.Click += bypassSecondLowPassButton_Click;
+            // 
+            // applyToAllStringsButton
+            // 
+            applyToAllStringsButton.Location = new Point(700, 249);
+            applyToAllStringsButton.Name = "applyToAllStringsButton";
+            applyToAllStringsButton.Size = new Size(325, 58);
+            applyToAllStringsButton.TabIndex = 51;
+            applyToAllStringsButton.Text = "<-Apply to all strings";
+            applyToAllStringsButton.UseVisualStyleBackColor = true;
+            applyToAllStringsButton.Click += applyToAllStringsButton_Click;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(90, 583);
+            label2.Name = "label2";
+            label2.Size = new Size(345, 41);
+            label2.TabIndex = 50;
+            label2.Text = "Low Pass Filter per string";
+            // 
+            // LowPassCutOffTrackBar
+            // 
+            LowPassCutOffTrackBar.Location = new Point(77, 483);
+            LowPassCutOffTrackBar.Maximum = 100;
+            LowPassCutOffTrackBar.Minimum = 1;
+            LowPassCutOffTrackBar.Name = "LowPassCutOffTrackBar";
+            LowPassCutOffTrackBar.Size = new Size(991, 114);
+            LowPassCutOffTrackBar.TabIndex = 49;
+            LowPassCutOffTrackBar.Value = 1;
+            LowPassCutOffTrackBar.ValueChanged += LowPassCutOffTrackBar_ValueChanged;
+            // 
             // label12
             // 
             label12.AutoSize = true;
-            label12.Location = new Point(399, 263);
+            label12.Location = new Point(76, 393);
             label12.Name = "label12";
-            label12.Size = new Size(241, 41);
+            label12.Size = new Size(453, 41);
             label12.TabIndex = 48;
-            label12.Text = "Dry/Wet impulse";
+            label12.Text = "Dry/Wet body impulse per string";
             // 
             // dryWetImpulseTrackBar
             // 
-            dryWetImpulseTrackBar.Location = new Point(399, 328);
+            dryWetImpulseTrackBar.Location = new Point(76, 320);
             dryWetImpulseTrackBar.Maximum = 100;
             dryWetImpulseTrackBar.Name = "dryWetImpulseTrackBar";
-            dryWetImpulseTrackBar.Size = new Size(692, 114);
+            dryWetImpulseTrackBar.Size = new Size(1037, 114);
             dryWetImpulseTrackBar.TabIndex = 47;
             dryWetImpulseTrackBar.ValueChanged += dryWetImpulseTrackBar_ValueChanged;
             // 
             // loadGuitarBodyButton
             // 
-            loadGuitarBodyButton.Location = new Point(25, 285);
+            loadGuitarBodyButton.Location = new Point(379, 249);
             loadGuitarBodyButton.Name = "loadGuitarBodyButton";
             loadGuitarBodyButton.Size = new Size(295, 58);
             loadGuitarBodyButton.TabIndex = 46;
@@ -846,13 +935,20 @@
             tabPage2.Location = new Point(10, 58);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(4162, 2985);
+            tabPage2.Size = new Size(4310, 3282);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Fret Patterns";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(fingeringPatternpanel12);
+            tabPage3.Controls.Add(fingeringPatternpanel11);
+            tabPage3.Controls.Add(fingeringPatternpanel10);
+            tabPage3.Controls.Add(fingeringPatternpanel9);
+            tabPage3.Controls.Add(fingeringPatternpanel8);
+            tabPage3.Controls.Add(fingeringPatternpanel7);
+            tabPage3.Controls.Add(fingeringPatternpanel6);
             tabPage3.Controls.Add(fingeringPatternpanel5);
             tabPage3.Controls.Add(fingeringPatternpanel4);
             tabPage3.Controls.Add(fingeringPatternPanel3);
@@ -860,10 +956,80 @@
             tabPage3.Controls.Add(fingeringPatternPanel1);
             tabPage3.Location = new Point(10, 58);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(4162, 2985);
+            tabPage3.Size = new Size(4310, 3282);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Fingering Patterns";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // fingeringPatternpanel12
+            // 
+            fingeringPatternpanel12.Location = new Point(1532, 2321);
+            fingeringPatternpanel12.Margin = new Padding(4);
+            fingeringPatternpanel12.Name = "fingeringPatternpanel12";
+            fingeringPatternpanel12.Size = new Size(1391, 342);
+            fingeringPatternpanel12.TabIndex = 2;
+            fingeringPatternpanel12.Tag = "4";
+            fingeringPatternpanel12.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel11
+            // 
+            fingeringPatternpanel11.Location = new Point(42, 2321);
+            fingeringPatternpanel11.Margin = new Padding(4);
+            fingeringPatternpanel11.Name = "fingeringPatternpanel11";
+            fingeringPatternpanel11.Size = new Size(1391, 342);
+            fingeringPatternpanel11.TabIndex = 2;
+            fingeringPatternpanel11.Tag = "4";
+            fingeringPatternpanel11.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel10
+            // 
+            fingeringPatternpanel10.Location = new Point(1532, 1879);
+            fingeringPatternpanel10.Margin = new Padding(4);
+            fingeringPatternpanel10.Name = "fingeringPatternpanel10";
+            fingeringPatternpanel10.Size = new Size(1391, 342);
+            fingeringPatternpanel10.TabIndex = 2;
+            fingeringPatternpanel10.Tag = "4";
+            fingeringPatternpanel10.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel9
+            // 
+            fingeringPatternpanel9.Location = new Point(42, 1879);
+            fingeringPatternpanel9.Margin = new Padding(4);
+            fingeringPatternpanel9.Name = "fingeringPatternpanel9";
+            fingeringPatternpanel9.Size = new Size(1391, 342);
+            fingeringPatternpanel9.TabIndex = 2;
+            fingeringPatternpanel9.Tag = "4";
+            fingeringPatternpanel9.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel8
+            // 
+            fingeringPatternpanel8.Location = new Point(1532, 1432);
+            fingeringPatternpanel8.Margin = new Padding(4);
+            fingeringPatternpanel8.Name = "fingeringPatternpanel8";
+            fingeringPatternpanel8.Size = new Size(1391, 342);
+            fingeringPatternpanel8.TabIndex = 2;
+            fingeringPatternpanel8.Tag = "4";
+            fingeringPatternpanel8.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel7
+            // 
+            fingeringPatternpanel7.Location = new Point(42, 1432);
+            fingeringPatternpanel7.Margin = new Padding(4);
+            fingeringPatternpanel7.Name = "fingeringPatternpanel7";
+            fingeringPatternpanel7.Size = new Size(1391, 342);
+            fingeringPatternpanel7.TabIndex = 2;
+            fingeringPatternpanel7.Tag = "4";
+            fingeringPatternpanel7.Paint += fingeringPatternPanelPaint;
+            // 
+            // fingeringPatternpanel6
+            // 
+            fingeringPatternpanel6.Location = new Point(1532, 988);
+            fingeringPatternpanel6.Margin = new Padding(4);
+            fingeringPatternpanel6.Name = "fingeringPatternpanel6";
+            fingeringPatternpanel6.Size = new Size(1391, 342);
+            fingeringPatternpanel6.TabIndex = 2;
+            fingeringPatternpanel6.Tag = "4";
+            fingeringPatternpanel6.Paint += fingeringPatternPanelPaint;
             // 
             // fingeringPatternpanel5
             // 
@@ -877,7 +1043,7 @@
             // 
             // fingeringPatternpanel4
             // 
-            fingeringPatternpanel4.Location = new Point(1532, 525);
+            fingeringPatternpanel4.Location = new Point(1532, 504);
             fingeringPatternpanel4.Margin = new Padding(4);
             fingeringPatternpanel4.Name = "fingeringPatternpanel4";
             fingeringPatternpanel4.Size = new Size(1451, 360);
@@ -897,7 +1063,7 @@
             // 
             // fingeringPatternPanel2
             // 
-            fingeringPatternPanel2.Location = new Point(1532, 63);
+            fingeringPatternPanel2.Location = new Point(1532, 44);
             fingeringPatternPanel2.Margin = new Padding(4);
             fingeringPatternPanel2.Name = "fingeringPatternPanel2";
             fingeringPatternPanel2.Size = new Size(1451, 381);
@@ -928,7 +1094,7 @@
             AutoScaleDimensions = new SizeF(17F, 41F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
-            ClientSize = new Size(4250, 3131);
+            ClientSize = new Size(4287, 3344);
             Controls.Add(tabControl1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
@@ -959,6 +1125,8 @@
             tabPage1.PerformLayout();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)secondLowPassTrackBar).EndInit();
+            ((System.ComponentModel.ISupportInitialize)LowPassCutOffTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)dryWetImpulseTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)fretPatternSelectionNumericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)baseFretForFretActivePatternNumericUpDown).EndInit();
@@ -1056,5 +1224,21 @@
         private OpenFileDialog loadGuitarBodyOpenFileDialog;
         private Label label12;
         private TrackBar dryWetImpulseTrackBar;
+        private Label label1;
+        private TrackBar LowPassCutOffTrackBar;
+        private Label label2;
+        private RadioButton applyToAllStringsRadioButton;
+        private RadioButton bypassSecondLowPassRadioButton;
+        private Button bypassSecondLowPassButton;
+        private Button applyToAllStringsButton;
+        private Label label13;
+        private TrackBar secondLowPassTrackBar;
+        private Panel fingeringPatternpanel12;
+        private Panel fingeringPatternpanel11;
+        private Panel fingeringPatternpanel10;
+        private Panel fingeringPatternpanel9;
+        private Panel fingeringPatternpanel8;
+        private Panel fingeringPatternpanel7;
+        private Panel fingeringPatternpanel6;
     }
 }

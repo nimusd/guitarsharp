@@ -16,8 +16,7 @@ namespace Guitarsharp
         public bool IsActive { get; set; }
         private Form1 form1Instance;
         public List<Button> Buttons { get; private set; } = new List<Button>();
-        public Button ActivateButton { get; private set; } = new Button { Text = "Activate" };
-        public NumericUpDown BaseFretControl { get; private set; } = new NumericUpDown();
+        
 
         public List<Button> FrettedNoteButtons { get; set; } = new();
 
@@ -34,18 +33,18 @@ namespace Guitarsharp
         public void Activate()
         {
             IsActive = true;
-            ActivateButton.BackColor = Color.Red; // Change the background color to red
+            
 
-            // Update fretboard display logic here
+            
         }
 
 
         public void Deactivate()
         {
             IsActive = false;
-            ActivateButton.BackColor = Color.Beige; // Reset the background color
+           
 
-            // Update fretboard display logic here
+            
         }
 
 
@@ -159,34 +158,7 @@ namespace Guitarsharp
         }
 
 
-        private void ActivateButton_Click(object sender, EventArgs e)
-        {
-            Button clickedButton = sender as Button;
-            int patternNumber = (int)clickedButton.Tag;
-
-            if (clickedButton != null)
-            {
-               // Debug.WriteLine(clickedButton.Text);
-                clickedButton.BackColor = Color.Red;
-                clickedButton.Text = "Active";
-
-
-                // Deactivate other patterns using Form1Instance
-                foreach (var pattern in form1Instance.allFretPatterns)
-                {
-                   // Debug.WriteLine("deactivate");
-
-                    if (pattern.ActivateButton.Tag != clickedButton.Tag)
-                        pattern.Deactivate();
-
-                }
-
-                // Activate the clicked pattern
-                form1Instance.allFretPatterns[(int)ActivateButton.Tag].Activate();
-
-
-            }
-        }
+      
 
 
 
@@ -213,7 +185,7 @@ namespace Guitarsharp
 
         public FretPatternData GetSerializableData()
         {
-            var data = new FretPatternData(Name, Description, BaseFret, ActivateButton.Text, (int)ActivateButton.Tag, (int)ActivateButton.BackColor.ToArgb(), IsActive);
+            var data = new FretPatternData(Name, Description, BaseFret,  IsActive);
 
 
 
@@ -250,24 +222,22 @@ namespace Guitarsharp
         public bool IsActive { get; set; }
         public List<int> FretButtonBackColor { get; set; } = new();
         public List<string> FretButtonName { get; set; } = new();
-        public string ActivateButtonText { get; set; } = string.Empty;
+       
         public List<FretTag> FretTags { get; set; } = new();
-        public int ActivateButtonTag { get; set; } = 0;
-        public int ActivateButtonBackColor { get; set; } = 0;
+        
+       
 
         // Parameterless constructor for deserialization
         public FretPatternData() { }
 
         // Constructor with parameters
-        public FretPatternData(string name, string description, int baseFret, string activateButtonText, int activateButtonTag, int activateButtonBackColor, bool isActive)
+        public FretPatternData(string name, string description, int baseFret,  bool isActive)
         {
             Name = name;
             Description = description;
             BaseFret = baseFret;
             IsActive = isActive;
-            ActivateButtonText = activateButtonText;
-            ActivateButtonTag = activateButtonTag;
-            ActivateButtonBackColor = activateButtonBackColor;
+           
         }
     }
 

@@ -33,6 +33,7 @@ namespace Guitarsharp
     using NWaves.Filters.Fda;
     using NWaves.Windows;
     using NWaves.Filters.Bessel;
+    using NAudio.Dsp;
 
     [Serializable]
     public partial class Form1 : Form
@@ -98,8 +99,12 @@ namespace Guitarsharp
         private AudioFileReader audioFileReader;
         private int filenumber = 1;
         private bool staccatoMode = false;
-        private int selectedStringIndex = 0;
+        private int selectedStringIndex = 1;
         private Guitar theGuitar;
+        public float lowPassCutOffValue = 0.06f;// default value
+        public float secondLowPassCutOffValue = 0.06f; //default value
+        private bool applyToAllStrings = false;
+        private bool bypassSecondLowPass = false;
         public Form1()
         {
             InitializeComponent();
@@ -180,8 +185,7 @@ namespace Guitarsharp
 
             CreateFretPatterns();
 
-            allFingeringPatterns = new List<FingeringPattern>();
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 12; i++)
             {
                 FingeringPattern fingeringPattern = new FingeringPattern();
 
@@ -200,7 +204,10 @@ namespace Guitarsharp
                 radioButton.CheckedChanged += new EventHandler(radioButton_CheckedChanged);
                 stringSynthroupBox.Controls.Add(radioButton);
             }
+
+
             theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
+
 
 
             loadfilesfortesting();
@@ -216,14 +223,18 @@ namespace Guitarsharp
         }
         private void loadfilesfortesting()
         {
-            string guitarbody = "Yamaha_LL16_48000.wav";
+            string guitarbody = "RAMIREZ.wav";
             string reverb = "Performance Hall - XY Close.wav";
-            float[] impulseResponse = LoadWaveFile("Yamaha_LL16_48000.wav");
+            float[] impulseResponse = LoadWaveFile("RAMIREZ.wav");
             for (int i = 0; i < 6; i++)
             {
 
                 // Now, pass this impulseResponse to the KarplusStrong 
                 theGuitar.strings[i].SetImpulseResponse(impulseResponse);
+
+
+                //might as well set the lowpassfilter:)
+                theGuitar.strings[i].lowPassCutOffValue = lowPassCutOffValue;//default value
             }
 
 
@@ -235,8 +246,8 @@ namespace Guitarsharp
             //this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
             //this.PixelsPerSecond = data.PixelsPerSecond;
             //this.midiChannelPerString = data.MidiChannelPerString;
-           // this.timeSignatureNumerator = data.timeSignatureNumerator;
-           // this.timeSignatureDenominator = data.timeSignatureNumerator;
+            // this.timeSignatureNumerator = data.timeSignatureNumerator;
+            // this.timeSignatureDenominator = data.timeSignatureNumerator;
             //this.tempo = data.tempo;
 
             //check the version and handle older versions accordingly(e.g., provide default values for new properties or convert data from old formats).
@@ -285,19 +296,21 @@ namespace Guitarsharp
             {
                 selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
 
-                
+
                 int dryWet = (int)(theGuitar.strings[selectedStringIndex].dryWetMix * 100);
 
                 // Ensure Value is within the TrackBar's range
-               
+
                 dryWet = Math.Max(dryWetImpulseTrackBar.Minimum, Math.Min(dryWet, dryWetImpulseTrackBar.Maximum));
 
-                
                 dryWetImpulseTrackBar.Value = dryWet;
+
+                LowPassCutOffTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].lowPassCutOffValue - 0.05)) / 0.45);
+                secondLowPassTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue - 0.05)) / 0.45);
             }
         }
 
-       
+
         private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             int midiNoteNumber;
@@ -338,10 +351,9 @@ namespace Guitarsharp
                     // Debug.WriteLine("Button has no tag or incorrect tag format");
                 }
             }
-
+            
 
         }
-
 
 
         private Button FindButtonByStringAndNote(int stringNumber, int midiNoteNumber)
@@ -389,7 +401,7 @@ namespace Guitarsharp
 
                     // Update the button tag and text with the new fret index
                     button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
-                    button.Text = activeFretPattern.GetNoteName(stringIndex, fretIndex);
+                    //button.Text = activeFretPattern.GetNoteName(stringIndex, fretIndex);
                 }
 
                 activeFretPattern.BaseFret = newBaseFret; // Update the BaseFret property to the new value
@@ -1131,7 +1143,7 @@ namespace Guitarsharp
 
             for (int i = 0; i < notesPerString.Length; i++)
             {
-                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i]);
+                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i], i);
 
 
 
@@ -1143,13 +1155,13 @@ namespace Guitarsharp
             {
                 //  wetDryMix is a float variable representing the wet/dry mix ratio
                 float wetDryMix = theGuitar.strings[i].dryWetMix; // Set this based on user input, ranging from 0.0 (dry) to 1.0 (wet)
-               //Debug.WriteLine("wetdrymix: " + wetDryMix);
+                //Debug.WriteLine("wetdrymix: " + wetDryMix);
                 // Create NWaves signals
                 var audioSignal = new DiscreteSignal(GlobalConfig.GlobalWaveFormat.SampleRate, audioDataPerString[i]);
                 // Assuming impulseResponseFrequency is a Complex[] array
-                Complex[] impulse = (Complex[])theGuitar.strings[i].impulseResponseFrequency.Clone();
+                System.Numerics.Complex[] impulse = (System.Numerics.Complex[])theGuitar.strings[i].impulseResponseFrequency.Clone();
 
-                Complex[] frequencyDomainSignal = impulse;
+                System.Numerics.Complex[] frequencyDomainSignal = impulse;
 
                 // Apply inverse Fourier transform
                 Fourier.Inverse(frequencyDomainSignal, FourierOptions.Matlab);
@@ -1166,7 +1178,7 @@ namespace Guitarsharp
                 var convolvedSignal = convolver.Convolve(audioSignal, impulseResponse);
 
                 // Apply a more gradual mix curve
-                float adjustedWetDryMix = (float)Math.Pow(wetDryMix, 3); // Example of an exponential curve
+                float adjustedWetDryMix = (float)Math.Pow(wetDryMix, 8); // Example of an exponential curve
 
                 for (int j = 0; j < audioDataPerString[i].Count; j++)
                 {
@@ -1184,14 +1196,22 @@ namespace Guitarsharp
             List<float> mixedAudioData = MixAudioData(audioDataPerString);
 
             // Step 4: Write mixed audio to file
-            string filePath = WriteAudioToFile(mixedAudioData, "composition " + filenumber++ + ".wav");
+            string filePath = WriteAudioToFile(mixedAudioData, "Take " + filenumber++ + ".wav");
 
             // Return the file path of the generated audio file
             return filePath;
         }
 
-
-        private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth)
+        private void LowPassCutOffTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].SetlowPassCutOffValue(LowPassCutOffTrackBar.Value);
+            // Debug.WriteLine("low pass: " + theGuitar.strings[selectedStringIndex].lowPassCutOffValue);
+        }
+        private void secondLowPassTrackBar_ValueChanged(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue = (float)(0.05 + 0.45 * (secondLowPassTrackBar.Value - 1) / 99.0);  //cutoff must be between .05 and 0.5
+        }
+        private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth, int stringNumber)
         {
             List<float> stringAudio = new List<float>();
 
@@ -1203,11 +1223,12 @@ namespace Guitarsharp
             }
 
             // Define the duration of the attack phase in samples (e.g., 0.1 seconds)
-            int attackPhaseSamples = (int)(0.5 * GlobalConfig.GlobalWaveFormat.SampleRate);
-            // Design a low-pass FIR filter for the attack phase
-            var lowPassFilter = new LowPassFilter(.01, 5);
+            int attackPhaseSamples = (int)(.1f * GlobalConfig.GlobalWaveFormat.SampleRate);
 
-
+            // Design a low-pass FIR filter
+            var lowPassFilter = new LowPassFilter(stringSynth.lowPassCutOffValue, 5); // Cutoff must be between .05 and 0.5
+            Debug.WriteLine("String number: " + stringNumber + "  cutoff: " + stringSynth.lowPassCutOffValue);
+            var lowPassFilter2 = new LowPassFilter(theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue, 5); // Cutoff must be between .05 and 0.5
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -1219,23 +1240,31 @@ namespace Guitarsharp
 
                 stringSynth.Pluck(((float)currentNote.Velocity / 127));
 
-                // Determine the duration to generate based on staccato flag or gap to next note
+                // Determine the duration to generate based on staccato flag or gap to the next note
                 var (samplesForNote, samplesForSilence) = CalculateSamplesToGenerate(currentNote, nextNote, GlobalConfig.GlobalWaveFormat.SampleRate);
 
                 // Generate audio for the note
                 for (int j = 0; j < samplesForNote; j++)
                 {
-                    stringAudio.Add(stringSynth.NextSample());
-                }
+                    // Generate the sample from your Karplus-Strong algorithm
+                    float sample = stringSynth.NextSample();
 
-                // Apply low-pass filter to the attack phase of the note
-                int noteStartIndex = stringAudio.Count - samplesForNote;
-                //for (int j = noteStartIndex; j < Math.Min(noteStartIndex + attackPhaseSamples, stringAudio.Count); j++)
-                for (int j = 0; j < samplesForNote; j++)
-                {
-                    stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
-                }
+                    // Apply low-pass filter to the attack phase of the note
+                    if (j < attackPhaseSamples)
+                    {
+                        // Calculate an exponential envelope for the ramp-up
+                        float envelope = (float)Math.Pow((j / (float)attackPhaseSamples), 2); // Exponential ramp-up
+                        sample *= envelope;
 
+                    }
+
+
+                    stringAudio.Add(sample);
+                }
+               // for (int j = 0; j < samplesForNote; j++)
+               // {
+                //    stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
+               // }
                 // Add silence if necessary
                 if (samplesForSilence > 0)
                 {
@@ -1243,9 +1272,22 @@ namespace Guitarsharp
                 }
             }
 
+            for (int j = 0; j < stringAudio.Count; j++)
+            {
+                stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
+            }
+
+
+
+            if (!bypassSecondLowPass)
+            {
+                for (int j = 0; j < stringAudio.Count; j++)
+                {
+                    stringAudio[j] = lowPassFilter2.Process(stringAudio[j]);
+                }
+            }
             return stringAudio;
         }
-
 
 
         private (int samplesForNote, int samplesForSilence) CalculateSamplesToGenerate(Note currentNote, Note nextNote, int sampleRate)
@@ -1493,11 +1535,11 @@ namespace Guitarsharp
 
         private void CreateFretPatterns()
         {
-            int numberOfPatterns = 12;
-            int patternsPerRow = 4;
-            int patternSpacing = 150;
+            int numberOfPatterns = 12; // Set the number of patterns to 4
+            int patternsPerRow = 6;
+            int patternSpacing = 100;
             int patternWidth = 400; // Adjust as needed
-            int patternHeight = 550; // Adjust as needed
+            int patternHeight = 1500; // Adjust as needed
 
             for (int i = 0; i < numberOfPatterns; i++)
             {
@@ -1507,17 +1549,16 @@ namespace Guitarsharp
                 FretPattern pattern = new FretPattern($"Pattern {i + 1}", 0, this);
                 allFretPatterns.Add(pattern); // Add the pattern to the list
                 Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
-                pattern.CreateFretboard(6, 5, pattern.BaseFret, location, i);
+                pattern.CreateFretboard(6, 13, pattern.BaseFret, location, i); // Use 13 frets instead of 5
 
                 // Add fret buttons, activation button, and base fret control to the panel
                 foreach (Button button in pattern.Buttons)
                 {
                     fretPatternPanel.Controls.Add(button);
                 }
-
-                fretPatternPanel.Controls.Add(pattern.BaseFretControl);
             }
         }
+
         public void DeactivateOtherFretPatterns(FretPattern activePattern)
         {
             foreach (var pattern in allFretPatterns)
@@ -1591,10 +1632,10 @@ namespace Guitarsharp
                     allFretPatterns.Clear();
 
                     // Constants for layout
-                    int patternsPerRow = 4;
-                    int patternSpacing = 150;
+                    int patternsPerRow = 6;
+                    int patternSpacing = 100;
                     int patternWidth = 400; // Adjust as needed
-                    int patternHeight = 550; // Adjust as needed
+                    int patternHeight = 1500; // Adjust as needed
 
                     // Rebuild the UI elements with the loaded data
                     for (int i = 0; i < loadedPatternData.Count; i++)
@@ -1611,23 +1652,10 @@ namespace Guitarsharp
                         pattern.IsActive = patternData.IsActive;
 
                         // Set up the pattern's UI elements
-                        pattern.CreateFretboard(6, 4, pattern.BaseFret, location, i);
+                        pattern.CreateFretboard(6, 13, pattern.BaseFret, location, i);
 
-                        // Update the activation button text and back color
-                        pattern.ActivateButton.Text = patternData.ActivateButtonText;
-                        pattern.ActivateButton.BackColor = Color.FromArgb(patternData.ActivateButtonBackColor);
-                        pattern.ActivateButton.Tag = patternData.ActivateButtonTag;
 
-                        // Update the base fret control value
-                        if (patternData.BaseFret >= pattern.BaseFretControl.Minimum && patternData.BaseFret <= pattern.BaseFretControl.Maximum)
-                        {
-                            pattern.BaseFretControl.Value = patternData.BaseFret;
-                        }
-                        else
-                        {
-                            // Set to a default value or minimum value if the loaded value is out of range
-                            pattern.BaseFretControl.Value = pattern.BaseFretControl.Minimum;
-                        }
+
 
 
                         // Update the buttons with the loaded names and back colors
@@ -1647,8 +1675,7 @@ namespace Guitarsharp
                         {
                             fretPatternPanel.Controls.Add(button);
                         }
-                        fretPatternPanel.Controls.Add(pattern.ActivateButton);
-                        fretPatternPanel.Controls.Add(pattern.BaseFretControl);
+
                     }
 
                     // Optionally, refresh the panel or form if necessary
@@ -1675,12 +1702,7 @@ namespace Guitarsharp
             {
                 FretPattern pattern = allFretPatterns[i];
 
-                // Update the activation button
-                pattern.ActivateButton.BackColor = pattern.IsActive ? Color.Red : Color.Beige;
-                pattern.ActivateButton.Text = pattern.IsActive ? "Active" : "Activate";
 
-                // Update the base fret numeric up/down
-                pattern.BaseFretControl.Value = pattern.BaseFret;
 
                 // Update the fret buttons
                 foreach (Button button in pattern.Buttons)
@@ -2069,8 +2091,20 @@ namespace Guitarsharp
             {
                 string fileName = loadGuitarBodyOpenFileDialog.FileName;
                 float[] impulseResponse = LoadWaveFile(fileName);
-                // Now, pass this impulseResponse to the KarplusStrong 
-                theGuitar.strings[selectedStringIndex].SetImpulseResponse(impulseResponse);
+
+                // Now, pass this impulseResponse to the KarplusStrong
+                if (applyToAllStrings)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        theGuitar.strings[i].SetImpulseResponse(impulseResponse);
+                    }
+                }
+                else
+                {
+
+                    theGuitar.strings[selectedStringIndex].SetImpulseResponse(impulseResponse);
+                }
 
             }
         }
@@ -2102,6 +2136,25 @@ namespace Guitarsharp
         {
             theGuitar.strings[selectedStringIndex].SetDryWetMix(dryWetImpulseTrackBar.Value);//divided by 100 in karplusstrong
         }
+
+
+
+
+
+        private void applyToAllStringsButton_Click(object sender, EventArgs e)
+        {
+            // Toggle the fingering pattern mode
+            applyToAllStrings = !applyToAllStrings;
+            applyToAllStringsButton.BackColor = applyToAllStrings ? Color.Red : Color.White;
+        }
+
+        private void bypassSecondLowPassButton_Click(object sender, EventArgs e)
+        {
+            bypassSecondLowPass = !bypassSecondLowPass;
+            bypassSecondLowPassButton.BackColor = bypassSecondLowPass ? Color.Red : Color.White;
+        }
+
+ 
     }
 
     public static class MidiUtilities

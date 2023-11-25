@@ -1,4 +1,80 @@
-﻿using MathNet.Numerics.IntegralTransforms;
+﻿
+
+
+
+
+
+
+
+
+
+
+
+to dos:
+
+tempo and tempo changes
+show tempo in info lane
+
+save everything at once
+
+save guitars independently
+
+design curves (bell, parabolic, exponential etc) for note start, note end and velocities per measure or group of, with the first note of each measure never changed.
+curves can be applied per parameter or group of.
+
+12 bands eq
+
+numeric updpwn for attack, order of lowpass 1 and 2 
+button to bypass of first lowpass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using MathNet.Numerics.IntegralTransforms;
 using System.Numerics;
 using NAudio.Wave;
 using System;
