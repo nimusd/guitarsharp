@@ -28,7 +28,7 @@ namespace Guitarsharp
         public bool IsSelected { get; set; } = false;
         public bool IsStaccato { get; set; } = false;
 
-        public int MidiChannel;
+        public int MidiChannel { get; set; }
 
 
         // Define the open string frequencies and MIDI note numbers for a standard-tuned six-string guitar

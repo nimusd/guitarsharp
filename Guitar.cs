@@ -24,6 +24,7 @@ namespace Guitarsharp
             for (int i = 0; i < 6; i++)
             {
                 strings[i] = new KarplusStrong(sampleRate, (float) stringFrequencies[i]);
+                
             }
 
             // Initialize the mixer

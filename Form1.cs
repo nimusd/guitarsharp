@@ -34,6 +34,7 @@ namespace Guitarsharp
     using NWaves.Windows;
     using NWaves.Filters.Bessel;
     using NAudio.Dsp;
+   
 
     [Serializable]
     public partial class Form1 : Form
@@ -87,7 +88,7 @@ namespace Guitarsharp
         private FretPattern activeFretPattern;
         public List<FretPattern> allFretPatterns = new List<FretPattern>();
         public List<FingeringPattern> allFingeringPatterns = new List<FingeringPattern>();
-
+        public int activeFingeringPattern = 0;
         public bool fingeringPatternMode = false;
 
         public bool triplePerBeatMode = false;
@@ -116,7 +117,7 @@ namespace Guitarsharp
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
 
-            InitializeAudio();
+            //InitializeAudio();
             this.KeyPreview = true;
 
 
@@ -132,8 +133,8 @@ namespace Guitarsharp
             }
 
             karplusStrong = new KarplusStrong(format.SampleRate, 220.0f); // This is just an initial frequency.
-            karplusStrong.UpdateFrequency(880);
-            sampleProvider = new KarplusStrongSampleProvider(karplusStrong, 440f);
+            karplusStrong.UpdateFrequency(20000f);
+            sampleProvider = new KarplusStrongSampleProvider(karplusStrong, 20000f);
             waveOut = new WaveOut();
             waveOut.Init(sampleProvider);
             waveOut.Play();
@@ -207,8 +208,8 @@ namespace Guitarsharp
 
 
             theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
-
-
+            InitializeEQSliders();
+            SetEqualizers();
 
             loadfilesfortesting();
             Debug.WriteLine("Init completed");
@@ -236,24 +237,137 @@ namespace Guitarsharp
                 //might as well set the lowpassfilter:)
                 theGuitar.strings[i].lowPassCutOffValue = lowPassCutOffValue;//default value
             }
+            LoadFretPatterns("base.gfp");
 
+           // string jsonString = File.ReadAllText("teset.gur");
+            //Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
 
-            string jsonString = File.ReadAllText("teset.gur");
-            Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
-
-            this.allNotes = data.AllNotes;
-            this.composition = data.Composition;
+           // this.allNotes = data.AllNotes;
+            //this.composition = data.Composition;
             //this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
             //this.PixelsPerSecond = data.PixelsPerSecond;
-            //this.midiChannelPerString = data.MidiChannelPerString;
+           // this.midiChannelPerString = data.MidiChannelPerString;
             // this.timeSignatureNumerator = data.timeSignatureNumerator;
             // this.timeSignatureDenominator = data.timeSignatureNumerator;
             //this.tempo = data.tempo;
 
             //check the version and handle older versions accordingly(e.g., provide default values for new properties or convert data from old formats).
-            if (this.version != data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+            //if (this.version != data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
 
             guitarRollPanel.Invalidate(); // Refresh the panel to reflect the loaded data
+
+        }
+
+        private void InitializeEQSliders()
+        {
+            const int numberOfBands = 12;
+            const int bandHeight = 440;
+            const int panelWidth = 100; // Adjust as needed
+            const int panelSpacing = 10; // Adjust as needed
+            float originalValueMin = -1.0f;
+            float originalValueMax = 1.0f;
+            float newValueMin = 1.0f;
+            float newValueMax = 100.0f;
+
+            
+            int[] bands = new int[numberOfBands] { 31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000, 20000, 40000 };
+            float[] gains = new float[numberOfBands] { 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1 };
+            // Create and add TrackBar controls for each band
+            for (int i = 0; i < numberOfBands; i++)
+            {
+                TrackBar eqSlider = new TrackBar();
+                eqSlider.Orientation = Orientation.Vertical;
+                eqSlider.Name = $"bandSlider{i}";
+                eqSlider.Minimum = 0; // Set the minimum value
+                eqSlider.Maximum = 100; // Set the maximum value
+                eqSlider.TickFrequency = 1; // Set the tick frequency
+
+                float mappedValue = (newValueMin + (newValueMax - newValueMin) * (gains[i] - originalValueMin) / (originalValueMax - originalValueMin));
+                eqSlider.Value = (int) mappedValue;
+                Debug.WriteLine("eqslider: " + eqSlider.Name +"value:  "+ eqSlider.Value);
+                eqSlider.ValueChanged += EQSlider_ValueChanged;
+
+                // Create and add a Label for the band's frequency range
+                Label label = new Label();
+                label.Text = "Band" + Environment.NewLine + bands[i].ToString();
+                label.TextAlign = ContentAlignment.MiddleCenter;
+
+                // Calculate the position of the controls
+                int xPosition = i * (panelWidth + panelSpacing);
+                int yPosition = 0;
+
+                // Set the location and size of the TrackBar and Label
+                eqSlider.Location = new Point(xPosition, yPosition);
+                eqSlider.Size = new Size(panelWidth, bandHeight);
+
+                label.Location = new Point(xPosition, yPosition + bandHeight);
+                label.Size = new Size(panelWidth, 100); // Adjust the height as needed
+
+                // Add the controls to the twelveBandEQPanel
+                twelveBandEQPanel.Controls.Add(eqSlider);
+                twelveBandEQPanel.Controls.Add(label);
+            }
+        }
+
+        private void EQSlider_ValueChanged(object sender, EventArgs e)
+        {
+            float sliderValue = 50; // Default slider value between 1 and 100
+            float minValue = -1.0f;
+            float maxValue = 1.0f;
+            int sliderNum =0;
+            // Cast the sender to a Slider (or the appropriate slider control type)
+            TrackBar slider = (TrackBar)sender;
+
+            // Get the name of the slider
+            string sliderName = slider.Name;
+
+            int startIndex = sliderName.IndexOfAny("0123456789".ToCharArray());
+
+            if (startIndex >= 0)
+            {
+                string numberSubstring = sliderName.Substring(startIndex);
+
+                if (int.TryParse(numberSubstring, out int sliderNumber))
+                {
+                   // Debug.WriteLine("slider number: "+ sliderNumber);
+                   sliderNum = sliderNumber;
+                }
+            }
+            // Map the slider value to the desired range
+            float mappedValue = minValue + (maxValue - minValue) * (slider.Value - 1) / (100 - 1);
+
+            // Now `mappedValue` contains the value in the range -1 to +1
+            theGuitar.strings[selectedStringIndex].twelveBands.bands[sliderNum].Gain = mappedValue;
+            
+            theGuitar.strings[selectedStringIndex].twelveBands.Update();
+            
+
+            // Handle changes in EQ slider values here
+            // Update your audio processing code based on the EQ adjustments
+        }
+        private void SetEqualizers()
+        {
+            EqualizerBand[] bands = new EqualizerBand[]
+{
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 32.7f, Gain = 0.0f },   // Band 1
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 65.4f, Gain = 0.0f },   // Band 2
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 130.8f, Gain = 0.0f },  // Band 3
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 261.6f, Gain = 0.0f },  // Band 4
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 523.3f, Gain = 0.0f },  // Band 5
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 1046.5f, Gain = -1f }, // Band 6
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 2093.0f, Gain = -1f }, // Band 7
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 4186.0f, Gain = -1f }, // Band 8
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 8372.0f, Gain = -1f }, // Band 9
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 12000.0f, Gain = -1f },// Band 10
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 16000.0f, Gain = -1f },// Band 11
+            new EqualizerBand { Bandwidth = 1.0f, Frequency = 20000.0f, Gain = -1f } // Band 12
+};
+
+            // Initialize the equalizer with the karplusStrong (ISampleProvider) and equalizer bands
+            for (int i = 0; i < theGuitar.strings.Length; i++)
+            {
+                theGuitar.strings[i].twelveBands =  new Equalizer(theGuitar.strings[i].twelveBands, bands);
+            }
 
         }
         private void InitFretBoard()
@@ -296,19 +410,44 @@ namespace Guitarsharp
             {
                 selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
 
-
                 int dryWet = (int)(theGuitar.strings[selectedStringIndex].dryWetMix * 100);
-
                 // Ensure Value is within the TrackBar's range
-
                 dryWet = Math.Max(dryWetImpulseTrackBar.Minimum, Math.Min(dryWet, dryWetImpulseTrackBar.Maximum));
-
                 dryWetImpulseTrackBar.Value = dryWet;
 
                 LowPassCutOffTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].lowPassCutOffValue - 0.05)) / 0.45);
                 secondLowPassTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue - 0.05)) / 0.45);
+
+                float originalValueMin = -1.0f;
+                float originalValueMax = 1.0f;
+                float newValueMin = 1.0f;
+                float newValueMax = 100.0f;
+
+                int num = 0;
+                foreach (Control control in twelveBandEQPanel.Controls)
+                {
+                    if (control is TrackBar trackBar)
+                    {
+                        // Ensure num does not exceed the number of bands
+                        if (num < theGuitar.strings[selectedStringIndex].twelveBands.bands.Length)
+                        {
+                            // Map the slider value to the desired range
+                            float mappedValue = (newValueMin + (newValueMax - newValueMin) * (theGuitar.strings[selectedStringIndex].twelveBands.bands[num].Gain - originalValueMin) / (originalValueMax - originalValueMin));
+
+                            // Ensure Value is within the TrackBar's range
+                            mappedValue = Math.Max(trackBar.Minimum, Math.Min(mappedValue, trackBar.Maximum));
+
+                            Debug.WriteLine("Selected string: " + selectedStringIndex + "  eq slider: " + trackBar.Name + "   " + theGuitar.strings[selectedStringIndex].twelveBands.bands[num].Gain + " Mapped value: " + (int)mappedValue);
+                            trackBar.Value = (int)mappedValue;
+                            trackBar.Invalidate();
+
+                            num++;
+                        }
+                    }
+                }
             }
         }
+
 
 
         private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -465,7 +604,7 @@ namespace Guitarsharp
                 Tempo = this.tempo,
                 TimeSignatureNumerator = this.timeSignatureNumerator,
                 TimeSignatureDenominator = this.timeSignatureDenominator,
-                //Strings = new List<GuitarString>()
+               
             };
 
 
@@ -1013,9 +1152,9 @@ namespace Guitarsharp
                 SetStatusMessage("Generating audio...");
 
                 // Generate the WAV file instead of a MemoryStream
-                audioFilePath = GenerateCompositionAudioFile(composition); // await Task.Run(() => GenerateCompositionAudioFile(composition));
+                 await Task.Run(() => GenerateCompositionAudioFile(composition));// audioFilePath = GenerateCompositionAudioFile(composition);
 
-                SetStatusMessage("Playing the audio...");
+                //SetStatusMessage("Playing the audio...");
 
                 // Play the generated WAV file
                 PlayAudioFile(audioFilePath);
@@ -1211,8 +1350,12 @@ namespace Guitarsharp
         {
             theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue = (float)(0.05 + 0.45 * (secondLowPassTrackBar.Value - 1) / 99.0);  //cutoff must be between .05 and 0.5
         }
+
+        /**************************************************************************************************/
         private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth, int stringNumber)
         {
+
+
             List<float> stringAudio = new List<float>();
 
             // If the first note starts after time zero, add silence up to the start time of the first note
@@ -1270,7 +1413,12 @@ namespace Guitarsharp
                 {
                     stringAudio.AddRange(new float[samplesForSilence]);
                 }
+
+                theGuitar.strings[currentNote.StringNumber].twelveBands.Process(stringAudio);
+
             }
+
+            /*
 
             for (int j = 0; j < stringAudio.Count; j++)
             {
@@ -1286,6 +1434,7 @@ namespace Guitarsharp
                     stringAudio[j] = lowPassFilter2.Process(stringAudio[j]);
                 }
             }
+            */
             return stringAudio;
         }
 
@@ -1505,7 +1654,7 @@ namespace Guitarsharp
                 {
                     int startTime = (int)(note.StartTime * MidiUtilities.TicksPerQuarterNote);
                     int duration = (int)((note.EndTime - note.StartTime) * MidiUtilities.TicksPerQuarterNote);
-
+                    
                     NoteOnEvent noteOn = new NoteOnEvent(startTime, note.MidiChannel, note.MidiNoteNumber, note.Velocity, duration);
                     trackEvents.Add(noteOn);
 
@@ -1620,76 +1769,79 @@ namespace Guitarsharp
             if (loadFretPatternsDialog.ShowDialog() == DialogResult.OK)
             {
                 string fileName = loadFretPatternsDialog.FileName;
-                try
+                LoadFretPatterns(fileName);
+            }
+        }
+        private void LoadFretPatterns(string fileName)
+        {
+            try
+            {
+                string jsonString = File.ReadAllText(fileName);
+
+                // Deserialize the JSON to a list of FretPatternData
+                List<FretPatternData> loadedPatternData = JsonSerializer.Deserialize<List<FretPatternData>>(jsonString);
+
+                // Clear the existing UI elements
+                fretPatternPanel.Controls.Clear();
+                allFretPatterns.Clear();
+
+                // Constants for layout
+                int patternsPerRow = 6;
+                int patternSpacing = 100;
+                int patternWidth = 400; // Adjust as needed
+                int patternHeight = 1500; // Adjust as needed
+
+                // Rebuild the UI elements with the loaded data
+                for (int i = 0; i < loadedPatternData.Count; i++)
                 {
-                    string jsonString = File.ReadAllText(fileName);
+                    var patternData = loadedPatternData[i];
+                    int row = i / patternsPerRow;
+                    int col = i % patternsPerRow;
 
-                    // Deserialize the JSON to a list of FretPatternData
-                    List<FretPatternData> loadedPatternData = JsonSerializer.Deserialize<List<FretPatternData>>(jsonString);
+                    // Calculate the location for each pattern
+                    Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
 
-                    // Clear the existing UI elements
-                    fretPatternPanel.Controls.Clear();
-                    allFretPatterns.Clear();
+                    FretPattern pattern = new FretPattern(patternData.Name, patternData.BaseFret, this);
+                    pattern.Description = patternData.Description;
+                    pattern.IsActive = patternData.IsActive;
 
-                    // Constants for layout
-                    int patternsPerRow = 6;
-                    int patternSpacing = 100;
-                    int patternWidth = 400; // Adjust as needed
-                    int patternHeight = 1500; // Adjust as needed
+                    // Set up the pattern's UI elements
+                    pattern.CreateFretboard(6, 13, pattern.BaseFret, location, i);
 
-                    // Rebuild the UI elements with the loaded data
-                    for (int i = 0; i < loadedPatternData.Count; i++)
+
+
+
+
+                    // Update the buttons with the loaded names and back colors
+                    for (int j = 0; j < pattern.Buttons.Count; j++)
                     {
-                        var patternData = loadedPatternData[i];
-                        int row = i / patternsPerRow;
-                        int col = i % patternsPerRow;
-
-                        // Calculate the location for each pattern
-                        Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
-
-                        FretPattern pattern = new FretPattern(patternData.Name, patternData.BaseFret, this);
-                        pattern.Description = patternData.Description;
-                        pattern.IsActive = patternData.IsActive;
-
-                        // Set up the pattern's UI elements
-                        pattern.CreateFretboard(6, 13, pattern.BaseFret, location, i);
-
-
-
-
-
-                        // Update the buttons with the loaded names and back colors
-                        for (int j = 0; j < pattern.Buttons.Count; j++)
-                        {
-                            pattern.Buttons[j].Text = patternData.FretButtonName[j];
-                            pattern.Buttons[j].BackColor = Color.FromArgb(patternData.FretButtonBackColor[j]);
-                            pattern.Buttons[j].Tag = new Tuple<int, int>(patternData.FretTags[j].StringIndex, patternData.FretTags[j].FretIndex);
-
-                        }
-
-                        // Add the pattern to the list
-                        allFretPatterns.Add(pattern);
-
-                        // Add the pattern's UI elements to the panel
-                        foreach (Button button in pattern.Buttons)
-                        {
-                            fretPatternPanel.Controls.Add(button);
-                        }
+                        pattern.Buttons[j].Text = patternData.FretButtonName[j];
+                        pattern.Buttons[j].BackColor = Color.FromArgb(patternData.FretButtonBackColor[j]);
+                        pattern.Buttons[j].Tag = new Tuple<int, int>(patternData.FretTags[j].StringIndex, patternData.FretTags[j].FretIndex);
 
                     }
 
-                    // Optionally, refresh the panel or form if necessary
-                    fretPatternPanel.Refresh();
+                    // Add the pattern to the list
+                    allFretPatterns.Add(pattern);
 
-                    //MessageBox.Show("Fret patterns loaded successfully.", "Load Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Add the pattern's UI elements to the panel
+                    foreach (Button button in pattern.Buttons)
+                    {
+                        fretPatternPanel.Controls.Add(button);
+                    }
+
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Failed to load fret patterns: {ex.Message}", "Load Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+
+                // Optionally, refresh the panel or form if necessary
+                fretPatternPanel.Refresh();
+
+                //MessageBox.Show("Fret patterns loaded successfully.", "Load Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load fret patterns: {ex.Message}", "Load Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         private void UpdateFretPatternsUI()
         {
@@ -1734,12 +1886,14 @@ namespace Guitarsharp
             fingeringPatternMode = !fingeringPatternMode;
             FingerPatternModeButton.BackColor = fingeringPatternMode ? Color.Red : Color.White;
 
-            if (!fingeringPatternMode)
+            if (fingeringPatternMode == false)
             {
                 // Exiting fingering pattern mode
+   
                 PopulateFingeringPattern((int)selectedFingeringPatternNumericUpDown.Value - 1);
                 // Debug.WriteLine(" 1 fingering pattern #: " + ((int)selectedFingeringPatternNumericUpDown.Value -1));
                 RefreshFingeringPatternsUI();
+
                 guitarRollPanel.Invalidate();
             }
             else
@@ -1838,7 +1992,7 @@ namespace Guitarsharp
             else
             {
                 // Optionally, draw a placeholder or message indicating the pattern is empty
-                e.Graphics.DrawString("Empty Pattern", new Font("Arial", 12), Brushes.Gray, new PointF(panel.Width / 2 - 50, panel.Height / 2));
+                e.Graphics.DrawString("Empty Pattern: " + panelNumber, new Font("Arial", 12), Brushes.Gray, new PointF(panel.Width / 2 - 50, panel.Height / 2));
             }
 
             // ... Additional drawing logic for beats and bars, if necessary
@@ -1940,8 +2094,10 @@ namespace Guitarsharp
         private void selectedFingeringPatternNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             // Update the selected fingering pattern index based on the NumericUpDown value
-            //selectedFingeringPatternIndex = (int)selectedFingeringPatternNumericUpDown.Value - 1;
-            // No other action is taken here. Other methods will use selectedFingeringPatternIndex as needed.
+            activeFingeringPattern = (int)selectedFingeringPatternNumericUpDown.Value - 1;
+
+            fingerPatternComposition.Notes = allFingeringPatterns[(int)selectedFingeringPatternNumericUpDown.Value - 1].Notes;
+            guitarRollPanel.Invalidate();
         }
 
         private void addFingerinPatternToCompositionButton_Click(object sender, EventArgs e)
@@ -2178,7 +2334,7 @@ namespace Guitarsharp
 
     public static class GlobalConfig
     {
-        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);//cd quality stereo
+        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(96000, 2);
 
     }
 

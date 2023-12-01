@@ -1,6 +1,7 @@
 ﻿using MathNet.Numerics.IntegralTransforms;
 using System.Numerics;
 using NAudio.Wave;
+using NAudio.Extras;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace Guitarsharp
         private List<float> sampleBuffer = new List<float>();
         private int bufferLength = 1024; // Example size, adjust as needed
         public float dryWetMix =.5f; // Value from 0 (fully dry) to 1 (fully wet)
+        public Equalizer twelveBands;
         public WaveFormat WaveFormat { get; } = GlobalConfig.GlobalWaveFormat;
        
 

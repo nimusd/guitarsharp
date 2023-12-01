@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>Guitarsharp.Program</StartupObject>
     <AssemblyName>Guitaristic</AssemblyName>
+    <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
+    <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +26,7 @@
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Extras" Version="2.2.1" />
     <PackageReference Include="NWaves" Version="0.9.6" />
   </ItemGroup>
 
@@ -41,5 +44,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
 
 </Project>
