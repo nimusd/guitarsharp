@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace Guitarsharp
@@ -12,13 +13,32 @@ namespace Guitarsharp
 
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; }
+      
         public int BaseFret { get; set; } = 0;
         public bool IsActive { get; set; }
         private Form1 form1Instance;
         public List<Button> Buttons { get; private set; } = new List<Button>();
-        
 
-        public List<Button> FrettedNoteButtons { get; set; } = new();
+        // Add a property to get the pattern number from the name
+        public int PatternNumber
+        {
+            get
+            {
+                // Assuming the pattern name follows the format "Pattern {number}"
+                // You may need to adjust this logic based on the actual naming convention
+                int patternNumber;
+                if (int.TryParse(Regex.Match(Name, @"\d+").Value, out patternNumber))
+                {
+                    return patternNumber;
+                }
+                else
+                {
+                    // Default to 0 or handle the case where the pattern number is not present
+                    return 0;
+                }
+            }
+        }
+ 
 
 
 
@@ -47,7 +67,21 @@ namespace Guitarsharp
             
         }
 
-
+        public void Clear()
+        {
+            // Reset properties to their default values
+            Name = string.Empty;
+            Description = "Empty"; 
+            BaseFret = 0;
+            IsActive = false;
+            foreach (Button button in Buttons)
+            {
+                button.BackColor = Color.Beige;
+            }
+           
+        
+            
+        }
 
         public void CreateFretboard(int numberOfStrings, int numberOfFrets, int baseFret, Point location, int patternNumber)
         {
@@ -138,7 +172,7 @@ namespace Guitarsharp
             {
                 Tuple<int, int> tag = (Tuple<int, int>)clickedButton.Tag;
                 int stringIndex = tag.Item1;
-                int fretIndex = tag.Item2;
+                int fretIndex = tag.Item2;              
 
                 // Deselect other buttons on the same string
                 foreach (Button button in Buttons)
@@ -148,17 +182,37 @@ namespace Guitarsharp
                     {
                         button.BackColor =  Color.Beige; // Reset color
                     }
+                 
                 }
 
                 // Toggle the selection state of the clicked button            
                 
                     clickedButton.BackColor = clickedButton.BackColor == Color.Beige ? Color.Bisque : Color.Beige;
+
+                //now update the basefret if needed
+                UpdateBaseFret();
                 
             }
         }
 
 
-      
+        private void UpdateBaseFret()
+        {
+            // Find all selected buttons
+            List<int> selectedFrets = Buttons
+                .Where(button => button.BackColor == Color.Bisque)
+                .Select(button => ((Tuple<int, int>)button.Tag).Item2)
+                .ToList();
+
+            // Update the basefret to the lowest fret number if there are selected frets
+            if (selectedFrets.Any())
+            {
+                int lowestFret = selectedFrets.Min();
+                BaseFret = lowestFret;
+                    
+                
+            }
+        }
 
 
 

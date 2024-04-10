@@ -22,19 +22,12 @@ namespace Guitarsharp
     using System.Security.Principal;
     using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
     using RadioButton = RadioButton;
-    using NWaves.Signals;
-    using NWaves.Operations.Convolution;
-    using NWaves.Signals.Builders;
-    using MathNet.Numerics.IntegralTransforms;
-    
-    using System.Numerics;
-    using NWaves.Effects.Base;
-    using NWaves.Filters;
-    using NWaves.Filters.Fda;
-    using NWaves.Windows;
-    using NWaves.Filters.Bessel;
-    using NAudio.Dsp;
    
+    using MathNet.Numerics.IntegralTransforms;
+
+    using System.Numerics;
+    
+    using System.Diagnostics.Eventing.Reader;
 
     [Serializable]
     public partial class Form1 : Form
@@ -90,6 +83,7 @@ namespace Guitarsharp
         public List<FingeringPattern> allFingeringPatterns = new List<FingeringPattern>();
         public int activeFingeringPattern = 0;
         public bool fingeringPatternMode = false;
+        public bool fretPatternMode = false;
 
         public bool triplePerBeatMode = false;
         public bool quintuplePerBeatMode = false;
@@ -100,12 +94,12 @@ namespace Guitarsharp
         private AudioFileReader audioFileReader;
         private int filenumber = 1;
         private bool staccatoMode = false;
-        private int selectedStringIndex = 1;
+        private int selectedStringIndex;
         private Guitar theGuitar;
-        public float lowPassCutOffValue = 0.06f;// default value
-        public float secondLowPassCutOffValue = 0.06f; //default value
+        public float lowPassCutOffValue;
+        public float lowPassQValue;
         private bool applyToAllStrings = false;
-        private bool bypassSecondLowPass = false;
+
         public Form1()
         {
             InitializeComponent();
@@ -117,7 +111,7 @@ namespace Guitarsharp
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
 
-            //InitializeAudio();
+            // InitializeAudio();
             this.KeyPreview = true;
 
 
@@ -208,10 +202,9 @@ namespace Guitarsharp
 
 
             theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
-            InitializeEQSliders();
-            SetEqualizers();
 
-            loadfilesfortesting();
+
+            // loadfilesfortesting();
             Debug.WriteLine("Init completed");
 
 
@@ -223,7 +216,7 @@ namespace Guitarsharp
 
         }
         private void loadfilesfortesting()
-        {
+        {/*
             string guitarbody = "RAMIREZ.wav";
             string reverb = "Performance Hall - XY Close.wav";
             float[] impulseResponse = LoadWaveFile("RAMIREZ.wav");
@@ -238,15 +231,15 @@ namespace Guitarsharp
                 theGuitar.strings[i].lowPassCutOffValue = lowPassCutOffValue;//default value
             }
             LoadFretPatterns("base.gfp");
+*/
+            string jsonString = File.ReadAllText("first.gur");
+            Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
 
-           // string jsonString = File.ReadAllText("teset.gur");
-            //Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
-
-           // this.allNotes = data.AllNotes;
-            //this.composition = data.Composition;
+            this.allNotes = data.AllNotes;
+            this.composition = data.Composition;
             //this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
             //this.PixelsPerSecond = data.PixelsPerSecond;
-           // this.midiChannelPerString = data.MidiChannelPerString;
+            // this.midiChannelPerString = data.MidiChannelPerString;
             // this.timeSignatureNumerator = data.timeSignatureNumerator;
             // this.timeSignatureDenominator = data.timeSignatureNumerator;
             //this.tempo = data.tempo;
@@ -258,118 +251,7 @@ namespace Guitarsharp
 
         }
 
-        private void InitializeEQSliders()
-        {
-            const int numberOfBands = 12;
-            const int bandHeight = 440;
-            const int panelWidth = 100; // Adjust as needed
-            const int panelSpacing = 10; // Adjust as needed
-            float originalValueMin = -1.0f;
-            float originalValueMax = 1.0f;
-            float newValueMin = 1.0f;
-            float newValueMax = 100.0f;
 
-            
-            int[] bands = new int[numberOfBands] { 31, 62, 125, 250, 500, 1000, 2000, 4000, 8000, 16000, 20000, 40000 };
-            float[] gains = new float[numberOfBands] { 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1 };
-            // Create and add TrackBar controls for each band
-            for (int i = 0; i < numberOfBands; i++)
-            {
-                TrackBar eqSlider = new TrackBar();
-                eqSlider.Orientation = Orientation.Vertical;
-                eqSlider.Name = $"bandSlider{i}";
-                eqSlider.Minimum = 0; // Set the minimum value
-                eqSlider.Maximum = 100; // Set the maximum value
-                eqSlider.TickFrequency = 1; // Set the tick frequency
-
-                float mappedValue = (newValueMin + (newValueMax - newValueMin) * (gains[i] - originalValueMin) / (originalValueMax - originalValueMin));
-                eqSlider.Value = (int) mappedValue;
-                Debug.WriteLine("eqslider: " + eqSlider.Name +"value:  "+ eqSlider.Value);
-                eqSlider.ValueChanged += EQSlider_ValueChanged;
-
-                // Create and add a Label for the band's frequency range
-                Label label = new Label();
-                label.Text = "Band" + Environment.NewLine + bands[i].ToString();
-                label.TextAlign = ContentAlignment.MiddleCenter;
-
-                // Calculate the position of the controls
-                int xPosition = i * (panelWidth + panelSpacing);
-                int yPosition = 0;
-
-                // Set the location and size of the TrackBar and Label
-                eqSlider.Location = new Point(xPosition, yPosition);
-                eqSlider.Size = new Size(panelWidth, bandHeight);
-
-                label.Location = new Point(xPosition, yPosition + bandHeight);
-                label.Size = new Size(panelWidth, 100); // Adjust the height as needed
-
-                // Add the controls to the twelveBandEQPanel
-                twelveBandEQPanel.Controls.Add(eqSlider);
-                twelveBandEQPanel.Controls.Add(label);
-            }
-        }
-
-        private void EQSlider_ValueChanged(object sender, EventArgs e)
-        {
-            float sliderValue = 50; // Default slider value between 1 and 100
-            float minValue = -1.0f;
-            float maxValue = 1.0f;
-            int sliderNum =0;
-            // Cast the sender to a Slider (or the appropriate slider control type)
-            TrackBar slider = (TrackBar)sender;
-
-            // Get the name of the slider
-            string sliderName = slider.Name;
-
-            int startIndex = sliderName.IndexOfAny("0123456789".ToCharArray());
-
-            if (startIndex >= 0)
-            {
-                string numberSubstring = sliderName.Substring(startIndex);
-
-                if (int.TryParse(numberSubstring, out int sliderNumber))
-                {
-                   // Debug.WriteLine("slider number: "+ sliderNumber);
-                   sliderNum = sliderNumber;
-                }
-            }
-            // Map the slider value to the desired range
-            float mappedValue = minValue + (maxValue - minValue) * (slider.Value - 1) / (100 - 1);
-
-            // Now `mappedValue` contains the value in the range -1 to +1
-            theGuitar.strings[selectedStringIndex].twelveBands.bands[sliderNum].Gain = mappedValue;
-            
-            theGuitar.strings[selectedStringIndex].twelveBands.Update();
-            
-
-            // Handle changes in EQ slider values here
-            // Update your audio processing code based on the EQ adjustments
-        }
-        private void SetEqualizers()
-        {
-            EqualizerBand[] bands = new EqualizerBand[]
-{
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 32.7f, Gain = 0.0f },   // Band 1
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 65.4f, Gain = 0.0f },   // Band 2
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 130.8f, Gain = 0.0f },  // Band 3
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 261.6f, Gain = 0.0f },  // Band 4
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 523.3f, Gain = 0.0f },  // Band 5
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 1046.5f, Gain = -1f }, // Band 6
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 2093.0f, Gain = -1f }, // Band 7
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 4186.0f, Gain = -1f }, // Band 8
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 8372.0f, Gain = -1f }, // Band 9
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 12000.0f, Gain = -1f },// Band 10
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 16000.0f, Gain = -1f },// Band 11
-            new EqualizerBand { Bandwidth = 1.0f, Frequency = 20000.0f, Gain = -1f } // Band 12
-};
-
-            // Initialize the equalizer with the karplusStrong (ISampleProvider) and equalizer bands
-            for (int i = 0; i < theGuitar.strings.Length; i++)
-            {
-                theGuitar.strings[i].twelveBands =  new Equalizer(theGuitar.strings[i].twelveBands, bands);
-            }
-
-        }
         private void InitFretBoard()
         {
             int buttonWidth = 100;
@@ -410,192 +292,49 @@ namespace Guitarsharp
             {
                 selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
 
-                int dryWet = (int)(theGuitar.strings[selectedStringIndex].dryWetMix * 100);
-                // Ensure Value is within the TrackBar's range
-                dryWet = Math.Max(dryWetImpulseTrackBar.Minimum, Math.Min(dryWet, dryWetImpulseTrackBar.Maximum));
-                dryWetImpulseTrackBar.Value = dryWet;
+                if (theGuitar.strings[selectedStringIndex].lowPassCutOffValue > 50 && theGuitar.strings[selectedStringIndex].lowPassCutOffValue < 10000)
+                    lowPassFrequencyCutoffnumericUpDown.Value = (int)theGuitar.strings[selectedStringIndex].lowPassCutOffValue;
 
-                LowPassCutOffTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].lowPassCutOffValue - 0.05)) / 0.45);
-                secondLowPassTrackBar.Value = (int)(1 + (99.0 * (theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue - 0.05)) / 0.45);
-
-                float originalValueMin = -1.0f;
-                float originalValueMax = 1.0f;
-                float newValueMin = 1.0f;
-                float newValueMax = 100.0f;
-
-                int num = 0;
-                foreach (Control control in twelveBandEQPanel.Controls)
+                if (theGuitar.strings[selectedStringIndex].lowPassQValue > 1f && theGuitar.strings[selectedStringIndex].lowPassQValue < 10)
                 {
-                    if (control is TrackBar trackBar)
-                    {
-                        // Ensure num does not exceed the number of bands
-                        if (num < theGuitar.strings[selectedStringIndex].twelveBands.bands.Length)
-                        {
-                            // Map the slider value to the desired range
-                            float mappedValue = (newValueMin + (newValueMax - newValueMin) * (theGuitar.strings[selectedStringIndex].twelveBands.bands[num].Gain - originalValueMin) / (originalValueMax - originalValueMin));
+                    lowPassQTrackBar.Value = (int)theGuitar.strings[selectedStringIndex].lowPassQValue * 10;
+                    lowPassResonanceLabel.Text = "low pass  resonance (Q): " + theGuitar.strings[selectedStringIndex].lowPassQValue;
+                }
+                else if (theGuitar.strings[selectedStringIndex].lowPassQValue >= .1f && theGuitar.strings[selectedStringIndex].lowPassQValue <= 1)
+                {
+                    float newvalue = theGuitar.strings[selectedStringIndex].lowPassQValue * 10;
 
-                            // Ensure Value is within the TrackBar's range
-                            mappedValue = Math.Max(trackBar.Minimum, Math.Min(mappedValue, trackBar.Maximum));
+                    lowPassQTrackBar.Value = (int)newvalue;
+                    lowPassResonanceLabel.Text = "low pass  resonance (Q): " + theGuitar.strings[selectedStringIndex].lowPassQValue;
+                }
 
-                            Debug.WriteLine("Selected string: " + selectedStringIndex + "  eq slider: " + trackBar.Name + "   " + theGuitar.strings[selectedStringIndex].twelveBands.bands[num].Gain + " Mapped value: " + (int)mappedValue);
-                            trackBar.Value = (int)mappedValue;
-                            trackBar.Invalidate();
-
-                            num++;
-                        }
-                    }
+                if (theGuitar.strings[selectedStringIndex].attackPhaseSamples >= 1 && theGuitar.strings[selectedStringIndex].attackPhaseSamples <= 48000)
+                {
+                    attackPhaseNmericUpDown.Value = (int)theGuitar.strings[selectedStringIndex].attackPhaseSamples;
                 }
             }
         }
 
 
-
-        private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
+       
+        private void attackPhaseNmericUpDown_ValueChanged_2(object sender, EventArgs e)
         {
-            int midiNoteNumber;
-            int stringIndex;
-            int fretIndex;
-
-            // Assuming bisqueColor is the ARGB value for Color.Bisque
-            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
-
-            //clear the active fret pattern
-            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
-            if (activeFretPattern != null) activeFretPattern.IsActive = false;
-            //activate the new one and select it
-            allFretPatterns[(int)fretPatternSelectionNumericUpDown.Value].IsActive = true;
-            activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
-
-            baseFretForFretActivePatternNumericUpDown.Value = activeFretPattern.BaseFret;
-
-            foreach (Button button in fretboardPanel.Controls)
-            {
-                button.BackColor = SystemColors.Control;
-            }
-            //Debug the button tags and colors
-            foreach (var button in activeFretPattern.Buttons)
-            {
-
-                if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
-                {
-                    stringIndex = tag.Item1;
-                    fretIndex = tag.Item2;
-                    midiNoteNumber = GetMidiNoteNumber(stringIndex, fretIndex);
-                    FindButtonByStringAndNote(stringIndex, midiNoteNumber);
-
-                    //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
-                }
-                else
-                {
-                    // Debug.WriteLine("Button has no tag or incorrect tag format");
-                }
-            }
-            
-
+            theGuitar.strings[selectedStringIndex].attackPhaseSamples = (int)attackPhaseNmericUpDown.Value;
         }
 
-
-        private Button FindButtonByStringAndNote(int stringNumber, int midiNoteNumber)
+       
+        private void lowPassFrequencyCutoffnumericUpDown_ValueChanged_1(object sender, EventArgs e)
         {
-            foreach (Button btn in fretboardPanel.Controls)
-            {
-                if (btn.Tag is Tuple<int, int> tag)
-                {
-                    int btnMidiNoteNumber = tag.Item1;
-                    int btnStringNumber = tag.Item2;
-                    if (btnMidiNoteNumber == midiNoteNumber && btnStringNumber == stringNumber)
-                    {
-                        btn.BackColor = Color.Bisque;
-                        return btn; // Button found
-                    }
-                }
-            }
-            return null; // Button not found
+            theGuitar.strings[selectedStringIndex].lowPassCutOffValue = (float)lowPassFrequencyCutoffnumericUpDown.Value;
+            theGuitar.strings[selectedStringIndex].SetlowPassCutOffValue((float)lowPassFrequencyCutoffnumericUpDown.Value);
         }
-
-        private void baseFretForFretActivePatternNumericUpDown_ValueChanged(object sender, EventArgs e)
+        private void lowPassQTrackBar_ValueChanged_1(object sender, EventArgs e)
         {
-            NumericUpDown baseFretUpDown = sender as NumericUpDown;
-            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
-            int midiNoteNumber;
-            int stringIndex1;
-            int fretIndex1;
-            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
-
-
-            if (baseFretUpDown != null)
-            {
-                int newBaseFret = (int)baseFretUpDown.Value;
-                int fretChange = newBaseFret - activeFretPattern.BaseFret; // Calculate the change in frets
-
-                foreach (Button button in activeFretPattern.Buttons)
-                {
-                    Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
-                    int stringIndex = tag.Item1;
-                    int fretIndex = tag.Item2 + fretChange; // Update the fret index based on the change
-
-                    // Ensure fretIndex stays within valid range
-                    fretIndex = Math.Max(0, fretIndex);
-                    fretIndex = Math.Min(fretIndex, 23); // Assuming a maximum of 24 frets
-
-                    // Update the button tag and text with the new fret index
-                    button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
-                    //button.Text = activeFretPattern.GetNoteName(stringIndex, fretIndex);
-                }
-
-                activeFretPattern.BaseFret = newBaseFret; // Update the BaseFret property to the new value
-
-
-                foreach (Button button in fretboardPanel.Controls)
-                {
-                    button.BackColor = SystemColors.Control;
-                }
-                //Debug the button tags and colors
-                foreach (var button in activeFretPattern.Buttons)
-                {
-
-                    if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
-                    {
-                        stringIndex1 = tag.Item1;
-                        fretIndex1 = tag.Item2;
-                        midiNoteNumber = GetMidiNoteNumber(stringIndex1, fretIndex1);
-                        FindButtonByStringAndNote(stringIndex1, midiNoteNumber);
-
-                        //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
-                    }
-                    else
-                    {
-                        // Debug.WriteLine("Button has no tag or incorrect tag format");
-                    }
-                }
-            }
+            theGuitar.strings[selectedStringIndex].lowPassQValue = (float)lowPassQTrackBar.Value / 10;//divide the value by 10
+            lowPassResonanceLabel.Text = "low pass  resonance (Q): " + theGuitar.strings[selectedStringIndex].lowPassQValue;
+            theGuitar.strings[selectedStringIndex].SetlowPassQValue(theGuitar.strings[selectedStringIndex].lowPassQValue);
 
         }
-
-
-        private int GetMidiNoteNumber(int stringIndex, int fretIndex)
-        {
-            // MIDI note numbers for open strings in standard tuning
-            int[] openStringMidiNotes = new int[] { 64, 59, 55, 50, 45, 40 };
-
-            // Check if the string index is valid
-            if (stringIndex < 0 || stringIndex >= openStringMidiNotes.Length)
-                throw new ArgumentOutOfRangeException(nameof(stringIndex), "Invalid string index for MIDI note calculation.");
-
-            int midiNoteNumber = openStringMidiNotes[stringIndex] + fretIndex;
-            // Debug.WriteLine("note number form get midi note number: " +midiNoteNumber);
-
-            // Calculate the MIDI note number for the given string and fret
-            return openStringMidiNotes[stringIndex] + fretIndex;
-        }
-        private string GetNoteName(int midiNoteNumber)
-        {
-            string[] noteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-            int noteIndex = (midiNoteNumber - 12) % 12; // MIDI note number 12 is C, so we subtract 12 to align with our array
-            return noteNames[noteIndex];
-        }
-
-
         private void InitializeComposition()
         {
             composition = new Composition
@@ -604,7 +343,7 @@ namespace Guitarsharp
                 Tempo = this.tempo,
                 TimeSignatureNumerator = this.timeSignatureNumerator,
                 TimeSignatureDenominator = this.timeSignatureDenominator,
-               
+
             };
 
 
@@ -754,36 +493,121 @@ namespace Guitarsharp
 
 
                 string jsonString = File.ReadAllText(openFileDialog1.FileName);
-                Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
-
-                this.allNotes = data.AllNotes;
-                this.composition = data.Composition;
-                this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
-                this.PixelsPerSecond = data.PixelsPerSecond;
-                this.midiChannelPerString = data.MidiChannelPerString;
-                this.timeSignatureNumerator = data.timeSignatureNumerator;
-                this.timeSignatureDenominator = data.timeSignatureNumerator;
-                this.tempo = data.tempo;
+                // Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
+                AllDataContainer container = JsonSerializer.Deserialize<AllDataContainer>(jsonString);
+                this.allNotes = container.Form1Data.AllNotes;
+                this.composition = container.Form1Data.Composition;
+                this.fretboardMidiNoteNumber = container.Form1Data.FretboardMidiNoteNumber;
+                this.PixelsPerSecond = container.Form1Data.PixelsPerSecond;
+                this.midiChannelPerString = container.Form1Data.MidiChannelPerString;
+                this.timeSignatureNumerator = container.Form1Data.timeSignatureNumerator;
+                this.timeSignatureDenominator = container.Form1Data.timeSignatureNumerator;
+                this.tempo = container.Form1Data.tempo;
 
                 //check the version and handle older versions accordingly(e.g., provide default values for new properties or convert data from old formats).
-                if (this.version != data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+                if (this.version != container.Form1Data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+                                                                                                  // Load fret patterns
+                LoadFretPatternsFromData(container.FretPatternData);
+
+                // Load fingering patterns
+                allFingeringPatterns = container.FingeringPatterns;
 
                 guitarRollPanel.Invalidate(); // Refresh the panel to reflect the loaded data
             }
         }
+
+        private void LoadFretPatternsFromData(List<FretPatternData> fretPatternData)
+        {
+            // Clear the existing UI elements
+            fretPatternPanel.Controls.Clear();
+            allFretPatterns.Clear();
+
+            // Constants for layout
+            int patternsPerRow = 7;
+            int patternSpacing = 100;
+            int patternWidth = 400; // Adjust as needed
+            int patternHeight = 1500; // Adjust as needed
+
+            // Rebuild the UI elements with the loaded data
+            for (int i = 0; i < fretPatternData.Count; i++)
+            {
+                var patternData = fretPatternData[i];
+                int row = i / patternsPerRow;
+                int col = i % patternsPerRow;
+
+                // Calculate the location for each pattern
+                Point location = new Point(col * (patternWidth + patternSpacing) + 20, row * (patternHeight + patternSpacing) + 200);
+
+                FretPattern pattern = new FretPattern(patternData.Name, patternData.BaseFret, this);
+                pattern.Description = patternData.Description;
+                pattern.IsActive = patternData.IsActive;
+
+                // Set up the pattern's UI elements
+                pattern.CreateFretboard(6, 13, pattern.BaseFret, location, i);
+
+
+
+
+
+                // Update the buttons with the loaded names and back colors
+                for (int j = 0; j < pattern.Buttons.Count; j++)
+                {
+                    pattern.Buttons[j].Text = patternData.FretButtonName[j];
+                    pattern.Buttons[j].BackColor = Color.FromArgb(patternData.FretButtonBackColor[j]);
+                    pattern.Buttons[j].Tag = new Tuple<int, int>(patternData.FretTags[j].StringIndex, patternData.FretTags[j].FretIndex);
+
+                }
+
+                // Add the pattern to the list
+                allFretPatterns.Add(pattern);
+
+                // Add the pattern's UI elements to the panel
+                foreach (Button button in pattern.Buttons)
+                {
+                    fretPatternPanel.Controls.Add(button);
+                }
+
+            }
+            // activeFretPattern = allFretPatterns[0];
+            // Optionally, refresh the panel or form if necessary
+            fretPatternPanel.Refresh();
+
+            //MessageBox.Show("Fret patterns loaded successfully.", "Load Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+
+
+        }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             saveFileDialog1.DefaultExt = "gur";
             saveFileDialog1.Filter = "Guitarsharp Files (*.gur)|*.gur";
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                var container = new AllDataContainer
+                {
+                    Form1Data = GetForm1Data(),
+                    FretPatternData = GetAllFretPatternData(),
+                    FingeringPatterns = allFingeringPatterns // Assuming this is your list of fingering patterns
+                };
 
-                Form1Data data = GetForm1Data();
-                string jsonString = JsonSerializer.Serialize(data);
+                string jsonString = JsonSerializer.Serialize(container, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(saveFileDialog1.FileName, jsonString);
             }
-        }
 
+
+        }
+        private List<FretPatternData> GetAllFretPatternData()
+        {
+            List<FretPatternData> allPatternData = new List<FretPatternData>();
+            foreach (var pattern in allFretPatterns)
+            {
+                FretPatternData patternData = pattern.GetSerializableData();
+                allPatternData.Add(patternData);
+            }
+            return allPatternData;
+        }
         public enum NoteType
         {
             Ronde,      // Whole Note
@@ -1134,6 +958,7 @@ namespace Guitarsharp
         // Initialize NAudio components
         private void InitializeAudio()
         {
+
             PlayWaveOutDevice = new WaveOutEvent();
             mixer = new MixingSampleProvider(GlobalConfig.GlobalWaveFormat);
             mixer.ReadFully = true;
@@ -1152,7 +977,7 @@ namespace Guitarsharp
                 SetStatusMessage("Generating audio...");
 
                 // Generate the WAV file instead of a MemoryStream
-                 await Task.Run(() => GenerateCompositionAudioFile(composition));// audioFilePath = GenerateCompositionAudioFile(composition);
+                await Task.Run(() => audioFilePath = GenerateCompositionAudioFile(composition));
 
                 //SetStatusMessage("Playing the audio...");
 
@@ -1283,53 +1108,7 @@ namespace Guitarsharp
             for (int i = 0; i < notesPerString.Length; i++)
             {
                 audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i], i);
-
-
-
             }
-
-            // Assuming you have your audio signal and impulse response as float arrays
-
-            for (int i = 0; i < 6; i++)
-            {
-                //  wetDryMix is a float variable representing the wet/dry mix ratio
-                float wetDryMix = theGuitar.strings[i].dryWetMix; // Set this based on user input, ranging from 0.0 (dry) to 1.0 (wet)
-                //Debug.WriteLine("wetdrymix: " + wetDryMix);
-                // Create NWaves signals
-                var audioSignal = new DiscreteSignal(GlobalConfig.GlobalWaveFormat.SampleRate, audioDataPerString[i]);
-                // Assuming impulseResponseFrequency is a Complex[] array
-                System.Numerics.Complex[] impulse = (System.Numerics.Complex[])theGuitar.strings[i].impulseResponseFrequency.Clone();
-
-                System.Numerics.Complex[] frequencyDomainSignal = impulse;
-
-                // Apply inverse Fourier transform
-                Fourier.Inverse(frequencyDomainSignal, FourierOptions.Matlab);
-
-                // Extract the real part
-                float[] timeDomainSignal = frequencyDomainSignal.Select(c => (float)c.Real).ToArray();
-
-                // Create a DiscreteSignal object
-                var impulseResponse = new DiscreteSignal(GlobalConfig.GlobalWaveFormat.SampleRate, timeDomainSignal);
-
-
-                // Perform convolution
-                var convolver = new Convolver();
-                var convolvedSignal = convolver.Convolve(audioSignal, impulseResponse);
-
-                // Apply a more gradual mix curve
-                float adjustedWetDryMix = (float)Math.Pow(wetDryMix, 8); // Example of an exponential curve
-
-                for (int j = 0; j < audioDataPerString[i].Count; j++)
-                {
-                    float drySample = audioDataPerString[i][j];
-                    float wetSample = j < convolvedSignal.Samples.Length ? convolvedSignal.Samples[j] : 0f;
-                    audioDataPerString[i][j] = drySample * (1 - adjustedWetDryMix) + wetSample * adjustedWetDryMix;
-                }
-
-
-            }
-
-
 
             // Step 3: Mix audio from all strings
             List<float> mixedAudioData = MixAudioData(audioDataPerString);
@@ -1341,15 +1120,8 @@ namespace Guitarsharp
             return filePath;
         }
 
-        private void LowPassCutOffTrackBar_ValueChanged(object sender, EventArgs e)
-        {
-            theGuitar.strings[selectedStringIndex].SetlowPassCutOffValue(LowPassCutOffTrackBar.Value);
-            // Debug.WriteLine("low pass: " + theGuitar.strings[selectedStringIndex].lowPassCutOffValue);
-        }
-        private void secondLowPassTrackBar_ValueChanged(object sender, EventArgs e)
-        {
-            theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue = (float)(0.05 + 0.45 * (secondLowPassTrackBar.Value - 1) / 99.0);  //cutoff must be between .05 and 0.5
-        }
+
+
 
         /**************************************************************************************************/
         private List<float> GenerateAudioForString(List<Note> notes, KarplusStrong stringSynth, int stringNumber)
@@ -1366,12 +1138,8 @@ namespace Guitarsharp
             }
 
             // Define the duration of the attack phase in samples (e.g., 0.1 seconds)
-            int attackPhaseSamples = (int)(.1f * GlobalConfig.GlobalWaveFormat.SampleRate);
+            int attackPhaseSamples = stringSynth.attackPhaseSamples;
 
-            // Design a low-pass FIR filter
-            var lowPassFilter = new LowPassFilter(stringSynth.lowPassCutOffValue, 5); // Cutoff must be between .05 and 0.5
-            Debug.WriteLine("String number: " + stringNumber + "  cutoff: " + stringSynth.lowPassCutOffValue);
-            var lowPassFilter2 = new LowPassFilter(theGuitar.strings[selectedStringIndex].secondLowPassCutOffValue, 5); // Cutoff must be between .05 and 0.5
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -1392,7 +1160,7 @@ namespace Guitarsharp
                     // Generate the sample from your Karplus-Strong algorithm
                     float sample = stringSynth.NextSample();
 
-                    // Apply low-pass filter to the attack phase of the note
+
                     if (j < attackPhaseSamples)
                     {
                         // Calculate an exponential envelope for the ramp-up
@@ -1404,37 +1172,17 @@ namespace Guitarsharp
 
                     stringAudio.Add(sample);
                 }
-               // for (int j = 0; j < samplesForNote; j++)
-               // {
-                //    stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
-               // }
+
                 // Add silence if necessary
                 if (samplesForSilence > 0)
                 {
                     stringAudio.AddRange(new float[samplesForSilence]);
                 }
 
-                theGuitar.strings[currentNote.StringNumber].twelveBands.Process(stringAudio);
 
             }
 
-            /*
 
-            for (int j = 0; j < stringAudio.Count; j++)
-            {
-                stringAudio[j] = lowPassFilter.Process(stringAudio[j]);
-            }
-
-
-
-            if (!bypassSecondLowPass)
-            {
-                for (int j = 0; j < stringAudio.Count; j++)
-                {
-                    stringAudio[j] = lowPassFilter2.Process(stringAudio[j]);
-                }
-            }
-            */
             return stringAudio;
         }
 
@@ -1505,7 +1253,7 @@ namespace Guitarsharp
                 }
 
                 // Normalize if necessary to prevent clipping
-                mixedSample = NormalizeSample(mixedSample);
+                // mixedSample = NormalizeSample(mixedSample);
 
                 mixedAudio.Add(mixedSample);
             }
@@ -1585,7 +1333,7 @@ namespace Guitarsharp
                         for (int i = 0; i < samplesRead; i++)
                         {
                             // Normalize the sample
-                            buffer[i] = NormalizeSample(buffer[i]);
+                            // buffer[i] = NormalizeSample(buffer[i]);
                         }
                         writer.WriteSamples(buffer, 0, samplesRead);
                         elapsedTime += (double)samplesRead / waveFormat.SampleRate;
@@ -1654,7 +1402,7 @@ namespace Guitarsharp
                 {
                     int startTime = (int)(note.StartTime * MidiUtilities.TicksPerQuarterNote);
                     int duration = (int)((note.EndTime - note.StartTime) * MidiUtilities.TicksPerQuarterNote);
-                    
+
                     NoteOnEvent noteOn = new NoteOnEvent(startTime, note.MidiChannel, note.MidiNoteNumber, note.Velocity, duration);
                     trackEvents.Add(noteOn);
 
@@ -1684,8 +1432,8 @@ namespace Guitarsharp
 
         private void CreateFretPatterns()
         {
-            int numberOfPatterns = 12; // Set the number of patterns to 4
-            int patternsPerRow = 6;
+            int numberOfPatterns = 14; // Set the number of patterns to 14
+            int patternsPerRow = 7;
             int patternSpacing = 100;
             int patternWidth = 400; // Adjust as needed
             int patternHeight = 1500; // Adjust as needed
@@ -1730,8 +1478,8 @@ namespace Guitarsharp
         }
         private void saveFretPatternsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFretPatternsFileDialog.Filter = "Guitar Fret Patterns (*.gfp)|*.gfp";
-            saveFretPatternsFileDialog.DefaultExt = "gfp";
+            saveFretPatternsFileDialog.Filter = "Guitar Fret Patterns (*.fret)|*.fret";
+            saveFretPatternsFileDialog.DefaultExt = "fret";
             saveFretPatternsFileDialog.AddExtension = true;
 
             if (saveFretPatternsFileDialog.ShowDialog() == DialogResult.OK)
@@ -1763,8 +1511,8 @@ namespace Guitarsharp
 
         private void loadFretPatternsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            loadFretPatternsDialog.Filter = "Guitar Fret Patterns (*.gfp)|*.gfp";
-            loadFretPatternsDialog.DefaultExt = "gfp";
+            loadFretPatternsDialog.Filter = "Guitar Fret Patterns (*.fret)|*.fret";
+            loadFretPatternsDialog.DefaultExt = "fret";
 
             if (loadFretPatternsDialog.ShowDialog() == DialogResult.OK)
             {
@@ -1786,7 +1534,7 @@ namespace Guitarsharp
                 allFretPatterns.Clear();
 
                 // Constants for layout
-                int patternsPerRow = 6;
+                int patternsPerRow = 7;
                 int patternSpacing = 100;
                 int patternWidth = 400; // Adjust as needed
                 int patternHeight = 1500; // Adjust as needed
@@ -1831,7 +1579,7 @@ namespace Guitarsharp
                     }
 
                 }
-
+                //activeFretPattern = allFretPatterns[0];
                 // Optionally, refresh the panel or form if necessary
                 fretPatternPanel.Refresh();
 
@@ -1845,17 +1593,13 @@ namespace Guitarsharp
 
         private void UpdateFretPatternsUI()
         {
-            Color openStringSelectedColor = Color.Bisque; // or any color you use for selected open strings
-            Color openStringNotSelectedColor = Color.Blue; // or any color you use for not selected open strings
             Color fretSelectedColor = Color.Bisque; // Color for selected frets
             Color fretNotSelectedColor = Color.Beige; // Color for not selected frets
 
-            for (int i = 0; i < allFretPatterns.Count; i++)
+
+
+            foreach (FretPattern pattern in allFretPatterns)
             {
-                FretPattern pattern = allFretPatterns[i];
-
-
-
                 // Update the fret buttons
                 foreach (Button button in pattern.Buttons)
                 {
@@ -1863,22 +1607,264 @@ namespace Guitarsharp
                     int stringIndex = tag.Item1;
                     int fretIndex = tag.Item2;
 
-                    // Check if the button is for an open string
-                    if (fretIndex == -1)
-                    {
-                        // Open string button color is based on its current color
-                        button.BackColor = button.BackColor == openStringSelectedColor ? openStringSelectedColor : openStringNotSelectedColor;
-                        button.Text = pattern.GetNoteName(stringIndex, 0); // Assuming open string is equivalent to fret 0
-                    }
-                    else
-                    {
-                        // Regular fret button color is based on its current color
-                        button.BackColor = button.BackColor == fretSelectedColor ? fretSelectedColor : fretNotSelectedColor;
-                        button.Text = pattern.GetNoteName(stringIndex, fretIndex + pattern.BaseFret);
-                    }
+                    // Set the color based on whether the fret is selected or not
+                    // button.BackColor = button.BackColor;
+
+
+                    // Regular fret button color is based on its current color
+                    button.BackColor = button.BackColor == fretSelectedColor ? fretSelectedColor : fretNotSelectedColor;
+                    button.Text = pattern.GetNoteName(stringIndex, fretIndex + pattern.BaseFret);
                 }
             }
         }
+
+        private void clearFretPatternButton_Click(object sender, EventArgs e)
+        {
+
+            // Find the active FretPattern
+            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+
+            if (activeFretPattern != null)
+            {
+                int patternNum = activeFretPattern.PatternNumber;
+                if (patternNum > 0) patternNum -= 1;
+
+                // Clear the active FretPattern
+                allFretPatterns[patternNum].Clear();
+
+
+
+                Debug.WriteLine("pattern number: " + patternNum);
+            }
+
+
+        }
+
+        private void fretPatternModeButton_Click(object sender, EventArgs e)
+        {
+            int midiNoteNumber;
+            int stringIndex;
+            int fretIndex;
+
+            // Assuming bisqueColor is the ARGB value for Color.Bisque
+            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
+
+            fretPatternMode = !fretPatternMode;
+            fretPatternModeButton.BackColor = fretPatternMode ? Color.Red : Color.White;
+
+
+            if (fretPatternMode == false)
+            {
+                //exiting fret pattern mode
+                foreach (Button button in fretboardPanel.Controls)
+                {
+                    button.BackColor = SystemColors.Control;
+                }
+                // Determine which composition to use based on the fingering pattern mode
+                var currentComposition = fingeringPatternMode ? fingerPatternComposition : composition;
+
+                var notesAtNowTime = GetNotesAtNowTime(currentTime, currentComposition);
+                HighlightFretboard(notesAtNowTime);
+            }
+            else if (fretPatternMode == true)
+            {
+                if (activeFretPattern != null)
+                {
+                    Debug.WriteLine("active fret pattern # " + activeFretPattern.PatternNumber);
+
+                    baseFretForFretActivePatternNumericUpDown.Value = activeFretPattern.BaseFret;
+
+                    foreach (Button button in fretboardPanel.Controls)
+                    {
+                        button.BackColor = SystemColors.Control;
+                    }
+                    //Debug the button tags and colors
+                    foreach (var button in activeFretPattern.Buttons)
+                    {
+                        //Debug.WriteLine(" active pattern != null");
+                        if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
+                        {
+                            stringIndex = tag.Item1;
+                            fretIndex = tag.Item2;
+                            midiNoteNumber = GetMidiNoteNumber(stringIndex, fretIndex);
+                            FindButtonByStringAndNote(stringIndex, midiNoteNumber); //turn to color bisque
+
+                            // Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
+                        }
+                        else
+                        {
+                            // Debug.WriteLine("Button has no tag or incorrect tag format");
+                        }
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("No active pattern");
+                    return;
+                }
+
+            }
+        }
+
+        private void fretPatternSelectionNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            int midiNoteNumber;
+            int stringIndex;
+            int fretIndex;
+
+            // Assuming bisqueColor is the ARGB value for Color.Bisque
+            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
+
+            //clear the active fret pattern
+            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+            if (activeFretPattern != null) activeFretPattern.IsActive = false;
+            //activate the new one and select it
+            allFretPatterns[(int)fretPatternSelectionNumericUpDown.Value].IsActive = true;
+            activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+
+            baseFretForFretActivePatternNumericUpDown.Value = activeFretPattern.BaseFret;
+
+            if (fretPatternMode == true)
+            {
+
+                foreach (Button button in fretboardPanel.Controls)
+                {
+                    button.BackColor = SystemColors.Control;
+                }
+                //Debug the button tags and colors
+                foreach (var button in activeFretPattern.Buttons)
+                {
+
+                    if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
+                    {
+                        stringIndex = tag.Item1;
+                        fretIndex = tag.Item2;
+                        midiNoteNumber = GetMidiNoteNumber(stringIndex, fretIndex);
+                        FindButtonByStringAndNote(stringIndex, midiNoteNumber);//turn to color bisque
+
+                        //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
+                    }
+                    else
+                    {
+                        // Debug.WriteLine("Button has no tag or incorrect tag format");
+                    }
+                }
+            }
+
+
+        }
+
+
+        private Button FindButtonByStringAndNote(int stringNumber, int midiNoteNumber)
+        {
+            foreach (Button btn in fretboardPanel.Controls)
+            {
+                if (btn.Tag is Tuple<int, int> tag)
+                {
+                    int btnMidiNoteNumber = tag.Item1;
+                    int btnStringNumber = tag.Item2;
+                    if (btnMidiNoteNumber == midiNoteNumber && btnStringNumber == stringNumber)
+                    {
+                        btn.BackColor = Color.Bisque;
+                        return btn; // Button found
+                    }
+                }
+            }
+            return null; // Button not found
+        }
+
+        private void baseFretForFretActivePatternNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown baseFretUpDown = sender as NumericUpDown;
+            var activeFretPattern = allFretPatterns.FirstOrDefault(fp => fp.IsActive);
+            int midiNoteNumber;
+            int stringIndex1;
+            int fretIndex1;
+            Color bisqueColor = Color.FromArgb(255, 255, 228, 196);
+
+
+            if (baseFretUpDown != null && activeFretPattern != null && fretPatternMode == true)
+            {
+                int newBaseFret = (int)baseFretUpDown.Value;
+                int fretChange = newBaseFret - activeFretPattern.BaseFret; // Calculate the change in frets
+
+                foreach (Button button in activeFretPattern.Buttons)
+                {
+                    if (button.BackColor == bisqueColor) button.BackColor = Color.Beige;
+                    Tuple<int, int> tag = (Tuple<int, int>)button.Tag;
+                    int stringIndex = tag.Item1;
+                    int fretIndex = tag.Item2 + fretChange; // Update the fret index based on the change
+                    // Ensure fretIndex stays within valid range
+                    fretIndex = Math.Max(0, fretIndex);
+                    fretIndex = Math.Min(fretIndex, 23); // Assuming a maximum of 24 frets
+
+                    // Update the button tag and text with the new fret index
+                    button.Tag = new Tuple<int, int>(stringIndex, fretIndex);
+                    Tuple<int, int> tag1 = (Tuple<int, int>)button.Tag;
+
+                    //button.Text = activeFretPattern.GetNoteName(stringIndex, fretIndex);
+                }
+
+                activeFretPattern.BaseFret = newBaseFret; // Update the BaseFret property to the new value
+
+
+                foreach (Button button in fretboardPanel.Controls)
+                {
+                    button.BackColor = SystemColors.Control;
+                }
+                // the button colors
+                foreach (var button in activeFretPattern.Buttons)
+                {
+
+                    if (button.Tag is Tuple<int, int> tag && button.BackColor.ToArgb() == bisqueColor.ToArgb())
+                    {
+                        stringIndex1 = tag.Item1;
+                        fretIndex1 = tag.Item2;
+                        midiNoteNumber = GetMidiNoteNumber(stringIndex1, fretIndex1);
+                        FindButtonByStringAndNote(stringIndex1, midiNoteNumber);//turn to color bisque
+
+                        //Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
+                    }
+                    else
+                    {
+                        // Debug.WriteLine("Button has no tag or incorrect tag format");
+                    }
+                }
+
+
+                foreach (var button in activeFretPattern.Buttons)
+                {
+
+                }
+            }
+
+        }
+
+
+        private int GetMidiNoteNumber(int stringIndex, int fretIndex)
+        {
+            // MIDI note numbers for open strings in standard tuning
+            int[] openStringMidiNotes = new int[] { 64, 59, 55, 50, 45, 40 };
+
+            // Check if the string index is valid
+            if (stringIndex < 0 || stringIndex >= openStringMidiNotes.Length)
+                throw new ArgumentOutOfRangeException(nameof(stringIndex), "Invalid string index for MIDI note calculation.");
+
+            int midiNoteNumber = openStringMidiNotes[stringIndex] + fretIndex;
+            // Debug.WriteLine("note number form get midi note number: " +midiNoteNumber);
+
+            // Calculate the MIDI note number for the given string and fret
+            return openStringMidiNotes[stringIndex] + fretIndex;
+        }
+        private string GetNoteName(int midiNoteNumber)
+        {
+            string[] noteNames = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+            int noteIndex = (midiNoteNumber - 12) % 12; // MIDI note number 12 is C, so we subtract 12 to align with our array
+            return noteNames[noteIndex];
+        }
+
+
 
         private void FingerPatternModeButton_Click(object sender, EventArgs e)
         {
@@ -1889,7 +1875,7 @@ namespace Guitarsharp
             if (fingeringPatternMode == false)
             {
                 // Exiting fingering pattern mode
-   
+
                 PopulateFingeringPattern((int)selectedFingeringPatternNumericUpDown.Value - 1);
                 // Debug.WriteLine(" 1 fingering pattern #: " + ((int)selectedFingeringPatternNumericUpDown.Value -1));
                 RefreshFingeringPatternsUI();
@@ -2050,8 +2036,8 @@ namespace Guitarsharp
 
         private void saveFingeringPatternsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            saveFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fing)|*.fpg";
-            saveFingeringPatternsFileDialog.DefaultExt = "fpg";
+            saveFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fing)|*.fing";
+            saveFingeringPatternsFileDialog.DefaultExt = "fing";
             if (saveFingeringPatternsFileDialog.ShowDialog() == DialogResult.OK)
             {
                 SaveFingeringPatterns(saveFingeringPatternsFileDialog.FileName);
@@ -2068,7 +2054,7 @@ namespace Guitarsharp
 
         private void loadFingeringPatternsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            openFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fing)|*.fpg";
+            openFingeringPatternsFileDialog.Filter = "Fingering Patterns (*.fing)|*.fing";
             if (openFingeringPatternsFileDialog.ShowDialog() == DialogResult.OK)
             {
                 LoadFingeringPatterns(openFingeringPatternsFileDialog.FileName);
@@ -2124,16 +2110,25 @@ namespace Guitarsharp
                 return;
             }
             //Debug the button tags and colors
+            int isSelected = 0;
             foreach (var button in activeFretPattern.Buttons)
             {
+
                 if (button.Tag is Tuple<int, int> tag)
                 {
+                    if (button.BackColor == bisqueColor) { isSelected++; }
                     Debug.WriteLine($"Button for string {tag.Item1} has color {button.BackColor}" + " fretindex = " + tag.Item2);
                 }
                 else
                 {
                     Debug.WriteLine("Button has no tag or incorrect tag format");
                 }
+            }
+            if (isSelected == 0)
+            {
+                // Handle the case where there is nothing in the active fret pattern
+                MessageBox.Show(" Active fret pattern has no notes.");
+                return;
             }
 
             // Step 3: Loop through the notes in the active fingering pattern
@@ -2233,37 +2228,7 @@ namespace Guitarsharp
             }
         }
 
-        private void lowPassFilterAlpha_Scroll(object sender, EventArgs e)
-        {
 
-        }
-
-        private void loadGuitarBodyButton_Click(object sender, EventArgs e)
-        {
-            loadGuitarBodyOpenFileDialog.Filter = "Guitar Impulse Responses (*.wav)|*.wav";
-            loadGuitarBodyOpenFileDialog.DefaultExt = "wav";
-
-            if (loadGuitarBodyOpenFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string fileName = loadGuitarBodyOpenFileDialog.FileName;
-                float[] impulseResponse = LoadWaveFile(fileName);
-
-                // Now, pass this impulseResponse to the KarplusStrong
-                if (applyToAllStrings)
-                {
-                    for (int i = 0; i < 6; i++)
-                    {
-                        theGuitar.strings[i].SetImpulseResponse(impulseResponse);
-                    }
-                }
-                else
-                {
-
-                    theGuitar.strings[selectedStringIndex].SetImpulseResponse(impulseResponse);
-                }
-
-            }
-        }
         private float[] LoadWaveFile(string fileName)
         {
             using (var reader = new NAudio.Wave.AudioFileReader(fileName))
@@ -2288,29 +2253,20 @@ namespace Guitarsharp
         }
 
 
-        private void dryWetImpulseTrackBar_ValueChanged(object sender, EventArgs e)
+
+
+
+
+
+
+
+
+        private void tabControl1_Click(object sender, EventArgs e)
         {
-            theGuitar.strings[selectedStringIndex].SetDryWetMix(dryWetImpulseTrackBar.Value);//divided by 100 in karplusstrong
+            fretPatternPanel.Refresh();
         }
 
 
-
-
-
-        private void applyToAllStringsButton_Click(object sender, EventArgs e)
-        {
-            // Toggle the fingering pattern mode
-            applyToAllStrings = !applyToAllStrings;
-            applyToAllStringsButton.BackColor = applyToAllStrings ? Color.Red : Color.White;
-        }
-
-        private void bypassSecondLowPassButton_Click(object sender, EventArgs e)
-        {
-            bypassSecondLowPass = !bypassSecondLowPass;
-            bypassSecondLowPassButton.BackColor = bypassSecondLowPass ? Color.Red : Color.White;
-        }
-
- 
     }
 
     public static class MidiUtilities
@@ -2334,7 +2290,7 @@ namespace Guitarsharp
 
     public static class GlobalConfig
     {
-        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(96000, 2);
+        public static WaveFormat GlobalWaveFormat { get; } = WaveFormat.CreateIeeeFloatWaveFormat(48000, 2);
 
     }
 
@@ -2396,6 +2352,20 @@ namespace Guitarsharp
         }
     }
 
+    [Serializable]
+    public class AllDataContainer
+    {
+        public Form1Data Form1Data { get; set; }
+        public List<FretPatternData> FretPatternData { get; set; }
+        public List<FingeringPattern> FingeringPatterns { get; set; }
+
+        // Constructor
+        public AllDataContainer()
+        {
+            FretPatternData = new List<FretPatternData>();
+            FingeringPatterns = new List<FingeringPattern>();
+        }
+    }
 
 }
 

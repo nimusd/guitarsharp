@@ -10,6 +10,8 @@
     <AssemblyName>Guitaristic</AssemblyName>
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+    <ApplicationIcon>MugenB16-Acoustic-Guitars-Guitar-6.ico</ApplicationIcon>
+    <PackageIcon>MugenB16-Acoustic-Guitars-Guitar-6.128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,13 +26,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="NAudio.Extras" Version="2.2.1" />
-    <PackageReference Include="NWaves" Version="0.9.6" />
+    <None Remove="Resources\MugenB16-Acoustic-Guitars-Guitar-6%282%29.ico" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="MugenB16-Acoustic-Guitars-Guitar-6.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\nimus\Downloads\MugenB16-Acoustic-Guitars-Guitar-6.128.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="NAudio.Extras" Version="2.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -39,10 +60,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 

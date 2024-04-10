@@ -69,6 +69,8 @@ namespace Guitarsharp
             {
                 e.Graphics.DrawLine(thickRedPen, nowTimeX, 0, nowTimeX, guitarRollPanel.Height-400);
             }
+            var notesAtNowTime = GetNotesAtNowTime(currentTime, currentComposition);
+            HighlightFretboard(notesAtNowTime);
 
 
             // Get the current horizontal scroll position
@@ -165,15 +167,16 @@ namespace Guitarsharp
             {
                 if (note.DrawingRectangle.Contains(e.Location))
                 {
+                   
                     // Check if click is on the rightmost side
                     if (e.X >= note.DrawingRectangle.Right - 5 && e.X <= note.DrawingRectangle.Right)
                     {
-                        note.EndTime += 0.5; // Extend by half a second, adjust as needed
+                        note.EndTime += 0.1; // Extend by half a second, adjust as needed
                     }
                     // Check if click is on the leftmost side
                     else if (e.X >= note.DrawingRectangle.Left && e.X <= note.DrawingRectangle.Left + 5)
                     {
-                        note.StartTime -= 0.5; // Reduce start time by half a second, adjust as needed
+                        note.StartTime -= 0.1; // Reduce start time by half a second, adjust as needed
                     }
                     else
                     {
@@ -562,7 +565,30 @@ namespace Guitarsharp
 
 
 
+        private IEnumerable<Note> GetNotesAtNowTime(double currentTime, Composition composition)
+        {
+            // Find notes where the current time is between the start and end time of the note
+            return composition.Notes.Where(note => currentTime >= note.StartTime && currentTime <= note.EndTime);
+        }
 
+        private void HighlightFretboard(IEnumerable<Note> notes)
+        {
+            // Clear existing highlights
+            foreach (Button btn in fretboardPanel.Controls.OfType<Button>())
+            {
+                btn.BackColor = SystemColors.Control; // Default color
+            }
+
+            // Highlight new notes
+            foreach (Note note in notes)
+            {
+                Button fretButton = FindButtonByStringAndNote(note.StringNumber, note.MidiNoteNumber);
+                if (fretButton != null)
+                {
+                    fretButton.BackColor = Color.Bisque; // Highlight color
+                }
+            }
+        }
 
 
         private float CalculateBeatDuration()

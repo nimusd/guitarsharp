@@ -9,7 +9,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using NAudio.Dsp;
-
+using NWaves.Signals;
+using NWaves.Audio;
+using NWaves.Filters;
+using NWaves.Filters.Base;
+using NWaves.Filters.BiQuad;
+using NWaves.Filters.Fda;
+using NWaves.Operations;
+using NWaves.Transforms;
+using NWaves.Utils;
+using HighPassFilter = NWaves.Filters.BiQuad.HighPassFilter;
+using LowPassFilter = NWaves.Filters.BiQuad.LowPassFilter;
 
 
 namespace Guitarsharp
@@ -23,11 +33,11 @@ namespace Guitarsharp
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
-        public float lowPassCutOffValue { get; set; } = 300;
-        public float lowPassQValue { get; set; } = 1;
+        public float lowPassCutOffValue { get; set; } = 1500;
+        public float lowPassQValue { get; set; } = 3;
 
         private float previousSample = 0.0f;
-        public int attackPhaseSamples { get; set; } = 1;// lowest value
+        public int attackPhaseSamples { get; set; } = 480;// lowest value
 
 
         private List<float> sampleBuffer = new List<float>();
@@ -36,9 +46,7 @@ namespace Guitarsharp
         public Equalizer twelveBands;
         public NAudio.Wave.WaveFormat WaveFormat { get; set; } = GlobalConfig.GlobalWaveFormat;
 
-        private BiQuadFilter lowPassFilter;
-
-
+        private NWaves.Filters.BiQuad.BiQuadFilter lowPassFilter;
 
 
         public KarplusStrong(int sampleRate, float thefrequency)
@@ -55,10 +63,9 @@ namespace Guitarsharp
             {
                 excitationSample[i] = (float)(random.NextDouble() * 2.0 - 1.0);
             }
-
-            lowPassFilter = BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, lowPassCutOffValue, lowPassQValue);
-        
-    }
+            // Initialize the low-pass filter
+            lowPassFilter = new  LowPassFilter(0.1f,.1);// cutoff frequency and q factor (resonance which control the bandwidth of the filter)
+        }
        
 
         public void SetDryWetMix(float mix)
@@ -66,19 +73,10 @@ namespace Guitarsharp
             dryWetMix = mix/100;
            
         }
-        public void SetlowPassCutOffValue(float numericUpDownValue)
+        public void SetlowPassCutOffValue(float sliderValue)
         {
            
-            lowPassFilter.SetLowPassFilter(WaveFormat.SampleRate, numericUpDownValue, lowPassQValue);
-
-
-        }
-        public void SetlowPassQValue(float numericUpDownValue)
-        {
-
-            lowPassFilter.SetLowPassFilter(WaveFormat.SampleRate, lowPassCutOffValue, numericUpDownValue);
-            Debug.WriteLine("Q value: " + numericUpDownValue);
-
+            lowPassCutOffValue = (float)  (0.05 + 0.45 * (sliderValue - 1) / 99.0)  ;  //cutoff must be between .05 and 0.5
         }
         public void Stop()
         {
@@ -88,40 +86,78 @@ namespace Guitarsharp
                 delayLine[i] *= 0.1f; // Apply a strong damping factor to each sample
             }
 
-           
+            // Reset envelope position to prevent the sound from starting again
            
         }
 
         
         public float NextSample()
         {
-           
+            /*
+            float output;
+            int nextPos = (pos + 1) % delayLine.Count;
+            double currentDecay = GetDecayFactor(frequency);
+            output= delayLine[nextPos] = (float)(currentDecay * 0.5 * (delayLine[nextPos] + delayLine[pos])); 
+            pos = nextPos;
+            return output;
+            */
 
             //to dampen the sound
             float feedback = 0.989f;//between 0.980 and 0.999 (from mute to too much sustain)
             float output = delayLine[pos];
-
-            // Apply the low-pass filter directly
-            output = lowPassFilter.Transform(output);
-
             delayLine[pos] = feedback * 0.5f * (delayLine[pos] + delayLine[(pos + 1) % delayLine.Count]);
             
 
             pos = (pos + 1) % delayLine.Count;
 
 
+            /*
+
+            float output;
+            int nextPos = (pos + 1) % delayLine.Count;
+
+            output = delayLine[nextPos] = (float)(0.998f * 0.5 * (delayLine[nextPos] + delayLine[pos]));
+            pos = nextPos;
+            */
+
+            // Apply the low-pass filter to the output
+            /*
+            float lowpass = lowPassFilter.Transform(output);
+           //output = lowpass;
+
+            BiQuadFilter notchFilter = BiQuadFilter.NotchFilter(48000, 4000, -10);
             
-            return output ;
+            float notch = notchFilter.Transform(output);
+           // output = notch;
+            BiQuadFilter lowShelfFilter = BiQuadFilter.LowShelf(48000, 500, 5, 7);
+            float lowshelf = lowShelfFilter.Transform(output);
+           // output = lowshelf;
+            BiQuadFilter peakingFilter = BiQuadFilter.PeakingEQ(4800, 1000, 2, -15);
+            float peaking = peakingFilter.Transform(output);
+            //output = peaking;
+            
+            */
+
+            //var newoutput = lowPassFilter.Process(output);
+            
+            return output;
         }
 
 
         public void Pluck(float amplitude)
         {
-            
+            /*
+             // noise 
+            for (int i = 0; i < excitationSample.Count; i++)
+            {
+                delayLine[i] = amplitude * excitationSample[i];
+            }
+
+            */
             //pure sine
             for (int i = 0; i < delayLine.Count; i++)
             {
-                delayLine[i] = (amplitude/2)  * (float)(Math.Sin(2 * Math.PI * i / delayLine.Count));
+                delayLine[i] = (amplitude/2) * (float)(Math.Sin(2 * Math.PI * i / delayLine.Count));
 
             }
 
@@ -135,7 +171,18 @@ namespace Guitarsharp
             }
 
            
-            
+            /*
+
+            Random random = new Random();
+            for (int i = 0; i < delayLine.Count; i++)
+            {
+                float noise = (float)random.NextDouble() * 2 - 1;
+                float noiseAmplitude = (float)random.NextDouble();
+                float phase = (float)(random.NextDouble() * 2 * Math.PI);
+
+                delayLine[i] = amplitude * (float)(Math.Sin(2 * Math.PI * i / (delayLine.Count) + noise)  ); ;//the last number is giving the metallic to nylonish quality to the sound
+            }
+            */
         }
 
         public void UpdateFrequency(float newFrequency)
