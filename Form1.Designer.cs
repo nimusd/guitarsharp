@@ -118,9 +118,65 @@
             fingeringPatternPanel1 = new Panel();
             tabPage4 = new TabPage();
             panel2 = new Panel();
-            tabControl1 = new TabControl();
-            tabPage5 = new TabPage();
-            tabPage6 = new TabPage();
+            label16 = new Label();
+            label15 = new Label();
+            equalizerActiveCheckBox = new CheckBox();
+            EQBand8GainLabel = new Label();
+            EQBand7GainLabel = new Label();
+            EQBand6GainLabel = new Label();
+            EQBand5GainLabel = new Label();
+            EQBand4GainLabel = new Label();
+            EQBand3GainLabel = new Label();
+            EQBand2GainLabel = new Label();
+            EQBand1GainLabel = new Label();
+            EQBand8WidthLabel = new Label();
+            EQBand7WidthLabel = new Label();
+            EQBand6WidthLabel = new Label();
+            EQBand5WidthLabel = new Label();
+            EQBand4WidthLabel = new Label();
+            EQBand3WidthLabel = new Label();
+            EQBand2WidthLabel = new Label();
+            EQBand1WidthLabel = new Label();
+            EQBand8FrequencyLabel = new Label();
+            EQBand7FrequencyLabel = new Label();
+            EQBand6FrequencyLabel = new Label();
+            EQBand5FrequencyLabel = new Label();
+            EQBand4FrequencyLabel = new Label();
+            EQBand3FrequencyLabel = new Label();
+            EQBand2FrequencyLabel = new Label();
+            EQBand1FrequencyLabel = new Label();
+            label14 = new Label();
+            label13 = new Label();
+            label12 = new Label();
+            EQBand8GainSlider = new TrackBar();
+            EQBand7GainSlider = new TrackBar();
+            EQBand6GainSlider = new TrackBar();
+            EQBand5GainSlider = new TrackBar();
+            EQBand4GainSlider = new TrackBar();
+            EQBand3GainSlider = new TrackBar();
+            EQBand2GainSlider = new TrackBar();
+            EQBand1GainSlider = new TrackBar();
+            EQBand8WidthSlider = new TrackBar();
+            EQBand7WidthSlider = new TrackBar();
+            EQBand6WidthSlider = new TrackBar();
+            EQBand5WidthSlider = new TrackBar();
+            EQBand4WidthSlider = new TrackBar();
+            EQBand3WidthSlider = new TrackBar();
+            EQBand2WidthSlider = new TrackBar();
+            EQBand1WidthSlider = new TrackBar();
+            tabControl2 = new TabControl();
+            tabPage7 = new TabPage();
+            tabPage8 = new TabPage();
+            EQBand8FrequencySlider = new TrackBar();
+            EQBand7FrequencySlider = new TrackBar();
+            EQBand6FrequencySlider = new TrackBar();
+            EQBand5FrequencySlider = new TrackBar();
+            EQBand4FrequencySlider = new TrackBar();
+            EQBand3FrequencySlider = new TrackBar();
+            EQBand2FrequencySlider = new TrackBar();
+            EQBand1FrequencySlider = new TrackBar();
+            label8BandsEQ = new Label();
+            lowPassActiveCheckBox = new CheckBox();
             attackPhaseLabel = new Label();
             stringSynthroupBox = new GroupBox();
             attackPhaseNmericUpDown = new NumericUpDown();
@@ -154,7 +210,31 @@
             tabPage3.SuspendLayout();
             tabPage4.SuspendLayout();
             panel2.SuspendLayout();
-            tabControl1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)EQBand8GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1GainSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand8WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2WidthSlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1WidthSlider).BeginInit();
+            tabControl2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)EQBand8FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2FrequencySlider).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1FrequencySlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)attackPhaseNmericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lowPassQTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)lowPassFrequencyCutoffnumericUpDown).BeginInit();
@@ -413,6 +493,7 @@
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 24);
             fileToolStripMenuItem.Text = "File";
+            fileToolStripMenuItem.Click += fileToolStripMenuItem_Click;
             // 
             // openToolStripMenuItem
             // 
@@ -736,7 +817,7 @@
             tabPage1.Padding = new Padding(1);
             tabPage1.Size = new Size(1698, 1231);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "Main Page";
+            tabPage1.Text = "    Main Page       ";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // clearFretPatternButton
@@ -905,7 +986,7 @@
             tabPage2.Padding = new Padding(1);
             tabPage2.Size = new Size(1698, 1231);
             tabPage2.TabIndex = 1;
-            tabPage2.Text = "Fret Patterns";
+            tabPage2.Text = "    Fret Patterns        ";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
@@ -927,7 +1008,7 @@
             tabPage3.Name = "tabPage3";
             tabPage3.Size = new Size(1698, 1231);
             tabPage3.TabIndex = 2;
-            tabPage3.Text = "Fingering Patterns";
+            tabPage3.Text = "    Fingering Patterns        ";
             tabPage3.UseVisualStyleBackColor = true;
             // 
             // fingeringPatternpanel12
@@ -1058,13 +1139,69 @@
             tabPage4.Padding = new Padding(3);
             tabPage4.Size = new Size(1698, 1231);
             tabPage4.TabIndex = 3;
-            tabPage4.Text = "Synth";
+            tabPage4.Text = "    Synth        ";
             tabPage4.UseVisualStyleBackColor = true;
             // 
             // panel2
             // 
             panel2.BackColor = Color.Linen;
-            panel2.Controls.Add(tabControl1);
+            panel2.Controls.Add(label16);
+            panel2.Controls.Add(label15);
+            panel2.Controls.Add(equalizerActiveCheckBox);
+            panel2.Controls.Add(EQBand8GainLabel);
+            panel2.Controls.Add(EQBand7GainLabel);
+            panel2.Controls.Add(EQBand6GainLabel);
+            panel2.Controls.Add(EQBand5GainLabel);
+            panel2.Controls.Add(EQBand4GainLabel);
+            panel2.Controls.Add(EQBand3GainLabel);
+            panel2.Controls.Add(EQBand2GainLabel);
+            panel2.Controls.Add(EQBand1GainLabel);
+            panel2.Controls.Add(EQBand8WidthLabel);
+            panel2.Controls.Add(EQBand7WidthLabel);
+            panel2.Controls.Add(EQBand6WidthLabel);
+            panel2.Controls.Add(EQBand5WidthLabel);
+            panel2.Controls.Add(EQBand4WidthLabel);
+            panel2.Controls.Add(EQBand3WidthLabel);
+            panel2.Controls.Add(EQBand2WidthLabel);
+            panel2.Controls.Add(EQBand1WidthLabel);
+            panel2.Controls.Add(EQBand8FrequencyLabel);
+            panel2.Controls.Add(EQBand7FrequencyLabel);
+            panel2.Controls.Add(EQBand6FrequencyLabel);
+            panel2.Controls.Add(EQBand5FrequencyLabel);
+            panel2.Controls.Add(EQBand4FrequencyLabel);
+            panel2.Controls.Add(EQBand3FrequencyLabel);
+            panel2.Controls.Add(EQBand2FrequencyLabel);
+            panel2.Controls.Add(EQBand1FrequencyLabel);
+            panel2.Controls.Add(label14);
+            panel2.Controls.Add(label13);
+            panel2.Controls.Add(label12);
+            panel2.Controls.Add(EQBand8GainSlider);
+            panel2.Controls.Add(EQBand7GainSlider);
+            panel2.Controls.Add(EQBand6GainSlider);
+            panel2.Controls.Add(EQBand5GainSlider);
+            panel2.Controls.Add(EQBand4GainSlider);
+            panel2.Controls.Add(EQBand3GainSlider);
+            panel2.Controls.Add(EQBand2GainSlider);
+            panel2.Controls.Add(EQBand1GainSlider);
+            panel2.Controls.Add(EQBand8WidthSlider);
+            panel2.Controls.Add(EQBand7WidthSlider);
+            panel2.Controls.Add(EQBand6WidthSlider);
+            panel2.Controls.Add(EQBand5WidthSlider);
+            panel2.Controls.Add(EQBand4WidthSlider);
+            panel2.Controls.Add(EQBand3WidthSlider);
+            panel2.Controls.Add(EQBand2WidthSlider);
+            panel2.Controls.Add(EQBand1WidthSlider);
+            panel2.Controls.Add(tabControl2);
+            panel2.Controls.Add(EQBand8FrequencySlider);
+            panel2.Controls.Add(EQBand7FrequencySlider);
+            panel2.Controls.Add(EQBand6FrequencySlider);
+            panel2.Controls.Add(EQBand5FrequencySlider);
+            panel2.Controls.Add(EQBand4FrequencySlider);
+            panel2.Controls.Add(EQBand3FrequencySlider);
+            panel2.Controls.Add(EQBand2FrequencySlider);
+            panel2.Controls.Add(EQBand1FrequencySlider);
+            panel2.Controls.Add(label8BandsEQ);
+            panel2.Controls.Add(lowPassActiveCheckBox);
             panel2.Controls.Add(attackPhaseLabel);
             panel2.Controls.Add(stringSynthroupBox);
             panel2.Controls.Add(attackPhaseNmericUpDown);
@@ -1078,40 +1215,623 @@
             panel2.Size = new Size(1622, 833);
             panel2.TabIndex = 64;
             // 
-            // tabControl1
+            // label16
             // 
-            tabControl1.Controls.Add(tabPage5);
-            tabControl1.Controls.Add(tabPage6);
-            tabControl1.Location = new Point(485, 216);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(8, 8);
-            tabControl1.TabIndex = 58;
+            label16.AutoSize = true;
+            label16.BackColor = Color.Gold;
+            label16.Location = new Point(548, 662);
+            label16.Name = "label16";
+            label16.Size = new Size(290, 15);
+            label16.TabIndex = 121;
+            label16.Text = "must have a string selected before changing anything";
             // 
-            // tabPage5
+            // label15
             // 
-            tabPage5.Location = new Point(4, 24);
-            tabPage5.Name = "tabPage5";
-            tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(0, 0);
-            tabPage5.TabIndex = 0;
-            tabPage5.Text = "tabPage5";
-            tabPage5.UseVisualStyleBackColor = true;
+            label15.AutoSize = true;
+            label15.BackColor = Color.Gold;
+            label15.Location = new Point(90, 93);
+            label15.Name = "label15";
+            label15.Size = new Size(290, 15);
+            label15.TabIndex = 120;
+            label15.Text = "must have a string selected before changing anything";
             // 
-            // tabPage6
+            // equalizerActiveCheckBox
             // 
-            tabPage6.Location = new Point(4, 24);
-            tabPage6.Name = "tabPage6";
-            tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(0, 0);
-            tabPage6.TabIndex = 1;
-            tabPage6.Text = "tabPage6";
-            tabPage6.UseVisualStyleBackColor = true;
+            equalizerActiveCheckBox.AutoSize = true;
+            equalizerActiveCheckBox.Location = new Point(292, 111);
+            equalizerActiveCheckBox.Name = "equalizerActiveCheckBox";
+            equalizerActiveCheckBox.Size = new Size(194, 19);
+            equalizerActiveCheckBox.TabIndex = 119;
+            equalizerActiveCheckBox.Text = "Activate Equalizer for that string";
+            equalizerActiveCheckBox.UseVisualStyleBackColor = true;
+            equalizerActiveCheckBox.CheckedChanged += equalizerActiveCheckBox_CheckedChanged;
+            // 
+            // EQBand8GainLabel
+            // 
+            EQBand8GainLabel.AutoSize = true;
+            EQBand8GainLabel.Location = new Point(485, 809);
+            EQBand8GainLabel.Name = "EQBand8GainLabel";
+            EQBand8GainLabel.Size = new Size(13, 15);
+            EQBand8GainLabel.TabIndex = 118;
+            EQBand8GainLabel.Text = "0";
+            // 
+            // EQBand7GainLabel
+            // 
+            EQBand7GainLabel.AutoSize = true;
+            EQBand7GainLabel.Location = new Point(416, 809);
+            EQBand7GainLabel.Name = "EQBand7GainLabel";
+            EQBand7GainLabel.Size = new Size(13, 15);
+            EQBand7GainLabel.TabIndex = 117;
+            EQBand7GainLabel.Text = "0";
+            // 
+            // EQBand6GainLabel
+            // 
+            EQBand6GainLabel.AutoSize = true;
+            EQBand6GainLabel.Location = new Point(350, 809);
+            EQBand6GainLabel.Name = "EQBand6GainLabel";
+            EQBand6GainLabel.Size = new Size(13, 15);
+            EQBand6GainLabel.TabIndex = 116;
+            EQBand6GainLabel.Text = "0";
+            // 
+            // EQBand5GainLabel
+            // 
+            EQBand5GainLabel.AutoSize = true;
+            EQBand5GainLabel.Location = new Point(286, 809);
+            EQBand5GainLabel.Name = "EQBand5GainLabel";
+            EQBand5GainLabel.Size = new Size(13, 15);
+            EQBand5GainLabel.TabIndex = 115;
+            EQBand5GainLabel.Text = "0";
+            // 
+            // EQBand4GainLabel
+            // 
+            EQBand4GainLabel.AutoSize = true;
+            EQBand4GainLabel.Location = new Point(220, 809);
+            EQBand4GainLabel.Name = "EQBand4GainLabel";
+            EQBand4GainLabel.Size = new Size(13, 15);
+            EQBand4GainLabel.TabIndex = 114;
+            EQBand4GainLabel.Text = "0";
+            // 
+            // EQBand3GainLabel
+            // 
+            EQBand3GainLabel.AutoSize = true;
+            EQBand3GainLabel.Location = new Point(155, 809);
+            EQBand3GainLabel.Name = "EQBand3GainLabel";
+            EQBand3GainLabel.Size = new Size(13, 15);
+            EQBand3GainLabel.TabIndex = 113;
+            EQBand3GainLabel.Text = "0";
+            // 
+            // EQBand2GainLabel
+            // 
+            EQBand2GainLabel.AutoSize = true;
+            EQBand2GainLabel.Location = new Point(90, 809);
+            EQBand2GainLabel.Name = "EQBand2GainLabel";
+            EQBand2GainLabel.Size = new Size(13, 15);
+            EQBand2GainLabel.TabIndex = 112;
+            EQBand2GainLabel.Text = "0";
+            // 
+            // EQBand1GainLabel
+            // 
+            EQBand1GainLabel.AutoSize = true;
+            EQBand1GainLabel.Location = new Point(39, 809);
+            EQBand1GainLabel.Name = "EQBand1GainLabel";
+            EQBand1GainLabel.Size = new Size(13, 15);
+            EQBand1GainLabel.TabIndex = 111;
+            EQBand1GainLabel.Text = "0";
+            // 
+            // EQBand8WidthLabel
+            // 
+            EQBand8WidthLabel.AutoSize = true;
+            EQBand8WidthLabel.Location = new Point(485, 567);
+            EQBand8WidthLabel.Name = "EQBand8WidthLabel";
+            EQBand8WidthLabel.Size = new Size(13, 15);
+            EQBand8WidthLabel.TabIndex = 110;
+            EQBand8WidthLabel.Text = "1";
+            // 
+            // EQBand7WidthLabel
+            // 
+            EQBand7WidthLabel.AutoSize = true;
+            EQBand7WidthLabel.Location = new Point(416, 567);
+            EQBand7WidthLabel.Name = "EQBand7WidthLabel";
+            EQBand7WidthLabel.Size = new Size(13, 15);
+            EQBand7WidthLabel.TabIndex = 109;
+            EQBand7WidthLabel.Text = "1";
+            // 
+            // EQBand6WidthLabel
+            // 
+            EQBand6WidthLabel.AutoSize = true;
+            EQBand6WidthLabel.Location = new Point(350, 567);
+            EQBand6WidthLabel.Name = "EQBand6WidthLabel";
+            EQBand6WidthLabel.Size = new Size(13, 15);
+            EQBand6WidthLabel.TabIndex = 108;
+            EQBand6WidthLabel.Text = "1";
+            // 
+            // EQBand5WidthLabel
+            // 
+            EQBand5WidthLabel.AutoSize = true;
+            EQBand5WidthLabel.Location = new Point(286, 567);
+            EQBand5WidthLabel.Name = "EQBand5WidthLabel";
+            EQBand5WidthLabel.Size = new Size(13, 15);
+            EQBand5WidthLabel.TabIndex = 107;
+            EQBand5WidthLabel.Text = "1";
+            // 
+            // EQBand4WidthLabel
+            // 
+            EQBand4WidthLabel.AutoSize = true;
+            EQBand4WidthLabel.Location = new Point(220, 567);
+            EQBand4WidthLabel.Name = "EQBand4WidthLabel";
+            EQBand4WidthLabel.Size = new Size(13, 15);
+            EQBand4WidthLabel.TabIndex = 106;
+            EQBand4WidthLabel.Text = "1";
+            // 
+            // EQBand3WidthLabel
+            // 
+            EQBand3WidthLabel.AutoSize = true;
+            EQBand3WidthLabel.Location = new Point(155, 567);
+            EQBand3WidthLabel.Name = "EQBand3WidthLabel";
+            EQBand3WidthLabel.Size = new Size(13, 15);
+            EQBand3WidthLabel.TabIndex = 105;
+            EQBand3WidthLabel.Text = "1";
+            // 
+            // EQBand2WidthLabel
+            // 
+            EQBand2WidthLabel.AutoSize = true;
+            EQBand2WidthLabel.Location = new Point(90, 567);
+            EQBand2WidthLabel.Name = "EQBand2WidthLabel";
+            EQBand2WidthLabel.Size = new Size(13, 15);
+            EQBand2WidthLabel.TabIndex = 104;
+            EQBand2WidthLabel.Text = "1";
+            // 
+            // EQBand1WidthLabel
+            // 
+            EQBand1WidthLabel.AutoSize = true;
+            EQBand1WidthLabel.Location = new Point(39, 567);
+            EQBand1WidthLabel.Name = "EQBand1WidthLabel";
+            EQBand1WidthLabel.Size = new Size(13, 15);
+            EQBand1WidthLabel.TabIndex = 103;
+            EQBand1WidthLabel.Text = "1";
+            // 
+            // EQBand8FrequencyLabel
+            // 
+            EQBand8FrequencyLabel.AutoSize = true;
+            EQBand8FrequencyLabel.Location = new Point(485, 335);
+            EQBand8FrequencyLabel.Name = "EQBand8FrequencyLabel";
+            EQBand8FrequencyLabel.Size = new Size(31, 15);
+            EQBand8FrequencyLabel.TabIndex = 102;
+            EQBand8FrequencyLabel.Text = "3000";
+            // 
+            // EQBand7FrequencyLabel
+            // 
+            EQBand7FrequencyLabel.AutoSize = true;
+            EQBand7FrequencyLabel.Location = new Point(416, 335);
+            EQBand7FrequencyLabel.Name = "EQBand7FrequencyLabel";
+            EQBand7FrequencyLabel.Size = new Size(31, 15);
+            EQBand7FrequencyLabel.TabIndex = 101;
+            EQBand7FrequencyLabel.Text = "2000";
+            // 
+            // EQBand6FrequencyLabel
+            // 
+            EQBand6FrequencyLabel.AutoSize = true;
+            EQBand6FrequencyLabel.Location = new Point(350, 335);
+            EQBand6FrequencyLabel.Name = "EQBand6FrequencyLabel";
+            EQBand6FrequencyLabel.Size = new Size(31, 15);
+            EQBand6FrequencyLabel.TabIndex = 100;
+            EQBand6FrequencyLabel.Text = "1000";
+            // 
+            // EQBand5FrequencyLabel
+            // 
+            EQBand5FrequencyLabel.AutoSize = true;
+            EQBand5FrequencyLabel.Location = new Point(286, 335);
+            EQBand5FrequencyLabel.Name = "EQBand5FrequencyLabel";
+            EQBand5FrequencyLabel.Size = new Size(25, 15);
+            EQBand5FrequencyLabel.TabIndex = 99;
+            EQBand5FrequencyLabel.Text = "800";
+            // 
+            // EQBand4FrequencyLabel
+            // 
+            EQBand4FrequencyLabel.AutoSize = true;
+            EQBand4FrequencyLabel.Location = new Point(220, 335);
+            EQBand4FrequencyLabel.Name = "EQBand4FrequencyLabel";
+            EQBand4FrequencyLabel.Size = new Size(25, 15);
+            EQBand4FrequencyLabel.TabIndex = 98;
+            EQBand4FrequencyLabel.Text = "500";
+            // 
+            // EQBand3FrequencyLabel
+            // 
+            EQBand3FrequencyLabel.AutoSize = true;
+            EQBand3FrequencyLabel.Location = new Point(155, 335);
+            EQBand3FrequencyLabel.Name = "EQBand3FrequencyLabel";
+            EQBand3FrequencyLabel.Size = new Size(25, 15);
+            EQBand3FrequencyLabel.TabIndex = 97;
+            EQBand3FrequencyLabel.Text = "300";
+            // 
+            // EQBand2FrequencyLabel
+            // 
+            EQBand2FrequencyLabel.AutoSize = true;
+            EQBand2FrequencyLabel.Location = new Point(90, 335);
+            EQBand2FrequencyLabel.Name = "EQBand2FrequencyLabel";
+            EQBand2FrequencyLabel.Size = new Size(25, 15);
+            EQBand2FrequencyLabel.TabIndex = 96;
+            EQBand2FrequencyLabel.Text = "200";
+            // 
+            // EQBand1FrequencyLabel
+            // 
+            EQBand1FrequencyLabel.AutoSize = true;
+            EQBand1FrequencyLabel.Location = new Point(39, 335);
+            EQBand1FrequencyLabel.Name = "EQBand1FrequencyLabel";
+            EQBand1FrequencyLabel.Size = new Size(25, 15);
+            EQBand1FrequencyLabel.TabIndex = 95;
+            EQBand1FrequencyLabel.Text = "100";
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Location = new Point(45, 596);
+            label14.Name = "label14";
+            label14.Size = new Size(100, 15);
+            label14.TabIndex = 94;
+            label14.Text = "gain (+ or - 12db)";
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new Point(45, 366);
+            label13.Name = "label13";
+            label13.Size = new Size(183, 15);
+            label13.TabIndex = 93;
+            label13.Text = "width or Q factor (.1 to 3 octaves)";
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new Point(51, 127);
+            label12.Name = "label12";
+            label12.Size = new Size(98, 15);
+            label12.TabIndex = 92;
+            label12.Text = "Center frequency";
+            // 
+            // EQBand8GainSlider
+            // 
+            EQBand8GainSlider.Location = new Point(485, 623);
+            EQBand8GainSlider.Maximum = 12;
+            EQBand8GainSlider.Minimum = -12;
+            EQBand8GainSlider.Name = "EQBand8GainSlider";
+            EQBand8GainSlider.Orientation = Orientation.Vertical;
+            EQBand8GainSlider.Size = new Size(45, 183);
+            EQBand8GainSlider.TabIndex = 91;
+            EQBand8GainSlider.Scroll += EQBand8GainSlider_Scroll;
+            // 
+            // EQBand7GainSlider
+            // 
+            EQBand7GainSlider.Location = new Point(416, 623);
+            EQBand7GainSlider.Maximum = 12;
+            EQBand7GainSlider.Minimum = -12;
+            EQBand7GainSlider.Name = "EQBand7GainSlider";
+            EQBand7GainSlider.Orientation = Orientation.Vertical;
+            EQBand7GainSlider.Size = new Size(45, 183);
+            EQBand7GainSlider.TabIndex = 90;
+            EQBand7GainSlider.Scroll += EQBand7GainSlider_Scroll;
+            // 
+            // EQBand6GainSlider
+            // 
+            EQBand6GainSlider.Location = new Point(350, 623);
+            EQBand6GainSlider.Maximum = 12;
+            EQBand6GainSlider.Minimum = -12;
+            EQBand6GainSlider.Name = "EQBand6GainSlider";
+            EQBand6GainSlider.Orientation = Orientation.Vertical;
+            EQBand6GainSlider.Size = new Size(45, 183);
+            EQBand6GainSlider.TabIndex = 89;
+            EQBand6GainSlider.Scroll += EQBand6GainSlider_Scroll;
+            // 
+            // EQBand5GainSlider
+            // 
+            EQBand5GainSlider.Location = new Point(286, 623);
+            EQBand5GainSlider.Maximum = 12;
+            EQBand5GainSlider.Minimum = -12;
+            EQBand5GainSlider.Name = "EQBand5GainSlider";
+            EQBand5GainSlider.Orientation = Orientation.Vertical;
+            EQBand5GainSlider.Size = new Size(45, 183);
+            EQBand5GainSlider.TabIndex = 88;
+            EQBand5GainSlider.Scroll += EQBand5GainSlider_Scroll;
+            // 
+            // EQBand4GainSlider
+            // 
+            EQBand4GainSlider.Location = new Point(220, 623);
+            EQBand4GainSlider.Maximum = 12;
+            EQBand4GainSlider.Minimum = -12;
+            EQBand4GainSlider.Name = "EQBand4GainSlider";
+            EQBand4GainSlider.Orientation = Orientation.Vertical;
+            EQBand4GainSlider.Size = new Size(45, 183);
+            EQBand4GainSlider.TabIndex = 87;
+            EQBand4GainSlider.Scroll += EQBand4GainSlider_Scroll;
+            // 
+            // EQBand3GainSlider
+            // 
+            EQBand3GainSlider.Location = new Point(155, 623);
+            EQBand3GainSlider.Maximum = 12;
+            EQBand3GainSlider.Minimum = -12;
+            EQBand3GainSlider.Name = "EQBand3GainSlider";
+            EQBand3GainSlider.Orientation = Orientation.Vertical;
+            EQBand3GainSlider.Size = new Size(45, 183);
+            EQBand3GainSlider.TabIndex = 86;
+            EQBand3GainSlider.Scroll += EQBand3GainSlider_Scroll;
+            // 
+            // EQBand2GainSlider
+            // 
+            EQBand2GainSlider.Location = new Point(90, 623);
+            EQBand2GainSlider.Maximum = 12;
+            EQBand2GainSlider.Minimum = -12;
+            EQBand2GainSlider.Name = "EQBand2GainSlider";
+            EQBand2GainSlider.Orientation = Orientation.Vertical;
+            EQBand2GainSlider.Size = new Size(45, 183);
+            EQBand2GainSlider.TabIndex = 85;
+            EQBand2GainSlider.Scroll += EQBand2GainSlider_Scroll;
+            // 
+            // EQBand1GainSlider
+            // 
+            EQBand1GainSlider.Location = new Point(39, 623);
+            EQBand1GainSlider.Maximum = 12;
+            EQBand1GainSlider.Minimum = -12;
+            EQBand1GainSlider.Name = "EQBand1GainSlider";
+            EQBand1GainSlider.Orientation = Orientation.Vertical;
+            EQBand1GainSlider.Size = new Size(45, 183);
+            EQBand1GainSlider.TabIndex = 84;
+            EQBand1GainSlider.Scroll += EQBand1GainSlider_Scroll;
+            // 
+            // EQBand8WidthSlider
+            // 
+            EQBand8WidthSlider.Location = new Point(485, 381);
+            EQBand8WidthSlider.Maximum = 30;
+            EQBand8WidthSlider.Minimum = 1;
+            EQBand8WidthSlider.Name = "EQBand8WidthSlider";
+            EQBand8WidthSlider.Orientation = Orientation.Vertical;
+            EQBand8WidthSlider.Size = new Size(45, 183);
+            EQBand8WidthSlider.TabIndex = 82;
+            EQBand8WidthSlider.Value = 10;
+            EQBand8WidthSlider.Scroll += EQBand8WidthSlider_Scroll;
+            // 
+            // EQBand7WidthSlider
+            // 
+            EQBand7WidthSlider.Location = new Point(416, 381);
+            EQBand7WidthSlider.Maximum = 30;
+            EQBand7WidthSlider.Minimum = 1;
+            EQBand7WidthSlider.Name = "EQBand7WidthSlider";
+            EQBand7WidthSlider.Orientation = Orientation.Vertical;
+            EQBand7WidthSlider.Size = new Size(45, 183);
+            EQBand7WidthSlider.TabIndex = 81;
+            EQBand7WidthSlider.Value = 10;
+            EQBand7WidthSlider.Scroll += EQBand7WidthSlider_Scroll;
+            // 
+            // EQBand6WidthSlider
+            // 
+            EQBand6WidthSlider.Location = new Point(350, 381);
+            EQBand6WidthSlider.Maximum = 30;
+            EQBand6WidthSlider.Minimum = 1;
+            EQBand6WidthSlider.Name = "EQBand6WidthSlider";
+            EQBand6WidthSlider.Orientation = Orientation.Vertical;
+            EQBand6WidthSlider.Size = new Size(45, 183);
+            EQBand6WidthSlider.TabIndex = 80;
+            EQBand6WidthSlider.Value = 10;
+            EQBand6WidthSlider.Scroll += EQBand6WidthSlider_Scroll;
+            // 
+            // EQBand5WidthSlider
+            // 
+            EQBand5WidthSlider.Location = new Point(286, 381);
+            EQBand5WidthSlider.Maximum = 30;
+            EQBand5WidthSlider.Minimum = 1;
+            EQBand5WidthSlider.Name = "EQBand5WidthSlider";
+            EQBand5WidthSlider.Orientation = Orientation.Vertical;
+            EQBand5WidthSlider.Size = new Size(45, 183);
+            EQBand5WidthSlider.TabIndex = 79;
+            EQBand5WidthSlider.Value = 10;
+            EQBand5WidthSlider.Scroll += EQBand5WidthSlider_Scroll;
+            // 
+            // EQBand4WidthSlider
+            // 
+            EQBand4WidthSlider.Location = new Point(220, 381);
+            EQBand4WidthSlider.Maximum = 30;
+            EQBand4WidthSlider.Minimum = 1;
+            EQBand4WidthSlider.Name = "EQBand4WidthSlider";
+            EQBand4WidthSlider.Orientation = Orientation.Vertical;
+            EQBand4WidthSlider.Size = new Size(45, 183);
+            EQBand4WidthSlider.TabIndex = 78;
+            EQBand4WidthSlider.Value = 10;
+            EQBand4WidthSlider.Scroll += EQBand4WidthSlider_Scroll;
+            // 
+            // EQBand3WidthSlider
+            // 
+            EQBand3WidthSlider.Location = new Point(155, 381);
+            EQBand3WidthSlider.Maximum = 30;
+            EQBand3WidthSlider.Minimum = 1;
+            EQBand3WidthSlider.Name = "EQBand3WidthSlider";
+            EQBand3WidthSlider.Orientation = Orientation.Vertical;
+            EQBand3WidthSlider.Size = new Size(45, 183);
+            EQBand3WidthSlider.TabIndex = 77;
+            EQBand3WidthSlider.Value = 10;
+            EQBand3WidthSlider.Scroll += EQBand3WidthSlider_Scroll;
+            // 
+            // EQBand2WidthSlider
+            // 
+            EQBand2WidthSlider.Location = new Point(90, 381);
+            EQBand2WidthSlider.Maximum = 30;
+            EQBand2WidthSlider.Minimum = 1;
+            EQBand2WidthSlider.Name = "EQBand2WidthSlider";
+            EQBand2WidthSlider.Orientation = Orientation.Vertical;
+            EQBand2WidthSlider.Size = new Size(45, 183);
+            EQBand2WidthSlider.TabIndex = 76;
+            EQBand2WidthSlider.Value = 10;
+            EQBand2WidthSlider.Scroll += EQBand2WidthSlider_Scroll;
+            // 
+            // EQBand1WidthSlider
+            // 
+            EQBand1WidthSlider.Location = new Point(39, 381);
+            EQBand1WidthSlider.Maximum = 30;
+            EQBand1WidthSlider.Minimum = 1;
+            EQBand1WidthSlider.Name = "EQBand1WidthSlider";
+            EQBand1WidthSlider.Orientation = Orientation.Vertical;
+            EQBand1WidthSlider.Size = new Size(45, 183);
+            EQBand1WidthSlider.TabIndex = 75;
+            EQBand1WidthSlider.Value = 10;
+            EQBand1WidthSlider.Scroll += EQBand1WidthSlider_Scroll;
+            // 
+            // tabControl2
+            // 
+            tabControl2.Controls.Add(tabPage7);
+            tabControl2.Controls.Add(tabPage8);
+            tabControl2.Location = new Point(1012, 392);
+            tabControl2.Name = "tabControl2";
+            tabControl2.SelectedIndex = 0;
+            tabControl2.Size = new Size(8, 8);
+            tabControl2.TabIndex = 74;
+            // 
+            // tabPage7
+            // 
+            tabPage7.Location = new Point(4, 24);
+            tabPage7.Name = "tabPage7";
+            tabPage7.Padding = new Padding(3);
+            tabPage7.Size = new Size(0, 0);
+            tabPage7.TabIndex = 0;
+            tabPage7.Text = "tabPage7";
+            tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // tabPage8
+            // 
+            tabPage8.Location = new Point(4, 24);
+            tabPage8.Name = "tabPage8";
+            tabPage8.Padding = new Padding(3);
+            tabPage8.Size = new Size(0, 0);
+            tabPage8.TabIndex = 1;
+            tabPage8.Text = "tabPage8";
+            tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // EQBand8FrequencySlider
+            // 
+            EQBand8FrequencySlider.Location = new Point(485, 149);
+            EQBand8FrequencySlider.Maximum = 5000;
+            EQBand8FrequencySlider.Minimum = 50;
+            EQBand8FrequencySlider.Name = "EQBand8FrequencySlider";
+            EQBand8FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand8FrequencySlider.Size = new Size(45, 183);
+            EQBand8FrequencySlider.SmallChange = 50;
+            EQBand8FrequencySlider.TabIndex = 73;
+            EQBand8FrequencySlider.Value = 3000;
+            EQBand8FrequencySlider.Scroll += EQBand8FrequencySlider_Scroll;
+            // 
+            // EQBand7FrequencySlider
+            // 
+            EQBand7FrequencySlider.Location = new Point(416, 149);
+            EQBand7FrequencySlider.Maximum = 5000;
+            EQBand7FrequencySlider.Minimum = 50;
+            EQBand7FrequencySlider.Name = "EQBand7FrequencySlider";
+            EQBand7FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand7FrequencySlider.Size = new Size(45, 183);
+            EQBand7FrequencySlider.SmallChange = 50;
+            EQBand7FrequencySlider.TabIndex = 72;
+            EQBand7FrequencySlider.Value = 2000;
+            EQBand7FrequencySlider.Scroll += EQBand7FrequencySlider_Scroll;
+            // 
+            // EQBand6FrequencySlider
+            // 
+            EQBand6FrequencySlider.Location = new Point(350, 149);
+            EQBand6FrequencySlider.Maximum = 5000;
+            EQBand6FrequencySlider.Minimum = 50;
+            EQBand6FrequencySlider.Name = "EQBand6FrequencySlider";
+            EQBand6FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand6FrequencySlider.Size = new Size(45, 183);
+            EQBand6FrequencySlider.SmallChange = 50;
+            EQBand6FrequencySlider.TabIndex = 71;
+            EQBand6FrequencySlider.Value = 1000;
+            EQBand6FrequencySlider.Scroll += EQBand6FrequencySlider_Scroll;
+            // 
+            // EQBand5FrequencySlider
+            // 
+            EQBand5FrequencySlider.Location = new Point(286, 149);
+            EQBand5FrequencySlider.Maximum = 5000;
+            EQBand5FrequencySlider.Minimum = 50;
+            EQBand5FrequencySlider.Name = "EQBand5FrequencySlider";
+            EQBand5FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand5FrequencySlider.Size = new Size(45, 183);
+            EQBand5FrequencySlider.SmallChange = 50;
+            EQBand5FrequencySlider.TabIndex = 70;
+            EQBand5FrequencySlider.Value = 800;
+            EQBand5FrequencySlider.Scroll += EQBand5FrequencySlider_Scroll;
+            // 
+            // EQBand4FrequencySlider
+            // 
+            EQBand4FrequencySlider.Location = new Point(220, 149);
+            EQBand4FrequencySlider.Maximum = 5000;
+            EQBand4FrequencySlider.Minimum = 50;
+            EQBand4FrequencySlider.Name = "EQBand4FrequencySlider";
+            EQBand4FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand4FrequencySlider.Size = new Size(45, 183);
+            EQBand4FrequencySlider.SmallChange = 50;
+            EQBand4FrequencySlider.TabIndex = 69;
+            EQBand4FrequencySlider.Value = 500;
+            EQBand4FrequencySlider.Scroll += EQBand4FrequencySlider_Scroll;
+            // 
+            // EQBand3FrequencySlider
+            // 
+            EQBand3FrequencySlider.Location = new Point(155, 149);
+            EQBand3FrequencySlider.Maximum = 5000;
+            EQBand3FrequencySlider.Minimum = 50;
+            EQBand3FrequencySlider.Name = "EQBand3FrequencySlider";
+            EQBand3FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand3FrequencySlider.Size = new Size(45, 183);
+            EQBand3FrequencySlider.SmallChange = 50;
+            EQBand3FrequencySlider.TabIndex = 68;
+            EQBand3FrequencySlider.Value = 300;
+            EQBand3FrequencySlider.Scroll += EQBand3FrequencySlider_Scroll;
+            // 
+            // EQBand2FrequencySlider
+            // 
+            EQBand2FrequencySlider.Location = new Point(90, 149);
+            EQBand2FrequencySlider.Maximum = 5000;
+            EQBand2FrequencySlider.Minimum = 50;
+            EQBand2FrequencySlider.Name = "EQBand2FrequencySlider";
+            EQBand2FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand2FrequencySlider.Size = new Size(45, 183);
+            EQBand2FrequencySlider.SmallChange = 50;
+            EQBand2FrequencySlider.TabIndex = 67;
+            EQBand2FrequencySlider.Value = 200;
+            EQBand2FrequencySlider.Scroll += EQBand2FrequencySlider_Scroll;
+            // 
+            // EQBand1FrequencySlider
+            // 
+            EQBand1FrequencySlider.Location = new Point(39, 149);
+            EQBand1FrequencySlider.Maximum = 5000;
+            EQBand1FrequencySlider.Minimum = 50;
+            EQBand1FrequencySlider.Name = "EQBand1FrequencySlider";
+            EQBand1FrequencySlider.Orientation = Orientation.Vertical;
+            EQBand1FrequencySlider.Size = new Size(45, 183);
+            EQBand1FrequencySlider.SmallChange = 50;
+            EQBand1FrequencySlider.TabIndex = 66;
+            EQBand1FrequencySlider.Value = 100;
+            EQBand1FrequencySlider.Scroll += EQBand1FrequencySlider_Scroll;
+            // 
+            // label8BandsEQ
+            // 
+            label8BandsEQ.AutoSize = true;
+            label8BandsEQ.Location = new Point(220, 111);
+            label8BandsEQ.Name = "label8BandsEQ";
+            label8BandsEQ.Size = new Size(66, 15);
+            label8BandsEQ.TabIndex = 65;
+            label8BandsEQ.Text = "8 bands EQ";
+            // 
+            // lowPassActiveCheckBox
+            // 
+            lowPassActiveCheckBox.AllowDrop = true;
+            lowPassActiveCheckBox.AutoSize = true;
+            lowPassActiveCheckBox.Location = new Point(720, 711);
+            lowPassActiveCheckBox.Name = "lowPassActiveCheckBox";
+            lowPassActiveCheckBox.Size = new Size(117, 19);
+            lowPassActiveCheckBox.TabIndex = 64;
+            lowPassActiveCheckBox.Text = "Activate LowPass";
+            lowPassActiveCheckBox.UseVisualStyleBackColor = true;
+            lowPassActiveCheckBox.CheckedChanged += lowPassActiveCheckBox_CheckedChanged;
             // 
             // attackPhaseLabel
             // 
             attackPhaseLabel.AutoSize = true;
-            attackPhaseLabel.Location = new Point(3, 107);
+            attackPhaseLabel.Location = new Point(617, 33);
             attackPhaseLabel.Name = "attackPhaseLabel";
             attackPhaseLabel.Size = new Size(134, 15);
             attackPhaseLabel.TabIndex = 63;
@@ -1119,7 +1839,7 @@
             // 
             // stringSynthroupBox
             // 
-            stringSynthroupBox.Location = new Point(0, 36);
+            stringSynthroupBox.Location = new Point(14, 26);
             stringSynthroupBox.Margin = new Padding(1);
             stringSynthroupBox.Name = "stringSynthroupBox";
             stringSynthroupBox.Padding = new Padding(1);
@@ -1130,7 +1850,7 @@
             // 
             // attackPhaseNmericUpDown
             // 
-            attackPhaseNmericUpDown.Location = new Point(3, 125);
+            attackPhaseNmericUpDown.Location = new Point(617, 51);
             attackPhaseNmericUpDown.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
             attackPhaseNmericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             attackPhaseNmericUpDown.Name = "attackPhaseNmericUpDown";
@@ -1141,7 +1861,7 @@
             // 
             // lowPassQTrackBar
             // 
-            lowPassQTrackBar.Location = new Point(3, 273);
+            lowPassQTrackBar.Location = new Point(548, 767);
             lowPassQTrackBar.Margin = new Padding(1);
             lowPassQTrackBar.Maximum = 100;
             lowPassQTrackBar.Minimum = 1;
@@ -1153,7 +1873,7 @@
             // 
             // lowPassFrequencyCutoffnumericUpDown
             // 
-            lowPassFrequencyCutoffnumericUpDown.Location = new Point(3, 201);
+            lowPassFrequencyCutoffnumericUpDown.Location = new Point(548, 710);
             lowPassFrequencyCutoffnumericUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
             lowPassFrequencyCutoffnumericUpDown.Minimum = new decimal(new int[] { 50, 0, 0, 0 });
             lowPassFrequencyCutoffnumericUpDown.Name = "lowPassFrequencyCutoffnumericUpDown";
@@ -1165,7 +1885,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(3, 183);
+            label2.Location = new Point(548, 692);
             label2.Margin = new Padding(1, 0, 1, 0);
             label2.Name = "label2";
             label2.Size = new Size(149, 15);
@@ -1175,7 +1895,7 @@
             // lowPassResonanceLabel
             // 
             lowPassResonanceLabel.AutoSize = true;
-            lowPassResonanceLabel.Location = new Point(3, 244);
+            lowPassResonanceLabel.Location = new Point(548, 738);
             lowPassResonanceLabel.Margin = new Padding(1, 0, 1, 0);
             lowPassResonanceLabel.Name = "lowPassResonanceLabel";
             lowPassResonanceLabel.Size = new Size(132, 15);
@@ -1234,7 +1954,31 @@
             tabPage4.ResumeLayout(false);
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
-            tabControl1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)EQBand8GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1GainSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand8WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2WidthSlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1WidthSlider).EndInit();
+            tabControl2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)EQBand8FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand7FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand6FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand5FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand4FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand3FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand2FrequencySlider).EndInit();
+            ((System.ComponentModel.ISupportInitialize)EQBand1FrequencySlider).EndInit();
             ((System.ComponentModel.ISupportInitialize)attackPhaseNmericUpDown).EndInit();
             ((System.ComponentModel.ISupportInitialize)lowPassQTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)lowPassFrequencyCutoffnumericUpDown).EndInit();
@@ -1351,9 +2095,63 @@
         private TrackBar lowPassQTrackBar;
         private Label label2;
         private Panel panel2;
-        private TabControl tabControl1;
-        private TabPage tabPage5;
-        private TabPage tabPage6;
         private GroupBox stringSynthroupBox;
+        private CheckBox lowPassActiveCheckBox;
+        private TrackBar EQBand1FrequencySlider;
+        private Label label8BandsEQ;
+        private Label label14;
+        private TrackBar EQBand8GainSlider;
+        private TrackBar EQBand7GainSlider;
+        private TrackBar EQBand6GainSlider;
+        private TrackBar EQBand5GainSlider;
+        private TrackBar EQBand4GainSlider;
+        private TrackBar EQBand3GainSlider;
+        private TrackBar EQBand2GainSlider;
+        private TrackBar EQBand1GainSlider;
+        private TrackBar EQBand8WidthSlider;
+        private TrackBar EQBand7WidthSlider;
+        private TrackBar EQBand6WidthSlider;
+        private TrackBar EQBand5WidthSlider;
+        private TrackBar EQBand4WidthSlider;
+        private TrackBar EQBand3WidthSlider;
+        private TrackBar EQBand2WidthSlider;
+        private TrackBar EQBand1WidthSlider;
+        private TabControl tabControl2;
+        private TabPage tabPage7;
+        private TabPage tabPage8;
+        private TrackBar EQBand8FrequencySlider;
+        private TrackBar EQBand7FrequencySlider;
+        private TrackBar EQBand6FrequencySlider;
+        private TrackBar EQBand5FrequencySlider;
+        private TrackBar EQBand4FrequencySlider;
+        private TrackBar EQBand3FrequencySlider;
+        private TrackBar EQBand2FrequencySlider;
+        private Label EQBand1FrequencyLabel;
+        private Label EQBand8GainLabel;
+        private Label EQBand7GainLabel;
+        private Label EQBand6GainLabel;
+        private Label EQBand5GainLabel;
+        private Label EQBand4GainLabel;
+        private Label EQBand3GainLabel;
+        private Label EQBand2GainLabel;
+        private Label EQBand1GainLabel;
+        private Label EQBand8WidthLabel;
+        private Label EQBand7WidthLabel;
+        private Label EQBand6WidthLabel;
+        private Label EQBand5WidthLabel;
+        private Label EQBand4WidthLabel;
+        private Label EQBand3WidthLabel;
+        private Label EQBand2WidthLabel;
+        private Label EQBand1WidthLabel;
+        private Label EQBand8FrequencyLabel;
+        private Label EQBand7FrequencyLabel;
+        private Label EQBand6FrequencyLabel;
+        private Label EQBand5FrequencyLabel;
+        private Label EQBand4FrequencyLabel;
+        private Label EQBand3FrequencyLabel;
+        private Label EQBand2FrequencyLabel;
+        private CheckBox equalizerActiveCheckBox;
+        private Label label15;
+        private Label label16;
     }
 }

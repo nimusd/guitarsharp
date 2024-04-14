@@ -1,7 +1,23 @@
 ﻿
 
 
+// Assuming your trackbar is named trackBar1 and equalizer.band[0] is accessible
 
+// Set minimum and maximum values
+trackBar1.Minimum = 1; // We'll use 1-30 and divide by 10 later
+trackBar1.Maximum = 30; 
+
+// Event handler for trackbar value change
+private void trackBar1_Scroll(object sender, EventArgs e)
+{
+    // Get the trackbar value and divide by 10 to get the 0.1-3 range
+    decimal trackValue = trackBar1.Value / 10.0m;
+    
+    // Set the equalizer band width
+    equalizer.band[0].width = trackValue;
+
+    // You might want to update a label or display the value here
+}
 
 
 

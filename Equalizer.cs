@@ -11,11 +11,11 @@ namespace Guitarsharp
     /// </summary>
     public class Equalizer : ISampleProvider
     {
-        private readonly ISampleProvider sourceProvider;
-        public readonly EqualizerBand[] bands;
-        private readonly BiQuadFilter[,] filters;
-        private readonly int channels;
-        public readonly int bandCount;
+        private ISampleProvider sourceProvider;
+        public  EqualizerBand[] bands;
+        private BiQuadFilter[,] filters;
+        private int channels;
+        public  int bandCount;
         private bool updated;
 
         public Equalizer(ISampleProvider sourceProvider, EqualizerBand[] bands)
@@ -95,7 +95,7 @@ namespace Guitarsharp
 
     public class EqualizerBand
     {
-        public float Frequency { get; set; }
+        public int Frequency { get; set; }
         public float Gain { get; set; }
         public float Bandwidth { get; set; }
     }

@@ -14,6 +14,7 @@ namespace Guitarsharp
     using static System.Runtime.InteropServices.JavaScript.JSType;
     using NAudio.Mixer;
     using NAudio.Wave.SampleProviders;
+   
     using static System.Windows.Forms.DataFormats;
     using Microsoft.VisualBasic;
     using System.Linq;
@@ -28,6 +29,7 @@ namespace Guitarsharp
     using System.Numerics;
     
     using System.Diagnostics.Eventing.Reader;
+    using System.Text;
 
     [Serializable]
     public partial class Form1 : Form
@@ -107,10 +109,10 @@ namespace Guitarsharp
             this.WindowState = FormWindowState.Maximized;
 
             WaveFormat format = GlobalConfig.GlobalWaveFormat;
-            string midiFilePath = "test.mid"; // Ensure this path is correct
+            string midiFilePath = "firstglobal.gur"; // Ensure this path is correct
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
-
+            karplusStrong = new KarplusStrong(GlobalConfig.GlobalWaveFormat.SampleRate,333);
             // InitializeAudio();
             this.KeyPreview = true;
 
@@ -196,6 +198,7 @@ namespace Guitarsharp
                 radioButton.Width = 200;
                 radioButton.Text = $"String {i + 1}";
                 radioButton.Location = new Point((i * 200), 80); // Adjust the location for each button
+                if (i == 0) radioButton.Checked = true; else radioButton.Checked = false;
                 radioButton.CheckedChanged += new EventHandler(radioButton_CheckedChanged);
                 stringSynthroupBox.Controls.Add(radioButton);
             }
@@ -288,9 +291,99 @@ namespace Guitarsharp
         private void radioButton_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton radioButton = sender as RadioButton;
+
+
+
+            Label[] frequencyLabels = {
+            EQBand1FrequencyLabel,
+            EQBand2FrequencyLabel,
+            EQBand3FrequencyLabel,
+            EQBand4FrequencyLabel,
+            EQBand5FrequencyLabel,
+            EQBand6FrequencyLabel,
+            EQBand7FrequencyLabel,
+            EQBand8FrequencyLabel
+            };
+
+            Label[] widthLabels = {
+            EQBand1WidthLabel,
+            EQBand2WidthLabel,
+            EQBand3WidthLabel,
+            EQBand4WidthLabel ,
+            EQBand5WidthLabel,
+            EQBand6WidthLabel,
+            EQBand7WidthLabel,
+            EQBand8WidthLabel};
+
+            Label[] gainLabels = {
+            EQBand1GainLabel,
+            EQBand2GainLabel,
+            EQBand3GainLabel,
+            EQBand4GainLabel,
+            EQBand5GainLabel,
+            EQBand6GainLabel,
+            EQBand7GainLabel,
+            EQBand8GainLabel,};
+
+
+            TrackBar[] frequencies = {
+
+                EQBand1FrequencySlider,
+                EQBand2FrequencySlider,
+                EQBand3FrequencySlider,
+                EQBand4FrequencySlider,
+                EQBand5FrequencySlider,
+                EQBand6FrequencySlider,
+                EQBand7FrequencySlider,
+                EQBand8FrequencySlider};
+
+            TrackBar[] gains =
+            {
+                EQBand1GainSlider,
+                EQBand2GainSlider,
+                EQBand3GainSlider,
+                EQBand4GainSlider,
+                EQBand5GainSlider,
+                EQBand6GainSlider,
+                EQBand7GainSlider,
+                EQBand8GainSlider};
+
+            TrackBar[] widths =
+            {
+                EQBand1WidthSlider,
+                EQBand2WidthSlider,
+                EQBand3WidthSlider,
+                EQBand4WidthSlider,
+                EQBand5WidthSlider,
+                EQBand6WidthSlider,
+                EQBand7WidthSlider,
+                EQBand8WidthSlider};
+
+
             if (radioButton != null && radioButton.Checked)
             {
                 selectedStringIndex = int.Parse(radioButton.Text.Split(' ')[1]) - 1;
+
+                // Update checkbox based on lowPassActive  and eqActive state
+                lowPassActiveCheckBox.Checked = theGuitar.strings[selectedStringIndex].lowPassActive;
+                equalizerActiveCheckBox.Checked = theGuitar.strings[selectedStringIndex].eqActive;
+
+                //update the string 8 bands eq labels
+                for (int i = 0; i < 8; i++)
+                {
+                    frequencies[i].Value = theGuitar.strings[selectedStringIndex].bands[i].Frequency;
+                    frequencyLabels[i].Text = theGuitar.strings[selectedStringIndex].bands[i].Frequency.ToString();
+
+                    //******************************************************************
+                    // transform value of trackbar between .1 and 3 (i.e. divide by 10)
+                    float scaledValue = Math.Clamp(theGuitar.strings[selectedStringIndex].bands[i].Bandwidth, 0.1f, 3.0f) * 10;
+                    widths[i].Value = (int)scaledValue;
+                    widthLabels[i].Text = (scaledValue / 10f).ToString();
+
+                    gains[i].Value = (int)theGuitar.strings[selectedStringIndex].bands[i].Gain;
+                    gainLabels[i].Text = theGuitar.strings[selectedStringIndex].bands[i].Gain.ToString();
+
+                }
 
                 if (theGuitar.strings[selectedStringIndex].lowPassCutOffValue > 50 && theGuitar.strings[selectedStringIndex].lowPassCutOffValue < 10000)
                     lowPassFrequencyCutoffnumericUpDown.Value = (int)theGuitar.strings[selectedStringIndex].lowPassCutOffValue;
@@ -316,13 +409,18 @@ namespace Guitarsharp
         }
 
 
-       
+
         private void attackPhaseNmericUpDown_ValueChanged_2(object sender, EventArgs e)
         {
             theGuitar.strings[selectedStringIndex].attackPhaseSamples = (int)attackPhaseNmericUpDown.Value;
         }
 
-       
+        private void lowPassActiveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            // Update lowPassActive based on the checkbox checked state
+            theGuitar.strings[selectedStringIndex].lowPassActive = lowPassActiveCheckBox.Checked;
+        }
+
         private void lowPassFrequencyCutoffnumericUpDown_ValueChanged_1(object sender, EventArgs e)
         {
             theGuitar.strings[selectedStringIndex].lowPassCutOffValue = (float)lowPassFrequencyCutoffnumericUpDown.Value;
@@ -335,6 +433,14 @@ namespace Guitarsharp
             theGuitar.strings[selectedStringIndex].SetlowPassQValue(theGuitar.strings[selectedStringIndex].lowPassQValue);
 
         }
+
+
+
+
+
+
+
+
         private void InitializeComposition()
         {
             composition = new Composition
@@ -971,18 +1077,37 @@ namespace Guitarsharp
         private async void startPlayingButton_Click(object sender, EventArgs e)
         {
             string audioFilePath = "";
+            List<float>[] mixedAudioData = new List<float>[6];
             try
             {
                 startPlayingButton.Enabled = false;
                 SetStatusMessage("Generating audio...");
 
+
                 // Generate the WAV file instead of a MemoryStream
                 await Task.Run(() => audioFilePath = GenerateCompositionAudioFile(composition));
 
-                //SetStatusMessage("Playing the audio...");
+                SetStatusMessage("Playing the audio...");
 
                 // Play the generated WAV file
                 PlayAudioFile(audioFilePath);
+
+
+
+                /*
+                // Generate a MemoryStream instead of a Wav file
+                await Task.Run(() => mixedAudioData = GenerateCompositionAudio(composition));
+
+                SetStatusMessage("Playing the audio...");
+
+                // Play the generated WAV file
+                // PlayAudioFile(audioFilePath);
+
+                byte[] mixedAudioDataBytes = MixAudioDataStream(mixedAudioData);
+
+                PlayAudioFromMemory(mixedAudioDataBytes);
+                */
+
             }
             catch (Exception ex)
             {
@@ -1002,8 +1127,6 @@ namespace Guitarsharp
         {
             DisposeAudioResources();
 
-            // Store the path to the current audio file
-            //currentAudioFilePath = "composition.wav";//filePath;
 
             PlayWaveOutDevice = new WaveOutEvent();
             var audioFileReader = new AudioFileReader(filePath);
@@ -1086,6 +1209,30 @@ namespace Guitarsharp
             // currentAudioFilePath = null;
         }
 
+        private List<float>[] GenerateCompositionAudio(Composition composition)
+        {
+
+
+            // Step 1: Organize notes by string
+            List<Note>[] notesPerString = new List<Note>[6];
+            for (int i = 0; i < notesPerString.Length; i++)
+            {
+                notesPerString[i] = composition.Notes.Where(n => n.StringNumber == i).OrderBy(n => n.StartTime).ToList();
+            }
+
+            // Step 2: Generate audio for each string
+            List<float>[] audioDataPerString = new List<float>[6];
+
+
+            for (int i = 0; i < notesPerString.Length; i++)
+            {
+                audioDataPerString[i] = GenerateAudioForString(notesPerString[i], theGuitar.strings[i], i);
+            }
+
+
+            // Return the file path of the generated audio file
+            return audioDataPerString;
+        }
 
 
 
@@ -1231,6 +1378,122 @@ namespace Guitarsharp
             */
         }
 
+        public byte[] ConvertFloatListToByteArray(List<float> floatData)
+        {
+            int sampleCount = floatData.Count;
+            if (sampleCount == 0) Debug.WriteLine("sample count is zero");
+            int bytesPerSample = sizeof(float); // Assuming 32-bit floats
+            if (bytesPerSample == 0) Debug.WriteLine("sample count is zero");
+            // Calculate total data size (including header)
+            int dataSize = sampleCount * bytesPerSample + 44; // Adjust 44 for header size
+
+            // Allocate memory for the byte array
+            byte[] byteArray = new byte[dataSize];
+
+            // **WAV Header Construction**
+            string riffString = "RIFF";
+            int chunkId = BitConverter.ToInt32(Encoding.ASCII.GetBytes(riffString), 0);
+            int chunkSize = BitConverter.GetBytes(dataSize - 8)[0]; // -8 to exclude header size itself
+            string waveString = "WAVE";
+            int format = BitConverter.ToInt32(Encoding.ASCII.GetBytes(waveString), 0);
+            string theformat = "fmt "; // Space required for header format
+            int subchunk1Id = BitConverter.ToInt32(Encoding.ASCII.GetBytes(theformat), 0);
+            int subchunk1Size = BitConverter.GetBytes(16)[0]; // PCM format requires 16 for subchunk1
+            int audioFormat = BitConverter.GetBytes(1)[0]; // 1 for PCM
+            int numChannels = BitConverter.GetBytes(2)[0]; // Assuming stereo
+            int sampleRate = BitConverter.GetBytes(GlobalConfig.GlobalWaveFormat.SampleRate)[0];
+            int byteRate = BitConverter.GetBytes(numChannels * bytesPerSample)[0];
+            int blockAlign = BitConverter.GetBytes(bytesPerSample * numChannels)[0];
+            int bitsPerSample = BitConverter.GetBytes(bytesPerSample * 8)[0];
+            string dataString = "data";
+            int subchunk2Id = BitConverter.ToInt32(Encoding.ASCII.GetBytes(dataString), 0);
+            int subchunk2Size = BitConverter.GetBytes(sampleCount * bytesPerSample)[0];
+
+            // Copy header bytes to the beginning of the array
+            Array.Copy(BitConverter.GetBytes(chunkId), 0, byteArray, 0, 4);
+            Array.Copy(BitConverter.GetBytes(chunkSize), 0, byteArray, 4, 4);
+            Array.Copy(BitConverter.GetBytes(format), 0, byteArray, 8, 4);
+            Array.Copy(BitConverter.GetBytes(subchunk1Id), 0, byteArray, 12, 4);
+            Array.Copy(BitConverter.GetBytes(subchunk1Size), 0, byteArray, 16, 4);
+            Array.Copy(BitConverter.GetBytes(audioFormat), 0, byteArray, 20, 4);
+            Array.Copy(BitConverter.GetBytes(numChannels), 0, byteArray, 24, 4);
+            Array.Copy(BitConverter.GetBytes(sampleRate), 0, byteArray, 28, 4);
+            Array.Copy(BitConverter.GetBytes(byteRate), 0, byteArray, 32, 4);
+            Array.Copy(BitConverter.GetBytes(blockAlign), 0, byteArray, 36, 4);
+            Array.Copy(BitConverter.GetBytes(bitsPerSample), 0, byteArray, 40, 4);
+            Array.Copy(BitConverter.GetBytes(subchunk2Id), 0, byteArray, 44, 4);
+            Array.Copy(BitConverter.GetBytes(subchunk2Size), 0, byteArray, 48, 4);
+
+            // Copy float data after the header
+            int dataOffset = 44; // Offset after the 44-byte header
+            for (int i = 0; i < sampleCount; i++)
+            {
+                float sample = floatData[i];
+                byte[] sampleBytes = BitConverter.GetBytes(sample);
+                Array.Copy(sampleBytes, 0, byteArray, dataOffset + i * bytesPerSample, bytesPerSample);
+            }
+
+            return byteArray;
+        }
+
+
+
+        private byte[] MixAudioDataStream(List<float>[] audioDataPerString)
+        {
+            // Find the maximum length of non-empty lists
+            int maxSamples = audioDataPerString.Where(list => list.Count > 0).Max(list => list.Count);
+
+
+            List<float> mixedAudio = new List<float>(maxSamples);
+
+            for (int i = 0; i < maxSamples; i++)
+            {
+                float mixedSample = 0f;
+
+                // Mix samples from each string
+                foreach (var stringAudio in audioDataPerString)
+                {
+                    if (i < stringAudio.Count)
+                    {
+                        mixedSample += stringAudio[i];
+                    }
+                }
+                mixedAudio.Add(mixedSample);
+            }
+
+            byte[] mixedAudioBytes = ConvertFloatListToByteArray(mixedAudio);
+            return mixedAudioBytes;
+        }
+        private void PlayAudioFromMemory(byte[] audioData)
+        {
+            DisposeAudioResources(); // Dispose previous resources
+
+
+
+
+            // Create a memory stream from the byte array
+            using (MemoryStream memoryStream = new MemoryStream(audioData))
+            {
+                // Create a RawSourceWaveStream from the memory stream
+                using (var waveStream = new RawSourceWaveStream(memoryStream, new WaveFormat(GlobalConfig.GlobalWaveFormat.SampleRate, 16, 2))) // Adjust format as needed
+                {
+
+
+                    // Create a WaveOut object for playback
+                    using (var waveOut = new WaveOut())
+                    {
+
+                        waveOut.Init(waveStream);
+                        waveOut.Play();
+                        while (waveOut.PlaybackState == PlaybackState.Playing)
+                        {
+                            // Optional: Implement waiting logic while playing (avoid blocking UI thread)
+                        }
+                        waveOut.Stop();
+                    }
+                }
+            }
+        }
 
         private List<float> MixAudioData(List<float>[] audioDataPerString)
         {
@@ -2266,7 +2529,241 @@ namespace Guitarsharp
             fretPatternPanel.Refresh();
         }
 
+        private void equalizerActiveCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
 
+            Label[] frequencyLabels = {
+            EQBand1FrequencyLabel,
+            EQBand2FrequencyLabel,
+            EQBand3FrequencyLabel,
+            EQBand4FrequencyLabel,
+            EQBand5FrequencyLabel,
+            EQBand6FrequencyLabel,
+            EQBand7FrequencyLabel,
+            EQBand8FrequencyLabel
+            };
+
+            Label[] widthLabels = {
+            EQBand1WidthLabel,
+            EQBand2WidthLabel,
+            EQBand3WidthLabel,
+            EQBand4WidthLabel ,
+            EQBand5WidthLabel,
+            EQBand6WidthLabel,
+            EQBand7WidthLabel,
+            EQBand8WidthLabel};
+
+            Label[] gainLabels = {
+            EQBand1GainLabel,
+            EQBand2GainLabel,
+            EQBand3GainLabel,
+            EQBand4GainLabel,
+            EQBand5GainLabel,
+            EQBand6GainLabel,
+            EQBand7GainLabel,
+            EQBand8GainLabel,};
+
+            TrackBar[] frequencies = {
+
+                EQBand1FrequencySlider,
+                EQBand2FrequencySlider,
+                EQBand3FrequencySlider,
+                EQBand4FrequencySlider,
+                EQBand5FrequencySlider,
+                EQBand6FrequencySlider,
+                EQBand7FrequencySlider,
+                EQBand8FrequencySlider};
+
+            TrackBar[] gains =
+            {
+                EQBand1GainSlider,
+                EQBand2GainSlider,
+                EQBand3GainSlider,
+                EQBand4GainSlider,
+                EQBand5GainSlider,
+                EQBand6GainSlider,
+                EQBand7GainSlider,
+                EQBand8GainSlider};
+
+            TrackBar[] widths =
+            {
+                EQBand1WidthSlider,
+                EQBand2WidthSlider,
+                EQBand3WidthSlider,
+                EQBand4WidthSlider,
+                EQBand5WidthSlider,
+                EQBand6WidthSlider,
+                EQBand7WidthSlider,
+                EQBand8WidthSlider};
+
+            //******************* set the activation for the EQ for that string!!!!!!!!!!!!!!!
+            theGuitar.strings[selectedStringIndex].eqActive = equalizerActiveCheckBox.Checked;
+
+
+                for (int i = 0; i < 8; i++)
+                {
+                   frequencies[i].Value =  theGuitar.strings[selectedStringIndex].bands[i].Frequency ;
+                   frequencyLabels[i].Text = frequencies[i].Value.ToString();
+                   gains[i].Value = (int) theGuitar.strings[selectedStringIndex].bands[i].Gain ;
+                   gainLabels[i].Text = gains[i].Value.ToString() ;
+                float newvalue = theGuitar.strings[selectedStringIndex].bands[i].Bandwidth * 10;
+                widths[i].Value = (int) newvalue;
+                   // Debug.WriteLine("eq width band"  + i + ": " + theGuitar.strings[selectedStringIndex].bands[i].Bandwidth);
+                widthLabels[i].Text = theGuitar.strings[selectedStringIndex].bands[i].Bandwidth.ToString() ;
+                }
+            
+        }
+
+        private void EQBand1FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+
+            theGuitar.strings[selectedStringIndex].bands[0].Frequency = EQBand1FrequencySlider.Value;
+            EQBand1FrequencyLabel.Text = EQBand1FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand2FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[1].Frequency = EQBand2FrequencySlider.Value;
+            EQBand2FrequencyLabel.Text = EQBand2FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand3FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[2].Frequency = EQBand3FrequencySlider.Value;
+            EQBand3FrequencyLabel.Text = EQBand3FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand4FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[3].Frequency = EQBand4FrequencySlider.Value;
+            EQBand4FrequencyLabel.Text = EQBand4FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand5FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[4].Frequency = EQBand5FrequencySlider.Value;
+            EQBand5FrequencyLabel.Text = EQBand5FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand6FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[5].Frequency = EQBand6FrequencySlider.Value;
+            EQBand6FrequencyLabel.Text = EQBand6FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand7FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[6].Frequency = EQBand7FrequencySlider.Value;
+            EQBand7FrequencyLabel.Text = EQBand7FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand8FrequencySlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[7].Frequency = EQBand8FrequencySlider.Value;
+            EQBand8FrequencyLabel.Text = EQBand8FrequencySlider.Value.ToString();
+        }
+
+        private void EQBand1WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[0].Bandwidth = EQBand1WidthSlider.Value/10f;
+            EQBand1WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[0].Bandwidth.ToString();
+            Debug.WriteLine("eq width band 1 : " + theGuitar.strings[selectedStringIndex].bands[0].Bandwidth);
+        }
+
+        private void EQBand2WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[1].Bandwidth = EQBand2WidthSlider.Value/10f;
+            EQBand2WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[1].Bandwidth.ToString();
+        }
+
+        private void EQBand3WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[2].Bandwidth = EQBand3WidthSlider.Value/10f;
+            EQBand3WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[2].Bandwidth.ToString();
+        }
+
+        private void EQBand4WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[3].Bandwidth = EQBand4WidthSlider.Value/10f;
+            EQBand4WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[3].Bandwidth.ToString();
+        }
+
+        private void EQBand5WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[4].Bandwidth = EQBand5WidthSlider.Value / 10f;
+            EQBand5WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[4].Bandwidth.ToString();
+        }
+
+        private void EQBand6WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[5].Bandwidth = EQBand6WidthSlider.Value / 10f;
+            EQBand6WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[5].Bandwidth.ToString();
+        }
+
+        private void EQBand7WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[6].Bandwidth = EQBand7WidthSlider.Value / 10f;
+            EQBand7WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[6].Bandwidth.ToString();
+        }
+
+        private void EQBand8WidthSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[7].Bandwidth = EQBand8WidthSlider.Value / 10f;
+            EQBand8WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[7].Bandwidth.ToString();
+        }
+
+        private void EQBand1GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[0].Gain = EQBand1GainSlider.Value;
+            EQBand1GainLabel.Text = EQBand1GainSlider.Value.ToString();
+        }
+
+        private void EQBand2GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[1].Gain = EQBand2GainSlider.Value;
+            EQBand2GainLabel.Text = EQBand2GainSlider.Value.ToString();
+        }
+
+        private void EQBand3GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[2].Gain = EQBand3GainSlider.Value;
+            EQBand3GainLabel.Text = EQBand3GainSlider.Value.ToString();
+        }
+
+        private void EQBand4GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[3].Gain = EQBand4GainSlider.Value;
+            EQBand4GainLabel.Text = EQBand4GainSlider.Value.ToString();
+        }
+
+        private void EQBand5GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[4].Gain = EQBand5GainSlider.Value;
+            EQBand5GainLabel.Text = EQBand5GainSlider.Value.ToString();
+        }
+
+        private void EQBand6GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[5].Gain = EQBand6GainSlider.Value;
+            EQBand6GainLabel.Text = EQBand6GainSlider.Value.ToString();
+        }
+
+        private void EQBand7GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[6].Gain = EQBand7GainSlider.Value;
+            EQBand7GainLabel.Text = EQBand7GainSlider.Value.ToString();
+        }
+
+        private void EQBand8GainSlider_Scroll(object sender, EventArgs e)
+        {
+            theGuitar.strings[selectedStringIndex].bands[7].Gain = EQBand8GainSlider.Value;
+            EQBand8GainLabel.Text = EQBand8GainSlider.Value.ToString();
+        }
+
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     public static class MidiUtilities

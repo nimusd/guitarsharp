@@ -18,14 +18,14 @@ namespace Guitarsharp
     [Serializable]
     public class KarplusStrong : ISampleProvider
     {
-        private readonly double decay = 0.998;
+        
         public readonly List<float> delayLine;
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
         public float lowPassCutOffValue { get; set; } = 300;
         public float lowPassQValue { get; set; } = 1;
-
+        public bool lowPassActive  = false;
         private float previousSample = 0.0f;
         public int attackPhaseSamples { get; set; } = 1;// lowest value
 
@@ -33,7 +33,9 @@ namespace Guitarsharp
         private List<float> sampleBuffer = new List<float>();
         private int bufferLength = 1024; // Example size, adjust as needed
         public float dryWetMix =.5f; // Value from 0 (fully dry) to 1 (fully wet)
-        public Equalizer twelveBands;
+        public Equalizer eightBands;
+        public bool eqActive = true;
+        public EqualizerBand[] bands = new EqualizerBand[8];
         public NAudio.Wave.WaveFormat WaveFormat { get; set; } = GlobalConfig.GlobalWaveFormat;
 
         private BiQuadFilter lowPassFilter;
@@ -57,8 +59,16 @@ namespace Guitarsharp
             }
 
             lowPassFilter = BiQuadFilter.LowPassFilter(WaveFormat.SampleRate, lowPassCutOffValue, lowPassQValue);
-        
-    }
+            for (int i = 0; i < 8; i++)
+            {
+                bands[i] = new EqualizerBand();
+                bands[i].Frequency = 300;
+                bands[i].Bandwidth = 1;
+                bands[i].Gain = -3;
+            }
+            
+            eightBands = new Equalizer(this, bands);//initialize  empty Bands to be set by UI later
+        }
        
 
         public void SetDryWetMix(float mix)
@@ -75,9 +85,10 @@ namespace Guitarsharp
         }
         public void SetlowPassQValue(float numericUpDownValue)
         {
+            
 
             lowPassFilter.SetLowPassFilter(WaveFormat.SampleRate, lowPassCutOffValue, numericUpDownValue);
-            Debug.WriteLine("Q value: " + numericUpDownValue);
+            //Debug.WriteLine("Q value: " + numericUpDownValue);
 
         }
         public void Stop()
@@ -101,8 +112,12 @@ namespace Guitarsharp
             float feedback = 0.989f;//between 0.980 and 0.999 (from mute to too much sustain)
             float output = delayLine[pos];
 
-            // Apply the low-pass filter directly
-            output = lowPassFilter.Transform(output);
+            // Apply the filters directly
+            if (eqActive)
+                output = eightBands.Process(new List<float> { output })[0];
+            
+            if (lowPassActive)
+                output = lowPassFilter.Transform(output);
 
             delayLine[pos] = feedback * 0.5f * (delayLine[pos] + delayLine[(pos + 1) % delayLine.Count]);
             
