@@ -1,0 +1,15 @@
+C:\Users\nimus\Music\guitaristic\Guitaristic.exe
+C:\Users\nimus\Music\guitaristic\Guitaristic.dll
+C:\Users\nimus\Music\guitaristic\Guitaristic.deps.json
+C:\Users\nimus\Music\guitaristic\Guitaristic.runtimeconfig.json
+C:\Users\nimus\Music\guitaristic\Guitaristic.pdb
+C:\Users\nimus\Music\guitaristic\MathNet.Numerics.dll
+C:\Users\nimus\Music\guitaristic\NAudio.dll
+C:\Users\nimus\Music\guitaristic\NAudio.Asio.dll
+C:\Users\nimus\Music\guitaristic\NAudio.Core.dll
+C:\Users\nimus\Music\guitaristic\NAudio.Extras.dll
+C:\Users\nimus\Music\guitaristic\NAudio.Midi.dll
+C:\Users\nimus\Music\guitaristic\NAudio.Wasapi.dll
+C:\Users\nimus\Music\guitaristic\NAudio.WinForms.dll
+C:\Users\nimus\Music\guitaristic\NAudio.WinMM.dll
+C:\Users\nimus\Music\guitaristic\NWaves.dll
