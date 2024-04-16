@@ -112,7 +112,7 @@ namespace Guitarsharp
             string midiFilePath = "firstglobal.gur"; // Ensure this path is correct
             double defaultTempo = 60.0; // Example default tempo
             midiHandler = new MidiHandler(midiFilePath, defaultTempo);
-            karplusStrong = new KarplusStrong(GlobalConfig.GlobalWaveFormat.SampleRate,333);
+            karplusStrong = new KarplusStrong(GlobalConfig.GlobalWaveFormat.SampleRate, 333);
             // InitializeAudio();
             this.KeyPreview = true;
 
@@ -207,7 +207,7 @@ namespace Guitarsharp
             theGuitar = new Guitar(GlobalConfig.GlobalWaveFormat.SampleRate);
 
 
-            // loadfilesfortesting();
+            loadfilesfortesting();
             Debug.WriteLine("Init completed");
 
 
@@ -235,23 +235,30 @@ namespace Guitarsharp
             }
             LoadFretPatterns("base.gfp");
 */
-            string jsonString = File.ReadAllText("first.gur");
-            Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
+            string FileName = "firstglobal.gur";
 
-            this.allNotes = data.AllNotes;
-            this.composition = data.Composition;
-            //this.fretboardMidiNoteNumber = data.FretboardMidiNoteNumber;
-            //this.PixelsPerSecond = data.PixelsPerSecond;
-            // this.midiChannelPerString = data.MidiChannelPerString;
-            // this.timeSignatureNumerator = data.timeSignatureNumerator;
-            // this.timeSignatureDenominator = data.timeSignatureNumerator;
-            //this.tempo = data.tempo;
+
+            string jsonString = File.ReadAllText(FileName);
+            // Form1Data data = JsonSerializer.Deserialize<Form1Data>(jsonString);
+            AllDataContainer container = JsonSerializer.Deserialize<AllDataContainer>(jsonString);
+            this.allNotes = container.Form1Data.AllNotes;
+            this.composition = container.Form1Data.Composition;
+            this.fretboardMidiNoteNumber = container.Form1Data.FretboardMidiNoteNumber;
+            this.PixelsPerSecond = container.Form1Data.PixelsPerSecond;
+            this.midiChannelPerString = container.Form1Data.MidiChannelPerString;
+            this.timeSignatureNumerator = container.Form1Data.timeSignatureNumerator;
+            this.timeSignatureDenominator = container.Form1Data.timeSignatureNumerator;
+            this.tempo = container.Form1Data.tempo;
 
             //check the version and handle older versions accordingly(e.g., provide default values for new properties or convert data from old formats).
-            //if (this.version != data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+            if (this.version != container.Form1Data.Version) MessageBox.Show("wrong version");// we can do better :) but for now that's it...
+                                                                                              // Load fret patterns
+            LoadFretPatternsFromData(container.FretPatternData);
+
+            // Load fingering patterns
+            allFingeringPatterns = container.FingeringPatterns;
 
             guitarRollPanel.Invalidate(); // Refresh the panel to reflect the loaded data
-
         }
 
 
@@ -405,14 +412,46 @@ namespace Guitarsharp
                 {
                     attackPhaseNmericUpDown.Value = (int)theGuitar.strings[selectedStringIndex].attackPhaseSamples;
                 }
+
+                float stepValue = 0.000191919f; // calculated step value
+
+                float minValue = 1f;
+                float maxValue = 100f;
+
+                float damping = theGuitar.strings[selectedStringIndex].damping;
+                float difference = .999f - damping;
+                int trackbarValue = (int)(maxValue - (difference / stepValue));
+
+                // Ensure trackbarValue is within the range of minValue and maxValue
+                trackbarValue = Math.Clamp(trackbarValue, (int)minValue, (int)maxValue);
+
+                dampingTrackBar.Value = trackbarValue;
+                // Update the damping label to display the current damping value
+                dampingLabel.Text = "Damping: " + theGuitar.strings[selectedStringIndex].damping.ToString();
+
             }
         }
 
+        private void dampingTrackBar_Scroll(object sender, EventArgs e)
+        {
+            float stepValue = 0.000191919f; // calculated step value
 
+            // Calculate the damping value based on the trackbar value
+            float dampingValue = 0.980f + (dampingTrackBar.Value * stepValue);
+
+
+            // Set the damping value for the string from the KarplusStrong object
+            theGuitar.strings[selectedStringIndex].damping = dampingValue;
+
+            // Update the damping label to display the current damping value
+            dampingLabel.Text = "Damping: " + theGuitar.strings[selectedStringIndex].damping.ToString();
+            
+        }
 
         private void attackPhaseNmericUpDown_ValueChanged_2(object sender, EventArgs e)
         {
             theGuitar.strings[selectedStringIndex].attackPhaseSamples = (int)attackPhaseNmericUpDown.Value;
+            // Debug.WriteLine("attack phase samples: " + theGuitar.strings[selectedStringIndex].attackPhaseSamples + "  on string: " + selectedStringIndex);
         }
 
         private void lowPassActiveCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -1286,7 +1325,7 @@ namespace Guitarsharp
 
             // Define the duration of the attack phase in samples (e.g., 0.1 seconds)
             int attackPhaseSamples = stringSynth.attackPhaseSamples;
-
+            //Debug.WriteLine("attackPhaseSamples in generate audio for string: " + attackPhaseSamples + " string number: "+ stringNumber);
 
             for (int i = 0; i < notes.Count; i++)
             {
@@ -2600,18 +2639,19 @@ namespace Guitarsharp
             theGuitar.strings[selectedStringIndex].eqActive = equalizerActiveCheckBox.Checked;
 
 
-                for (int i = 0; i < 8; i++)
-                {
-                   frequencies[i].Value =  theGuitar.strings[selectedStringIndex].bands[i].Frequency ;
-                   frequencyLabels[i].Text = frequencies[i].Value.ToString();
-                   gains[i].Value = (int) theGuitar.strings[selectedStringIndex].bands[i].Gain ;
-                   gainLabels[i].Text = gains[i].Value.ToString() ;
+            for (int i = 0; i < 8; i++)
+            {
+                frequencyLabels[i].Text = frequencies[i].Value.ToString();
+                frequencies[i].Value = theGuitar.strings[selectedStringIndex].bands[i].Frequency;
+
+                gains[i].Value = (int)theGuitar.strings[selectedStringIndex].bands[i].Gain;
+                gainLabels[i].Text = gains[i].Value.ToString();
                 float newvalue = theGuitar.strings[selectedStringIndex].bands[i].Bandwidth * 10;
-                widths[i].Value = (int) newvalue;
-                   // Debug.WriteLine("eq width band"  + i + ": " + theGuitar.strings[selectedStringIndex].bands[i].Bandwidth);
-                widthLabels[i].Text = theGuitar.strings[selectedStringIndex].bands[i].Bandwidth.ToString() ;
-                }
-            
+                widths[i].Value = (int)newvalue;
+                // Debug.WriteLine("eq width band"  + i + ": " + theGuitar.strings[selectedStringIndex].bands[i].Bandwidth);
+                widthLabels[i].Text = theGuitar.strings[selectedStringIndex].bands[i].Bandwidth.ToString();
+            }
+
         }
 
         private void EQBand1FrequencySlider_Scroll(object sender, EventArgs e)
@@ -2665,26 +2705,26 @@ namespace Guitarsharp
 
         private void EQBand1WidthSlider_Scroll(object sender, EventArgs e)
         {
-            theGuitar.strings[selectedStringIndex].bands[0].Bandwidth = EQBand1WidthSlider.Value/10f;
+            theGuitar.strings[selectedStringIndex].bands[0].Bandwidth = EQBand1WidthSlider.Value / 10f;
             EQBand1WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[0].Bandwidth.ToString();
-            Debug.WriteLine("eq width band 1 : " + theGuitar.strings[selectedStringIndex].bands[0].Bandwidth);
+            //Debug.WriteLine("eq width band 1 : " + theGuitar.strings[selectedStringIndex].bands[0].Bandwidth);
         }
 
         private void EQBand2WidthSlider_Scroll(object sender, EventArgs e)
         {
-            theGuitar.strings[selectedStringIndex].bands[1].Bandwidth = EQBand2WidthSlider.Value/10f;
+            theGuitar.strings[selectedStringIndex].bands[1].Bandwidth = EQBand2WidthSlider.Value / 10f;
             EQBand2WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[1].Bandwidth.ToString();
         }
 
         private void EQBand3WidthSlider_Scroll(object sender, EventArgs e)
         {
-            theGuitar.strings[selectedStringIndex].bands[2].Bandwidth = EQBand3WidthSlider.Value/10f;
+            theGuitar.strings[selectedStringIndex].bands[2].Bandwidth = EQBand3WidthSlider.Value / 10f;
             EQBand3WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[2].Bandwidth.ToString();
         }
 
         private void EQBand4WidthSlider_Scroll(object sender, EventArgs e)
         {
-            theGuitar.strings[selectedStringIndex].bands[3].Bandwidth = EQBand4WidthSlider.Value/10f;
+            theGuitar.strings[selectedStringIndex].bands[3].Bandwidth = EQBand4WidthSlider.Value / 10f;
             EQBand4WidthLabel.Text = theGuitar.strings[selectedStringIndex].bands[3].Bandwidth.ToString();
         }
 
@@ -2764,6 +2804,8 @@ namespace Guitarsharp
         {
 
         }
+
+       
     }
 
     public static class MidiUtilities

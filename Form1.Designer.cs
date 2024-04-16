@@ -118,6 +118,10 @@
             fingeringPatternPanel1 = new Panel();
             tabPage4 = new TabPage();
             panel2 = new Panel();
+            dampingTrackBar = new TrackBar();
+            dampingLabel = new Label();
+            button1 = new Button();
+            startPlayingInSynth = new Button();
             label16 = new Label();
             label15 = new Label();
             equalizerActiveCheckBox = new CheckBox();
@@ -210,6 +214,7 @@
             tabPage3.SuspendLayout();
             tabPage4.SuspendLayout();
             panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dampingTrackBar).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EQBand8GainSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EQBand7GainSlider).BeginInit();
             ((System.ComponentModel.ISupportInitialize)EQBand6GainSlider).BeginInit();
@@ -1145,6 +1150,10 @@
             // panel2
             // 
             panel2.BackColor = Color.Linen;
+            panel2.Controls.Add(dampingTrackBar);
+            panel2.Controls.Add(dampingLabel);
+            panel2.Controls.Add(button1);
+            panel2.Controls.Add(startPlayingInSynth);
             panel2.Controls.Add(label16);
             panel2.Controls.Add(label15);
             panel2.Controls.Add(equalizerActiveCheckBox);
@@ -1214,6 +1223,48 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(1622, 833);
             panel2.TabIndex = 64;
+            // 
+            // dampingTrackBar
+            // 
+            dampingTrackBar.Location = new Point(627, 155);
+            dampingTrackBar.Maximum = 100;
+            dampingTrackBar.Minimum = 1;
+            dampingTrackBar.Name = "dampingTrackBar";
+            dampingTrackBar.Size = new Size(266, 45);
+            dampingTrackBar.TabIndex = 125;
+            dampingTrackBar.Value = 1;
+            dampingTrackBar.Scroll += dampingTrackBar_Scroll;
+            // 
+            // dampingLabel
+            // 
+            dampingLabel.AutoSize = true;
+            dampingLabel.Location = new Point(641, 127);
+            dampingLabel.Name = "dampingLabel";
+            dampingLabel.Size = new Size(56, 15);
+            dampingLabel.TabIndex = 124;
+            dampingLabel.Text = "Damping";
+            // 
+            // button1
+            // 
+            button1.Location = new Point(614, 68);
+            button1.Margin = new Padding(1);
+            button1.Name = "button1";
+            button1.Size = new Size(112, 31);
+            button1.TabIndex = 123;
+            button1.Text = "Stop Playing";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += StopPlayingButton_Click;
+            // 
+            // startPlayingInSynth
+            // 
+            startPlayingInSynth.Location = new Point(614, 32);
+            startPlayingInSynth.Margin = new Padding(1);
+            startPlayingInSynth.Name = "startPlayingInSynth";
+            startPlayingInSynth.Size = new Size(112, 34);
+            startPlayingInSynth.TabIndex = 122;
+            startPlayingInSynth.Text = "Start Playing";
+            startPlayingInSynth.UseVisualStyleBackColor = true;
+            startPlayingInSynth.Click += startPlayingButton_Click;
             // 
             // label16
             // 
@@ -1831,7 +1882,7 @@
             // attackPhaseLabel
             // 
             attackPhaseLabel.AutoSize = true;
-            attackPhaseLabel.Location = new Point(617, 33);
+            attackPhaseLabel.Location = new Point(759, 33);
             attackPhaseLabel.Name = "attackPhaseLabel";
             attackPhaseLabel.Size = new Size(134, 15);
             attackPhaseLabel.TabIndex = 63;
@@ -1850,7 +1901,7 @@
             // 
             // attackPhaseNmericUpDown
             // 
-            attackPhaseNmericUpDown.Location = new Point(617, 51);
+            attackPhaseNmericUpDown.Location = new Point(759, 51);
             attackPhaseNmericUpDown.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
             attackPhaseNmericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             attackPhaseNmericUpDown.Name = "attackPhaseNmericUpDown";
@@ -1954,6 +2005,7 @@
             tabPage4.ResumeLayout(false);
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dampingTrackBar).EndInit();
             ((System.ComponentModel.ISupportInitialize)EQBand8GainSlider).EndInit();
             ((System.ComponentModel.ISupportInitialize)EQBand7GainSlider).EndInit();
             ((System.ComponentModel.ISupportInitialize)EQBand6GainSlider).EndInit();
@@ -2153,5 +2205,9 @@
         private CheckBox equalizerActiveCheckBox;
         private Label label15;
         private Label label16;
+        private Button startPlayingInSynth;
+        private Button button1;
+        private TrackBar dampingTrackBar;
+        private Label dampingLabel;
     }
 }

@@ -1,14 +1,13 @@
-﻿using MathNet.Numerics.IntegralTransforms;
-using System.Numerics;
-using NAudio.Wave;
-using NAudio.Extras;
+﻿using NAudio.Dsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using NAudio.Dsp;
+using System.IO;
+using System.Runtime.Serialization;using NAudio.Dsp;
+using NAudio.Wave;
 
 
 
@@ -18,21 +17,31 @@ namespace Guitarsharp
     [Serializable]
     public class KarplusStrong : ISampleProvider
     {
-        
+
         public readonly List<float> delayLine;
         private readonly List<float> excitationSample;
         private int pos = 0;
         public float frequency;
         public float lowPassCutOffValue { get; set; } = 300;
         public float lowPassQValue { get; set; } = 1;
-        public bool lowPassActive  = false;
+        public bool lowPassActive = false;
         private float previousSample = 0.0f;
         public int attackPhaseSamples { get; set; } = 1;// lowest value
-
+       
+        public float damping
+        {
+            get { return _damping; }
+            set
+            {
+                // Ensure the damping value is within the range 0.980 to 0.999
+                _damping = Math.Max(0.980f, Math.Min(0.999f, value));
+            }
+        }
+        private float _damping = 0.989f;
 
         private List<float> sampleBuffer = new List<float>();
         private int bufferLength = 1024; // Example size, adjust as needed
-        public float dryWetMix =.5f; // Value from 0 (fully dry) to 1 (fully wet)
+        public float dryWetMix = .5f; // Value from 0 (fully dry) to 1 (fully wet)
         public Equalizer eightBands;
         public bool eqActive = true;
         public EqualizerBand[] bands = new EqualizerBand[8];
@@ -62,30 +71,31 @@ namespace Guitarsharp
             for (int i = 0; i < 8; i++)
             {
                 bands[i] = new EqualizerBand();
-                bands[i].Frequency = 300;
+                bands[i].Frequency = 100 * (i+1);
                 bands[i].Bandwidth = 1;
                 bands[i].Gain = -3;
             }
-            
+            Debug.WriteLine("KarplusStrong initialized");
             eightBands = new Equalizer(this, bands);//initialize  empty Bands to be set by UI later
+            attackPhaseSamples = 480;
         }
-       
+
 
         public void SetDryWetMix(float mix)
         {
-            dryWetMix = mix/100;
-           
+            dryWetMix = mix / 100;
+
         }
         public void SetlowPassCutOffValue(float numericUpDownValue)
         {
-           
+
             lowPassFilter.SetLowPassFilter(WaveFormat.SampleRate, numericUpDownValue, lowPassQValue);
 
 
         }
         public void SetlowPassQValue(float numericUpDownValue)
         {
-            
+
 
             lowPassFilter.SetLowPassFilter(WaveFormat.SampleRate, lowPassCutOffValue, numericUpDownValue);
             //Debug.WriteLine("Q value: " + numericUpDownValue);
@@ -99,48 +109,49 @@ namespace Guitarsharp
                 delayLine[i] *= 0.1f; // Apply a strong damping factor to each sample
             }
 
-           
-           
+
+
         }
 
-        
+
         public float NextSample()
         {
-           
+
 
             //to dampen the sound
-            float feedback = 0.989f;//between 0.980 and 0.999 (from mute to too much sustain)
+            
+           // damping = 0.989f;//between 0.980 and 0.999 (from mute to too much sustain)
             float output = delayLine[pos];
 
             // Apply the filters directly
             if (eqActive)
                 output = eightBands.Process(new List<float> { output })[0];
-            
+
             if (lowPassActive)
                 output = lowPassFilter.Transform(output);
 
-            delayLine[pos] = feedback * 0.5f * (delayLine[pos] + delayLine[(pos + 1) % delayLine.Count]);
-            
+            delayLine[pos] = _damping * 0.5f * (delayLine[pos] + delayLine[(pos + 1) % delayLine.Count]);
+
 
             pos = (pos + 1) % delayLine.Count;
 
 
-            
-            return output ;
+
+            return output;
         }
 
 
         public void Pluck(float amplitude)
         {
-            
+
             //pure sine
             for (int i = 0; i < delayLine.Count; i++)
             {
-                delayLine[i] = (amplitude/2)  * (float)(Math.Sin(2 * Math.PI * i / delayLine.Count));
+                delayLine[i] = (amplitude / 2) * (float)(Math.Sin(2 * Math.PI * i / delayLine.Count));
 
             }
 
-            
+
             // Transition to random numbers
             int transitionPoint = (int)(delayLine.Count * .9f);//from .1 "very" metallic to 1 Harp like 
             Random random = new Random();
@@ -149,8 +160,8 @@ namespace Guitarsharp
                 delayLine[i] = (float)random.NextDouble() * .1f - 1f;
             }
 
-           
-            
+
+
         }
 
         public void UpdateFrequency(float newFrequency)
@@ -159,7 +170,7 @@ namespace Guitarsharp
 
             frequency = newFrequency;
             int newDelayLineLength = (int)Math.Round(format.SampleRate / frequency);
-            
+
             // Resize the delayLine and excitationSample
             delayLine.Resize(newDelayLineLength);
             excitationSample.Resize(newDelayLineLength);
@@ -234,14 +245,14 @@ namespace Guitarsharp
         {
             return 0.998 - (0.001 * (frequency / 1000.0f));
         }
-        
+
 
         public int Read(float[] buffer, int offset, int count)
         {
             for (int n = 0; n < count; n += 2)
             {
                 float sample = NextSample();
-               
+
 
                 buffer[n + offset] = sample; // Left channel
                 buffer[n + offset + 1] = sample; // Right channel
